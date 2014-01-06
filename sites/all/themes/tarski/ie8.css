@@ -1,0 +1,9 @@
+/* $Id: ie8.css,v 1.1 2012/01/25 02:43:38 ubuntu Exp $ */
+
+textarea {
+  overflow: auto;
+}
+select {
+  padding: 0;
+}
+

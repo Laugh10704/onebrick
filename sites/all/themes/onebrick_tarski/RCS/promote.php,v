@@ -1,0 +1,295 @@
+head	1.8;
+access;
+symbols;
+locks; strict;
+comment	@# @;
+
+
+1.8
+date	2013.02.26.04.52.48;	author benson;	state Exp;
+branches;
+next	1.7;
+
+1.7
+date	2012.09.25.04.05.27;	author benson;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	2012.02.22.02.42.02;	author crc;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2012.01.27.20.21.20;	author crc;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2012.01.25.05.00.10;	author ubuntu;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2012.01.25.04.48.13;	author crc;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2012.01.25.04.44.33;	author ubuntu;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2012.01.25.02.42.50;	author ubuntu;	state Exp;
+branches;
+next	;
+
+
+desc
+@..
+@
+
+
+1.8
+log
+@checked for empty otherinfo
+@
+text
+@<div style="display:none">
+<div id="promoteArea">
+
+<?php
+  $chapter = $_SESSION['CHAPTER'];
+
+  // search for craigslist code
+  $q = "SELECT field_chapter_craigslist_stub_value FROM field_data_field_chapter_craigslist_stub WHERE entity_id=$chapter";
+  $region = db_query($q)->fetchField();
+
+  $url = "http://v3.onebrick.org";
+  $node_url = "$url/node/$node->nid";
+
+  $q = "SELECT field_chapter_craigslist_code_value FROM field_data_field_chapter_craigslist_code WHERE entity_id=$chapter";
+  $shortregion = db_query($q)->fetchField();
+?>
+
+<h1>Craigslist Posting</h1>
+
+For each of the following sections: (If you use a Mac, replace 'Ctrl' with the 'Command' key)<br/>
+<ol>
+<li>Click in the text box</li>
+<li>Select all the text (press Ctrl-A)</li>
+<li>Copy the text (press Ctrl-C)</li>
+<li>Click the heading link to go to Craigslist</li>
+<li>Navigate to the ad form</li>
+<li>Click in the "Posting Description" text box and paste the text (press Ctrl-V)</li>
+</ol>
+<hr/>
+
+<?php
+  // get node numbers (queries are separate, because "order" matters)
+  $q = "SELECT source FROM url_alias WHERE alias='promotion-header1'";
+  $source = db_query($q)->fetchField();
+  $promotion_header1 = strtok($source, "node/");
+  $q = "SELECT source FROM url_alias WHERE alias='promotion-header2'";
+  $source = db_query($q)->fetchField();
+  $promotion_header2 = strtok($source, "node/");
+  $q = "SELECT source FROM url_alias WHERE alias='promotion-header3'";
+  $source = db_query($q)->fetchField();
+  $promotion_header3 = strtok($source, "node/");
+  $q = "SELECT source FROM url_alias WHERE alias='promotion-footer'";
+  $source = db_query($q)->fetchField();
+  $promotion_footer = strtok($source, "node/");
+
+  // drupal node ids for headers and footers
+  $headers = array($promotion_header1, $promotion_header2, $promotion_header3);
+  $footers = array($promotion_footer, $promotion_footer, $promotion_footer);
+  $sections = array("Volunteers", "Activity Partners", "Events");
+  $top_section_code = array("C", "C", "E");
+  $section_code = array("vol", "act", "eve");
+  $count = count($headers);
+
+  for ($i = 0; $i < $count; $i++) {
+    $url_suffix = $top_section_code[$i] . "/" . $section_code[$i];
+    print("<a href='https://post.craigslist.org/c/$shortregion/$url_suffix' target='_blank'>Click to place ad in $sections[$i] section</a>");
+?>
+
+<textarea readonly style="height:100px">
+<?php
+  // get promotion header
+  $q = "SELECT body_value FROM field_data_body WHERE entity_id=$headers[$i]";
+  $code = db_query($q)->fetchField();
+  $code = str_replace(array('<strong>', '</strong>', '<em>', '</em>', 'www.onebrick.org'), array('<b>', '</b>', '<i>', '</i>', "v3.onebrick.org"), $code);
+  print(htmlentities($code));
+
+  // date
+  $ts_from = strtotime($node->field_event_date['und'][0]['value']);
+  $when = date('l, F d, Y, g:i A', $ts_from);
+  // location
+  if (isset($node->field_event_site)) {
+    $site = node_load($node->field_event_site['und']['0']['nid']);
+    if (isset($site->location)) {
+      $location = location_address2singleline($site->location);
+    }
+  }
+
+  $text = "<p><b>What:</b> <a href='$node_url'>$node->title</a><br> <b>When:</b> $when<br> <b>Where:</b> $location<br> <b>RSVP:</b> <a href='$node_url'>Click Here</a><br><br></p>";
+  print(htmlentities($text));
+
+  // event info
+  $event_info = $node->body['und'][0]['value'];
+  if (!empty($node->field_event_otherinfo)) {
+    $event_other_info = $node->field_event_otherinfo['und'][0]['value'];
+    $text = "<p><p>$event_info</p><p><b>Other Event Info:</b></p><p>$event_other_info</p>";
+    print(htmlentities($text));
+  }
+
+  $text = "<p>View <a href='$node_url'>more information</a> about this event at:<br><a href='$node_url'>$node_url</a></p>";
+  print(htmlentities($text));
+
+  $text = "<p>Please <a href='$node_url'><b>RSVP here</b></a></p><br/><p>Check out our <a href='$url/calendar/'>event calendar</b></a> for other upcoming volunteer opportunities.</p>";
+  print(htmlentities($text));
+
+  // get promotion footer
+  $q = "SELECT body_value FROM field_data_body WHERE entity_id=$footers[$i]";
+  $code = db_query($q)->fetchField();
+  $code = str_replace(array('<strong>', '</strong>', '<em>', '</em>', 'www.onebrick.org'), array('<b>', '</b>', '<i>', '</i>', "v3.onebrick.org"), $code);
+  print(htmlentities($code));
+?>
+
+</textarea>
+<p></p>
+
+<?php
+  } // end for loop of text areas
+?>
+
+</div>
+</div>
+@
+
+
+1.7
+log
+@made link go closer to ad form
+@
+text
+@d83 5
+a87 4
+  $event_other_info = $node->field_event_otherinfo['und'][0]['value'];
+
+  $text = "<p><p>$event_info</p><p><b>Other Event Info:</b></p><p>$event_other_info</p>";
+  print(htmlentities($text));
+@
+
+
+1.6
+log
+@*** empty log message ***
+@
+text
+@d49 3
+a51 1
+  $sections = array("Volunteers (under 'community')", "Activity Partners (under 'community')", "Events");
+d55 2
+a56 1
+    print("<a href='https://post.craigslist.org/c/$shortregion/' target='_blank'>Click to place ad in $sections[$i] section</a>");
+@
+
+
+1.5
+log
+@add isset to references to the location in case its not set in data from v2.
+.'
+@
+text
+@d32 13
+d47 2
+a48 2
+  $headers = array(294534, 294542, 294543);
+  $footers = array(294540, 294540, 294540);
+d53 1
+a53 2
+
+  print("<a href='https://post.craigslist.org/c/$shortregion/' target='_blank'>Click to place ad in $sections[$i] section</a>");
+d56 1
+a56 1
+<textarea rows="1">
+d68 1
+a68 1
+  if(isset($node->field_event_site)) {
+d70 1
+a70 1
+    if(isset($site->location)) {
+d82 1
+a82 1
+  $text = "<p><p>$event_info</p><br><p><b>Other Event Info:</b></p><p>$event_other_info</p>";
+d88 1
+a88 1
+  $text = "<p>Please <a href='$node_url'><b>RSVP here</b></a></p><p>Check out our <a href='$url/calendar/'>event calendar</b></a> for other upcoming volunteer opportunities.</p>";
+@
+
+
+1.4
+log
+@craigslist
+@
+text
+@d56 6
+a61 2
+  $site = node_load($node->field_event_site['und']['0']['nid']);
+  $location = location_address2singleline($site->location);
+@
+
+
+1.3
+log
+@add $_SESSION['CHAPTER']
+@
+text
+@d11 1
+a11 1
+  $url = "http://$region.onebrick.org";
+d33 1
+d49 1
+a49 1
+  $code = str_replace(array('<strong>', '</strong>', '<em>', '</em>', 'www.onebrick.org'), array('<b>', '</b>', '<i>', '</i>', "$region.onebrick.org"), $code);
+d78 1
+a78 1
+  $code = str_replace(array('<strong>', '</strong>', '<em>', '</em>', 'www.onebrick.org'), array('<b>', '</b>', '<i>', '</i>', "$region.onebrick.org"), $code);
+@
+
+
+1.2
+log
+@craigslist updates
+@
+text
+@d5 1
+a5 1
+  $chapter = 107;
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d5 1
+a5 1
+  $chapter = 101;
+d14 31
+d46 1
+a46 1
+  $q = "SELECT body_value FROM field_data_body WHERE entity_id=294534";
+a47 1
+
+a48 1
+
+d65 1
+a65 1
+  $text = "<p><p>Here's a little more information about the upcoming event:</p><p>$event_info</p><br><p><b>Other Event Info:</b></p><p>$event_other_info</p>";
+d74 12
+d87 1
+@

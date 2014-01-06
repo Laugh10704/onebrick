@@ -1,0 +1,688 @@
+head	1.4;
+access;
+symbols;
+locks; strict;
+comment	@# @;
+
+
+1.4
+date	2012.02.04.01.40.39;	author crc;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2012.01.25.04.45.06;	author jordan;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2012.01.25.02.08.53;	author crc;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2012.01.25.02.00.55;	author root;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.4
+log
+@*** empty log message ***
+@
+text
+@<?php
+// $Id: brick_data.php,v 1.3 2012/01/25 04:45:06 jordan Exp crc $
+
+function brick_1b_email($uid) {
+  $q = "
+  SELECT field_staff_email_value FROM field_revision_field_staff_person
+  JOIN field_revision_field_staff_email
+  on field_revision_field_staff_person.entity_id=field_revision_field_staff_email.entity_id
+  WHERE field_staff_person_uid=$uid;";
+
+  $c = db_query($q)->fetchField();
+  return($c);
+}
+
+function brick_data_chapter_list() {
+	return("here, there and everywhere");
+}
+
+function brick_data_hours() {
+	return("300,000");
+}
+
+function brick_data_chapter_count_num() {
+	return(13);
+}
+
+function brick_data_chapter_count_text() {
+	return("13");
+}
+
+function brick_data_org_count() {
+	//round up
+	return("1,200");
+}
+
+function brick_data_chapter_list() {
+	return("here, there and everywhere");
+}
+
+function brick_data_chapter_list() {
+	return("here, there and everywhere");
+}
+
+function brick_data_chapter_list() {
+	return("here, there and everywhere");
+}
+
+?>
+@
+
+
+1.3
+log
+@*** empty log message ***
+@
+text
+@d2 1
+a2 1
+// $Id: brick_data.php,v 1.2 2012/01/25 02:08:53 crc Exp jordan $
+d14 34
+@
+
+
+1.2
+log
+@*** empty log message ***
+@
+text
+@d2 1
+a2 1
+// $Id: brick_data.php,v 1.1 2012/01/25 02:00:55 root Exp crc $
+d14 1
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d2 1
+a2 161
+// $Id$
+
+function brick_colorbox_form_access() {
+   return TRUE;
+}
+
+function brick_login_form($form_state) {
+  $form = array();
+  $form['existing'] = array(
+    '#type' => 'container',
+    '#attributes' => array(
+       'class' => array(
+         'existing-area'
+       ),
+    ),
+  );
+
+  $form['existing']['intro'] = array(
+    '#markup' => 'Login with your OneBrick email and password'
+  );
+  
+  $form['existing']['emailexist'] = array(
+    '#size' => '35',
+    '#weight' => '0',
+    '#type' => 'textfield',
+    '#title' => t('Email'),
+    '#default_value' => '',
+  );
+
+  $form['existing']['pass'] = array(
+    '#size' => '35',
+    '#type' => 'password',
+    '#title' => t('Password')
+  );
+
+  $form['guest'] = array(
+    '#type' => 'container',
+    '#attributes' => array(
+       'class' => array(
+         'guest-area'
+        ),
+     ),
+  );
+
+  $form['guest']['intro'] = array(
+    '#markup' => 'If you would like to use this site as a guest instead, please enter your email so we can contact you',
+  );
+
+  $form['guest']['email'] = array(
+    '#size' => '35',
+    '#type' => 'textfield',
+    '#title' => t('Guest Email'),
+  );
+
+  $form['guest']['name'] = array(
+    '#size' => '35',
+    '#type' => 'textfield',
+    '#title' => t('Your Full Name')
+  );
+
+  $form['existing']['submit'] = array(
+    '#type' => 'submit',
+    '#value' => 'Login',
+    '#submit' => array('brick_login_existing')
+  );
+
+  $form['guest']['submit'] = array(
+    '#type' => 'submit',
+    '#value' => 'RSVP as guest',
+    '#submit' => array('brick_login_guest')
+  );
+
+  return $form;
+}
+
+function brick_login_guest($form, &$form_state) {
+   $emailAddr = $form_state['values']['email'];
+
+   $currUser = user_load_by_mail($emailAddr);
+   
+   if ($currUser) {
+   }
+   else {
+      $newUser = new StdClass();
+      $newUser->is_new = TRUE;
+      $newUser->status = TRUE;
+      $newUser->field_user_fname[LANGUAGE_NONE][0]['value'] = 'Jordan';
+      $newUser->field_user_sname[LANGUAGE_NONE][0]['value'] = 'Laughlin';
+      $newUser->name = $emailAddr;
+      $newUser->pass = 'guest';
+      $newUser->mail = $emailAddr;
+      $newUser->status = 1;
+      $newUser->init = $emailAddr;
+      user_save($newUser);
+
+      $currUser = $newUser;
+   }
+
+   drupal_goto($currUser->uid);
+}
+
+function brick_login_existing($form, &$form_state) {
+   global $user;
+
+   // try to load by email first, and then by username
+   $newuser = user_load_by_mail($form_state['values']['emailexist']);
+   if (!$newuser) {
+      $newuser = user_load_by_name($form_state['values']['emailexist']);
+   }
+
+   require_once DRUPAL_ROOT . '/' . variable_get('password_inc', 'includes/password.inc');
+   if ($newuser && user_check_password($form_state['values']['pass'], $newuser)) {
+      $user = $newuser;
+
+      user_login_finalize();
+
+      drupal_goto('success');
+   }
+   else {
+      drupal_goto('fail');
+   }
+}
+
+function brick_get_login_form() {
+   return drupal_get_form('brick_login_form');
+}  
+
+/**
+ * @@file
+ *
+ * A module that contains utility functions used across the One Brick website.
+ */
+function brick_get_rsvp_list($node) {
+  $q = "
+  SELECT DISTINCT
+    field_revision_field_rsvp_person.field_rsvp_person_uid as uid,
+    field_revision_field_rsvp_role.field_rsvp_role_value as role,
+    users.mail,
+    field_revision_field_user_fname.field_user_fname_value as fname,
+    field_revision_field_user_sname.field_user_sname_value as sname
+  FROM field_revision_field_rsvp_event
+    left join field_revision_field_rsvp_person
+      on field_revision_field_rsvp_event.entity_id=field_revision_field_rsvp_person.entity_id
+    left join field_revision_field_rsvp_role
+      on field_revision_field_rsvp_event.entity_id=field_revision_field_rsvp_role.entity_id
+    left join users
+      on field_revision_field_rsvp_person.field_rsvp_person_uid=users.uid
+    left join field_revision_field_user_fname 
+      on field_revision_field_rsvp_person.field_rsvp_person_uid=field_revision_field_user_fname.entity_id
+    left join field_revision_field_user_sname 
+      on field_revision_field_rsvp_person.field_rsvp_person_uid=field_revision_field_user_sname.entity_id
+  WHERE field_rsvp_event_nid = ".$node->nid;
+
+  /*
+  $rsvp_list = db_query($q);
+  while($rsvp = $rsvp_list->fetchAssoc()) {
+    print_r($rsvp); // debug
+  }
+*/
+  return(db_query($q));
+}
+a13 406
+
+function brick_event_full($node) {
+   $q = "SELECT count(entity_id) FROM field_data_field_rsvp_event where field_rsvp_event_nid = ".$node->nid;
+   $c = db_query($q)->fetchField();
+
+/* debug
+  printf("Requested: %s, RSVP Capacity: %s, RSVPed: %s",
+    $node->field_event_requested['und'][0]['value'],
+    $node->field_event_max_rsvp_capacity['und'][0]['value'],
+    $c);
+*/
+
+  return($c >= $node->field_event_max_rsvp_capacity['und'][0]['value']);
+}
+
+
+function brick_event_start($node) {
+  return(strtotime($node->field_event_date['und'][0]['value']));
+}
+
+function brick_event_open_date($node) {
+  return(strtotime($node->field_event_rsvp_date['und'][0]['value']));
+}
+
+function brick_add_rsvp($eid, $uid, $note) {
+$rid = db_insert('node') -> fields(array(
+  'uid' => $uid,
+  'vid' => 999999999, /* temporarily set to something reset in db_update() on next line */
+  'created'=>REQUEST_TIME,
+  'changed'=>REQUEST_TIME,
+  'comment'=>'2',
+  'title'=>'new rsvp',
+  'language'=>'und',
+  'type'=>'rsvp'))->execute();
+
+db_update('node') -> fields(array('vid' => $rid)) 
+->condition ('nid', $rid, '=') ->execute();
+
+db_insert('field_data_field_rsvp_event') -> fields(array(
+  'entity_type'=>'node',
+  'bundle'=>'rsvp',
+  'entity_id'=>$rid,
+  'revision_id'=>$rid,
+  'language'=>'und', 
+  'delta'=>0, 
+  'field_rsvp_event_nid'=>$eid))->execute();
+
+db_insert('field_data_field_rsvp_person') -> fields(array(
+  'entity_type'=>'node',
+  'bundle'=>'rsvp',
+  'entity_id'=>$rid,
+  'revision_id'=>$rid,
+  'language'=>'und',
+  'delta'=>0, 
+  'field_rsvp_person_uid'=>$uid))->execute();
+
+db_insert('field_data_field_rsvp_role') -> fields(array(
+  'entity_type'=>'node',
+  'bundle'=>'rsvp',
+  'entity_id'=>$rid,
+  'revision_id'=>$rid,
+  'language'=>'und',
+  'delta'=>0, 
+  'field_rsvp_role_value'=>'Volunteer'))->execute();
+
+db_insert('field_data_field_rsvp_note') -> fields(array(
+  'entity_type'=>'node',
+  'bundle'=>'rsvp',
+  'entity_id'=>$rid,
+  'revision_id'=>$rid,
+  'language'=>'und',
+  'delta'=>0, 
+  'field_rsvp_note_value'=>$note))->execute();
+}
+
+function brick_get_rsvp_status($n, $u) {
+  $r = db_query("SELECT * FROM  field_data_field_rsvp_person 
+  LEFT JOIN field_data_field_rsvp_event ON field_data_field_rsvp_person.entity_id
+     = field_data_field_rsvp_event.entity_id
+  WHERE field_data_field_rsvp_person.field_rsvp_person_uid = $u->uid
+  AND field_data_field_rsvp_event.field_rsvp_event_nid = $n->nid");
+  return($r->rowCount()>0);
+}
+
+function brick_load_chapters() {
+	$q = "
+		SELECT nid, title from node 
+			left join field_data_field_chapter_hide_from_menu on field_data_field_chapter_hide_from_menu.entity_id = nid 
+		WHERE type = 'chapter' and status = 1 and
+			field_data_field_chapter_hide_from_menu.deleted = 0 and
+			field_data_field_chapter_hide_from_menu.field_chapter_hide_from_menu_value != 1;
+	";
+   $r = db_query($q);
+   return $r;            
+}
+
+function brick_chapter_header() {
+ //$_SESSION['HEADER'] = 'header-sv.png'; // debug
+ return(file_create_url(file_build_uri($_SESSION['HEADER'])));
+}
+
+function brick_menu() {
+  $items['node/%/rsvp'] = array(
+    'page callback' => 'brick_dorsvp',
+    'page arguments' => array(1),
+    'access callback' => 'brick_access',
+    'access arguments' => array(1),
+  );
+
+  $items['node/%/add'] = array(
+      'title' => 'Add',
+      'page callback' => 'brick_add_node',
+      'page arguments' => array(1),
+      'access callback' => 'brick_access', 
+      'weight' => 10,
+      'type' => MENU_LOCAL_TASK
+  );
+
+
+  $items['node/%/copy'] = array(
+      'title' => 'Copy',
+      'page callback' => 'brick_copy_node',
+      'page arguments' => array(1),
+      'access callback' => 'brick_access', 
+      'weight' => 20,
+      'type' => MENU_LOCAL_TASK
+  );
+
+
+  $items["node/%/promote"] = array(
+      'title' => 'Promote',
+      'page callback' => 'brick_promote',
+      'page arguments' => array(1),
+      'access callback' => 'brick_access', 
+      'weight' => 20,
+      'type' => MENU_LOCAL_TASK
+  );
+
+  $chapterdata = brick_load_chapters();
+ 
+  $items['chapters'] = array(
+     'title' => 'Chapters',
+     'page callback' => 'brick_switch_chapter',
+     'page arguments' => array(1),
+     'access callback' => 'brick_access',
+     'weight' => -50,
+     'menu_name' => 'main-menu',
+     'expanded' => TRUE,
+     'type' => MENU_NORMAL_ITEM
+  );   
+
+
+  while($chapter = $chapterdata->fetchAssoc()) {
+    $items['chapters/' . $chapter['nid']] = array(
+          'title' => $chapter['title'],
+          'page callback' => 'brick_switch_chapter',
+          'page arguments' => array(1, $chapter['nid']),
+          'access callback' => 'brick_access',
+          'weight' => 0,
+          'tab_parent' => 'chapters',
+          'menu_name' => 'main-menu',
+          'type' => MENU_NORMAL_ITEM
+     );
+  }
+
+  return $items;
+}
+
+function brick_switch_chapter($nid) {
+  brick_set_chapter_globals($nid);
+
+  // return to the same page that switched the chapter
+  drupal_goto($_SERVER["HTTP_REFERER"]);
+}
+
+/*
+ * resets the SESSION variables to the users "home" chapter
+ * if $user is not set then they are not logged in and set set the value to the first chapter (SF)
+ */
+function brick_load_current_user_chapter() {
+   global $user;
+   
+   $chapter_nid = 101; // default to chapter 101 - San Francisco
+
+   if ($user) {
+     $loadedUser = user_load($user->uid);
+
+     if ($loadedUser->field_user_chapter) {
+        $chapter_nid = $loadedUser->field_user_chapter['und'][0]['nid'];
+     }
+   }
+   brick_set_chapter_globals($chapter_nid);
+}
+
+function brick_set_chapter_globals($chapter_nid) {
+  $_SESSION['CHAPTER'] = $chapter_nid;
+  $_SESSION['HEADER'] = 'header-sv.png'; // debug
+
+  $q = "SELECT field_chapter_craigslist_stub_value
+	  FROM field_data_field_chapter_craigslist_stub
+	  WHERE entity_id =$chapter_nid";
+  $_SESSION['CRAIGSLIST'] = db_query($q)->fetchField();
+
+  $q = "SELECT field_chapter_twitter_url_value
+	  FROM field_data_field_chapter_twitter_url
+	  WHERE entity_id =$chapter_nid";
+  $_SESSION['TWITTER'] = db_query($q)->fetchField();
+
+  $q = "SELECT field_chapter_facebook_url_value 
+	  FROM field_data_field_chapter_facebook_url
+	  WHERE entity_id = $chapter_nid";
+  $_SESSION['FACEBOOK'] = db_query($q)->fetchField();
+
+  $q = "SELECT filename
+	  FROM file_managed
+	  JOIN field_data_field_chapter_header_image ON file_managed.fid = field_chapter_header_image_fid
+	  WHERE  entity_id = $chapter_nid";
+  $_SESSION['HEADER'] = db_query($q)->fetchField();
+
+}
+
+function brick_user_login() {
+   brick_load_current_user_chapter();
+}
+
+/* 
+ * Returns the current chapter.
+ * This is normally stored in $_SESSION.  
+ * If it is not set then we initialize $_SESSION from the users account.
+ */
+function brick_current_chapter() {
+	if ($_SESSION && array_key_exists('CHAPTER', $_SESSION)) {
+		// do nothing, we already have a chapter set
+	} else {
+   		brick_load_current_user_chapter(); // set the $_SESSION variables from the user account.
+	}
+	return ($_SESSION['CHAPTER']);
+}
+
+function brick_add_node($nid) {
+  $node = node_load($nid);
+  drupal_goto('node/add/'.$node->type);
+}
+
+function brick_copy_node($nid) {
+  global $user;
+  $node = node_load($nid);
+
+  $node->nid = NULL;
+  $node->vid = NULL;
+  $node->tnid = NULL;
+  $node->name = $user->name;
+  $node->uid = $user->uid;
+  $node->created = NULL;
+  $node->path = NULL;
+  $node->files = array();
+  node_save($node);
+  drupal_goto('node/'.$node->nid.'/edit');
+}
+
+
+function brick_trigger_info() {
+  return array(
+    'rsvp' => array(
+      'brick_rsvp' => array(
+        'label' => t('After the user RSVPs for an event'),
+      ), 
+      'brick_unrsvp' => array(
+        'label' => t('After the user Un-RSVPs for an event'),
+      ), 
+    ),
+  );
+}
+
+function trigger_action($name, $node, $options = array()) {
+  $aids = trigger_get_assigned_actions($name);
+  $context = array(
+    'node' => $node,
+    'title' => $node->title,
+    'nid' => $node->nid,
+    'body' => 'I just signed up for $node->field_title',
+    'hook' => $name
+  );
+  actions_do(array_keys($aids), (object) $node, $context);
+}
+
+function brick_dorsvp($eid) {
+  global $user;
+  $note = "not set";
+  $node = node_load($eid);
+
+  brick_add_rsvp($eid, $user->uid, $note);
+  trigger_action('brick_rsvp', $node);
+
+  drupal_goto('node/' . $eid);
+}
+
+function brick_access() {
+  return true;
+}
+
+
+function brick_safe_mailto($email, $subject, $show = "(email)") {
+  $link = 'mailto:' . $email;
+  $obfuscatedLink = "";
+  for ($i=0; $i<strlen($link); $i++) {
+    $obfuscatedLink .= "&#" . ord($link[$i]) . ";";
+  }
+  $result = "<a href=\" $obfuscatedLink";
+  if (isset($subject)) {
+    $result .= "?subject=$subject";
+  }
+  $result .= "\">$show</a>";
+  return($result);
+}
+
+/**
+ * $node is an event note. 
+ *
+ */
+function brick_format_managment_list($node) {
+  
+  $result = "";
+	
+	$rsvp_list = brick_get_rsvp_list($node);
+	$first_manager = true;
+	while($rsvp = $rsvp_list->fetchAssoc()) {
+		if($rsvp['role'] == "Manager") {
+			if ($first_manager) {
+				$first_manager = false;
+				$result .= "Manager: ";
+			}
+			else {
+				$result .= ", ";
+			}
+			$result .= $rsvp['fname']." ";
+      if ($email = brick_1b_email($rsvp['uid'])) {
+			  $result .= brick_safe_mailto($email, $node->title);
+      }
+		}
+	}
+
+	$rsvp_list = brick_get_rsvp_list($node);
+	$first_coordinator = true;
+	while($rsvp = $rsvp_list->fetchAssoc()) {
+		if($rsvp['role'] == "Coordinator") {
+			if ($first_coordinator) {
+				$first_coordinator = false;
+				if(!$first_manager) {
+					$result .= "; ";
+				}
+				$result .= "Coordinator: ";
+			}
+			else {
+				$result .= ", ";
+			}
+			$result .= $rsvp['fname']." ";
+      if ($email = brick_1b_email($rsvp['uid'])) {
+			  $result .= brick_safe_mailto($email, $node->title);
+      }
+		}
+  }
+
+  return($result);
+}
+
+
+function brick_theme() {
+  $theme_functions = array();
+
+  // Formatter theming functions.
+  $formatters = array(
+    'brick_item_count',
+  );
+
+  foreach ($formatters as $formatter) {
+    $theme_functions[$formatter] = array(
+      'arguments' => array('field' => NULL),
+    );
+  }
+ 
+  return $theme_functions;
+}
+
+function brick_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
+   $element = array();
+   $element[0]['#markup'] = "<span class='count'>".sizeof($items)."</span>";
+   return $element;
+}
+
+function brick_field_formatter_info() {
+    return array(
+    'brick_item_count' => array(
+      'label' => t('Image Count'),
+      'field types' => array('image'),
+    ),
+  );
+}
+
+function brick_boot () {
+ if(empty($_SESSION['HEADER'])) {
+    brick_set_chapter_globals(101);// The first time someone visits the site we set them to the SF chapter.
+  }
+}
+
+?>
+@

@@ -1,0 +1,13 @@
+name = Brick
+description = One Brick utility functions.
+package = One Brick
+core = 7.x
+files[] = brick.module
+files[] = brick_menu.php
+files[] = brick_data.php
+files[] = brick_login.php
+files[] = brick_rsvp.php
+files[] = brick_rest_api.php
+files[] = views/brick_field_handler_reconcile.inc
+files[] = views/brick_field_handler_optin.inc
+files[] = views/brick_field_handler_rsvp_remove.inc

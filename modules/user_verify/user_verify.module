@@ -1,0 +1,746 @@
+<?php
+
+/**
+ * @file
+ * Verifies users once again after they have registered
+ *
+ * Implementation for Drupal 7.x
+ */
+
+// default config values
+define('USER_VERIFY_ACESS', 'administer user verification');
+define('USER_VERIFY_ADMIN_PATH', 'admin/config/people/accounts/verification');
+define('USER_VERIFY_DEFAULT_VERIFICATION_DELAY', 5); // minutes
+define('USER_VERIFY_DEFAULT_VERIFICATION_TIMEOUT', 24); // hours
+define('USER_VERIFY_DEFAULT_MAX_ERRORS', 3);
+define('USER_VERIFY_DELETE', 0);
+define('USER_VERIFY_VERBOSITY', 1);
+define('USER_VERIFY_LOCK', 1);
+define(
+  'USER_VERIFY_BLOCKED_MESSAGE',
+  t(
+    'You cannot log in until your account has been verified. ' .
+    'You will soon receive an email with further instructions.'
+  )
+);
+define('USER_VERIFY_DEFAULT_MAIL_SUBJECT', t('[site:name] - urgent: Account verification needed!'));
+define(
+  'USER_VERIFY_DEFAULT_MAIL_BODY',
+  t(
+    "Hi [user:name],\n\nyou recently registered with [site:name]. To " .
+    "protect our serious users from spam accounts, it is very important " .
+    "that you validate your registration.\n\nTo do so, please visit " .
+    "this URL:\n\n[user-verification:link]\n\nMake sure you do this not later than [user-verification:timeout]. " .
+    "Otherwise your account will be deleted without any further " .
+    "notification.\n\nThank you for your understanding,\n[site:name] team"
+  )
+);
+
+//------------------------------------------------------------------------------
+
+/**
+ * Implements hook_cron().
+ */
+function user_verify_cron() {
+  // Clean up all unvalidated and expired users.
+  $overdue = variable_get(
+    'user_verify_timeout',
+    USER_VERIFY_DEFAULT_VERIFICATION_TIMEOUT
+  )*3600;
+
+  if ($overdue) {
+    // Only clean up if a timeout has been defined.
+    $res = db_select('user_verify', 'v')
+      ->fields('v', array('uid'))
+    ;
+    $res->join('users', 'u', 'u.uid=v.uid');
+    $result = $res
+      ->condition('v.timeout', REQUEST_TIME, '<')
+      ->execute()
+      ->fetchCol()
+    ;
+    foreach ($result as $uid) {
+      $account = user_load($uid);
+      if ($account && !$account->status) {
+        // delete user unless he has been manually activated
+        watchdog(
+          'User',
+          t(
+            'User @uid has not verified his account within the given time and thus will be deleted.',
+            array('@uid' => $uid)
+          )
+        );
+        user_delete($uid);
+      }
+      _user_verify_cleanup($account);
+    }
+  }
+
+  // send mail to all users not yet notified
+  $due_time = REQUEST_TIME - variable_get(
+    'user_verify_delay',
+    USER_VERIFY_DEFAULT_VERIFICATION_DELAY
+  )*60;
+  $res = db_select('user_verify', 'v')
+    ->fields('v')
+  ;
+  $res->join('users', 'u', 'u.uid = v.uid');
+  if (
+    $result = $res
+      ->isNull('v.code')
+      ->condition('v.uid', 0, '>')
+      ->condition('created', 0, '>')
+      ->condition('created', $due_time, '<')
+      ->execute()
+  ) {
+    foreach ($result as $data) {
+      _user_verify_send_code($data);
+    }
+  }
+}
+
+//------------------------------------------------------------------------------
+
+/**
+ * Implements hook_form_FORM_ID_alter() for user_admin_settings().
+ */
+function user_verify_form_user_admin_settings_alter(&$form, &$form_state) {
+  $form['registration']['user_email_verification']['#description'] = t(
+    '<strong>Note:</strong> This option is disabled by user_verify module. Please refer to the <a href="@user_verify_url">user verification settings</a>.',
+    array('@user_verify_url' => base_path() . drupal_get_path_alias(USER_VERIFY_ADMIN_PATH))
+  );
+  $form['registration']['user_email_verification']['#default_value'] = FALSE;
+  $form['registration']['user_email_verification']['#disabled'] = TRUE;
+}
+
+//------------------------------------------------------------------------------
+
+/**
+ * Implements hook_mail().
+ */
+function user_verify_mail($key, &$message, $params) {
+  $account = $params['account'];
+  $token_data->timeout = format_date($params['timeout']);
+  $token_data->link = 'http://' . $_SERVER['HTTP_HOST'] .
+    base_path() . 'user/' . $account->uid . '/verify/' . $params['code']
+  ;
+  switch ($key) {
+    case 'code':
+      $message['subject'] = token_replace(
+        variable_get(
+          'user_verify_mail_subject',
+          USER_VERIFY_DEFAULT_MAIL_SUBJECT
+        ),
+        array(
+          'user' => $account,
+          'user-verification' => $token_data,
+        )
+      );
+      $message['body'][] = token_replace(
+        variable_get(
+          'user_verify_mail_body',
+          USER_VERIFY_DEFAULT_MAIL_BODY
+        ),
+        array(
+          'user' => $account,
+          'user-verification' => $token_data,
+        )
+      );
+      break;
+  }
+}
+
+//------------------------------------------------------------------------------
+
+/**
+ * Implements hook_menu().
+ */
+function user_verify_menu() {
+  return array(
+    'user/%user/verify/%' => array(
+      'type' => MENU_CALLBACK,
+      'access callback' => TRUE,
+      'page callback' => '_user_verify',
+      'page arguments' => array(1, 3),
+    ),
+    USER_VERIFY_ADMIN_PATH => array(
+      'title' => 'Verification',
+      'description' => 'Extended verification options for the registration process',
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array('_user_verify_settings'),
+      'access arguments' => array(USER_VERIFY_ACESS),
+      'type' => MENU_LOCAL_TASK,
+      'weight' => 1,
+    ),
+  );
+}
+
+//------------------------------------------------------------------------------
+
+/**
+ * Implements hook_menu_alter().
+ */
+function user_verify_menu_alter(&$items) {
+  // We want the verification tab as close to the "settings" tab as possible.
+  $items[USER_VERIFY_ADMIN_PATH]['weight'] = $items['admin/config/people/accounts/settings']['weight'] + 1;
+}
+
+//------------------------------------------------------------------------------
+
+/**
+ * Implements hook_permission().
+ */
+
+function user_verify_permission() {
+  return array(
+    USER_VERIFY_ACESS => array(
+      'title' => t('Configure user verification'),
+      'description' => t('Allows permitted users to set up the extended user verification.'),
+      'restrict access' => TRUE,
+    ),
+  );
+}
+
+//------------------------------------------------------------------------------
+
+/**
+ * Implements hook_token_info().
+ */
+function user_verify_token_info() {
+  return array(
+    'types' => array(
+      'user-verification' => array(
+        'name' => t('User verification'),
+        'description' => t('Tokens for extended user verification mails.'),
+        'needs-data' => 'user-verification',
+      ),
+    ),
+    'tokens' => array(
+      'user-verification' => array(
+        'timeout' => array(
+          'name' => t('Verification timeout'),
+          'description' => t('The verification timeout. Will result in a formatted local date.'),
+        ),
+        'link' => array(
+          'name' => t('Verification link'),
+          'description' => t('A URL a new user needs to open in order to have his account unblocked.'),
+        ),
+      ),
+    ),
+  );
+}
+
+//------------------------------------------------------------------------------
+
+/**
+ * Implements hook_tokens().
+ */
+function user_verify_tokens($type, $tokens, array $data = array(), array $options = array()) {
+  $replacements = array();
+  if ($type == 'user-verification' && !empty($data['user-verification'])) {
+    foreach (array('timeout', 'link') as $name) {
+      $replacements["[user-verification:$name]"] = $data['user-verification']->$name;
+    }
+  }
+  return $replacements;
+}
+
+//------------------------------------------------------------------------------
+
+/**
+ * Implements hook_user_insert().
+ * Jordan: I commented out this block, since we needed more fine grain control of when to send this email in the login php script
+ */
+/**
+function user_verify_user_insert(&$edit, $account, $category) {
+  // Make sure that this rule only applies to users not
+  // being created by admins. Also, if admin approval is
+  // required, further verification would be useless.
+  global $user;
+  if (
+    !user_access('administer users', $user)
+    &&
+    variable_get('user_register', 1) == 1
+  ) {
+    $udata->uid = $account->uid;
+    
+    // we don't use this functionality for guest users
+    if (!brick_is_full_user($account)) {
+       return;
+    }
+
+    drupal_write_record('user_verify', $udata);
+    if (
+      (int)variable_get(
+        'user_verify_delay',
+        USER_VERIFY_DEFAULT_VERIFICATION_DELAY
+      ) == 0
+    ) {
+      _user_verify_send_code($udata);
+    }
+  }
+}
+*/
+
+//------------------------------------------------------------------------------
+
+/**
+Jordan: Moved this to check_user_verified so that we can use this within the new login system
+
+function user_verify_user_login(&$edit, $account) {
+  if (!brick_is_full_user($account)) {
+     return;
+  }
+
+  if (
+    db_select('user_verify', 'v')
+      ->fields('v', array('uid'))
+      ->condition('uid', $account->uid, '=')
+      ->execute()
+      ->fetchField()
+  ) {
+    if (variable_get(
+      'user_verify_lock',
+      USER_VERIFY_LOCK
+    )) {
+      // modify the user's DB entry
+      $account->status = 0;
+      db_update('users')
+        ->fields(array('status' => 0))
+        ->condition('uid', $account->uid, '=')
+        ->execute()
+      ;
+      if ($msg = variable_get(
+        'user_verify_blocked_message',
+        USER_VERIFY_BLOCKED_MESSAGE
+      )) {
+        drupal_set_message(check_plain($msg), 'error');
+      }
+      drupal_goto('user/login');
+    }
+  }
+}
+**/
+
+function check_user_verified($account) {
+   if (
+    db_select('user_verify', 'v')
+      ->fields('v', array('uid'))
+      ->condition('uid', $account->uid, '=')
+      ->execute()
+      ->fetchField()
+  ) {
+    if (variable_get(
+      'user_verify_lock',
+      USER_VERIFY_LOCK
+    )) {
+      // modify the user's DB entry
+      $account->status = 0;
+      db_update('users')
+        ->fields(array('status' => 0))
+        ->condition('uid', $account->uid, '=')
+        ->execute()
+      ;
+
+      return false;
+    }
+  }
+
+  return true;
+}
+
+//------------------------------------------------------------------------------
+
+/**
+ * Implements hook_user_delete().
+ */
+function user_verify_user_delete($account) {
+  _user_verify_cleanup($account);
+}
+
+//------------------------------------------------------------------------------
+
+/**
+ * Implements hook_user_update().
+ */
+function user_verify_user_update(&$edit, $account, $category) {
+  // in case someone else (admin etc.)
+  // has manually released the account, delete
+  // the blocking code as well
+  global $user;
+  if (
+    $account->status
+    &&
+    $user->uid != $account->uid
+    &&
+    $user->uid > 0
+    &&
+    $account->uid > 0
+  ) {
+    _user_verify_cleanup($account);
+  }
+}
+
+//------------------------------------------------------------------------------
+
+/**
+ * Menu callback to verify the user in reaction to his request.
+ *
+ * @param $account
+ *   Object representing the user about to be verified.
+ * @param $code
+ *   The verification code the new user has provided.
+ *
+ * @see user_verify_menu()
+ */
+function _user_verify($account, $code) {
+  if ($account->uid && $code) {
+    $vdata = db_select('user_verify', 'v')
+      ->fields('v')
+      ->condition('uid', $account->uid, '=')
+      ->execute()
+      ->fetchObject()
+    ;
+    if ($vdata) {
+      if ($vdata->code != $code) {
+        $vdata->errors++;
+        drupal_write_record('user_verify', $vdata, 'uid');
+
+        // If the validation failed less often than allowed, warn the user
+        // (if configured).
+        $remaining_attempts = variable_get('user_verify_max_errors', USER_VERIFY_DEFAULT_MAX_ERRORS) - $vdata->errors;
+        if (variable_get('user_verify_verbosity', USER_VERIFY_VERBOSITY)) {
+          if ($remaining_attempts > 1) {
+            drupal_set_message(
+              t(
+                'The verification failed. You have @attempts further attempts.',
+                array('@attempts' => $remaining_attempts)
+              ),
+              'warning'
+            );
+          }
+          elseif ($remaining_attempts > 0) {
+            drupal_set_message(
+              t('The verification failed. You have only one more try!'),
+              'warning'
+            );
+          }
+        }
+        if ($remaining_attempts < 1) {
+          // Otherwise block or delete (as configured).
+          if (variable_get('user_verify_delete', USER_VERIFY_DELETE)) {
+            _user_verify_delete($account);
+          }
+          else {
+            _user_verify_block($account);
+          }
+        }
+      }
+      else {
+        // Validated.
+        _user_verify_cleanup($account);
+        $success = TRUE;
+        // Unlock user.
+        if (!$account->status) {
+          $success = db_update('users')
+            ->fields(array(
+              'status' => 1
+            ))
+            ->condition('uid', $account->uid, '=')
+            ->execute()
+          ;
+          if (!$success) {
+            drupal_set_message(
+              t('Your account could not be unlocked. Please contact an administrator.'),
+              'error'
+            );
+          }
+        }
+        //if (variable_get('user_verify_verbosity', USER_VERIFY_VERBOSITY)) {
+          drupal_set_message(t('Validation successful. You may now log in!'));
+        //}
+      }
+    }
+  }
+  drupal_goto('<front>');
+}
+
+//------------------------------------------------------------------------------
+
+/**
+ * Block a user account after failed validation.
+ *
+ * @param $account
+ *   Object representing the account to be blocked.
+ *
+ * @see _user_verify()
+ */
+function _user_verify_block($account) {
+  _user_verify_cleanup($account);
+  user_block_user_action($account);
+  if (variable_get('user_verify_verbosity', USER_VERIFY_VERBOSITY)) {
+    drupal_set_message(
+      t('Your verification failed. For security reasons, your account has been blocked.'),
+      'error'
+    );
+  }
+}
+
+//------------------------------------------------------------------------------
+
+/**
+ * Remove a user entry from the verification table.
+ *
+ * @param $account
+ *   Object representing the account to be removed.
+ */
+function _user_verify_cleanup($account) {
+    db_delete('user_verify')
+      ->condition('uid', $account->uid, '=')
+      ->execute()
+    ;
+}
+
+//------------------------------------------------------------------------------
+
+/**
+ * Delete a user account after validation failed.
+ *
+ * @param $account
+ *   Object representing the account to be deleted.
+ */
+function _user_verify_delete($account) {
+  _user_verify_cleanup($account);
+  user_delete($account->uid);
+  if (variable_get('user_verify_verbosity', USER_VERIFY_VERBOSITY)) {
+    drupal_set_message(
+      t('Your verification failed. According to the site policy, your account has been deleted.'),
+      'error'
+    );
+  }
+}
+
+//------------------------------------------------------------------------------
+
+/**
+ * Generates and sends out the verification code.
+ *
+ * Randomly generates validation code and stores it in the
+ * user_verify table after sending out the code to the
+ * user's mail address.
+ *
+ * @param $data
+ *   An object representing one row of the user_verify table.
+ *
+ * @see user_verify_user_insert()
+ * @see user_verify_cron()
+ */
+function _user_verify_send_code($data) {
+  if ($account = user_load($data->uid)) {
+    srand();
+    $data->code = md5(rand(1000000, 9999999));
+    $data->timeout = REQUEST_TIME + variable_get(
+      'user_verify_timeout',
+      USER_VERIFY_DEFAULT_VERIFICATION_TIMEOUT
+    ) * 3600;
+    $msg = drupal_mail(
+      'user_verify',
+      'code',
+      sprintf('%s <%s>', $account->name, $account->mail),
+      user_preferred_language($account),
+      array(
+        'account' => $account,
+        'code' => $data->code,
+        'timeout' => $data->timeout,
+      )
+    );
+    // Debug state. I just forgot why. ;)
+    if (TRUE || $msg['result']) {
+      drupal_write_record('user_verify', $data, 'uid');
+    }
+  }
+}
+
+//------------------------------------------------------------------------------
+
+/**
+ * Administration form callback for the settings page.
+ */
+function _user_verify_settings() {
+  global $user;
+
+  // Token management has radically changed in D7.
+  // Unfortunately with not yet the best (documented) API.
+  //
+  // @todo: Hope for a far more consistent token API in D8 and
+  //   probably adjust here.
+  $token_info = token_info();
+  $token_keys = array();
+  foreach (array('site', 'date', 'user', 'user-verification') as $key) {
+    foreach ($token_info['tokens'][$key] as $k => $v) {
+      $token_keys[] = "<li>[$key:$k] => " . $v['description'] . '</li>';
+    }
+  }
+
+  $form = array(
+    'user_verify_info' => array(
+      '#type' => 'item',
+      '#title' => t('Notice'),
+      '#markup' => t(
+        'The Email verification option in the <a href="@admin_link">user settings form</a> has been ' .
+        'disabled to prevent your users from receiving ' .
+        'both the standard registration mail and the verification code. ' .
+        'Also, you probably want to go there and modify the contents of the user ' .
+        'registration email templates in order to not confuse your new users.',
+        array('@admin_link' => base_path() . drupal_get_path_alias('admin/user/settings'))
+      ),
+    ),
+    'user_verify_lock' => array(
+      '#title' => t('Lock new accounts'),
+      '#description' => t(
+        'Normally, Drupal accounts are created with status \'active\'' .
+        ' unless they need to be approved manually. ' .
+        'Change this behaviour and keep new accounts inactive until they ' .
+        'have been validated?'
+      ),
+      '#type' => 'radios',
+      '#default_value' => variable_get(
+        'user_verify_lock',
+        USER_VERIFY_LOCK
+      ),
+      '#required' => TRUE,
+      '#options' => array(
+        t('No'),
+        t('Yes')
+      ),
+    ),
+    'user_verify_blocked_message' => array(
+      '#title' => t('Notification message for blocked users'),
+      '#type' => 'textarea',
+      '#description' => t(
+        'Optional message that appears when the not verified user attempts to log in ' .
+        '(if verbosity is active)'
+      ),
+      '#default_value' => variable_get(
+        'user_verify_blocked_message',
+        USER_VERIFY_BLOCKED_MESSAGE
+      ),
+    ),
+    'user_verify_delay' => array(
+      '#title' => t('Delay verification email'),
+      '#type' => 'textfield',
+      '#description' => t(
+        'Optional delay between user registration and sending out the validation code. ' .
+        'Set to zero to send the code immediately after registration. ' .
+        'Delayed mailout only works with a properly configured ' .
+        'Cronjob!'
+      ),
+      '#field_suffix' => t('minutes'),
+      '#default_value' => variable_get(
+        'user_verify_delay',
+        USER_VERIFY_DEFAULT_VERIFICATION_DELAY
+      ),
+      '#maxlength' => 4,
+      '#size' => 5,
+    ),
+    'user_verify_timeout' => array(
+      '#title' => t('Timeout'),
+      '#type' => 'textfield',
+      '#description' => t(
+        'Define how long the user may take to validate before his account ' .
+        'will be deleted. Set to zero to avoid deletion of invalid accounts.'
+      ),
+      '#field_suffix' => t('hours'),
+      '#default_value' => variable_get(
+        'user_verify_timeout',
+        USER_VERIFY_DEFAULT_VERIFICATION_TIMEOUT
+      ),
+      '#maxlength' => 3,
+      '#size' => 4,
+    ),
+    'user_verify_max_errors' => array(
+      '#title' => t('Attempts'),
+      '#type' => 'textfield',
+      '#description' => t(
+        'Limit the attempts a user has to validate his account. Set to zero for unlimited ' .
+        'attempts (not recommended).'
+      ),
+      '#default_value' => variable_get(
+        'user_verify_max_errors',
+        USER_VERIFY_DEFAULT_MAX_ERRORS
+      ),
+      '#required' => TRUE,
+      '#maxlength' => 2,
+      '#size' => 3,
+    ),
+    'user_verify_verbosity' => array(
+      '#title' => t('Verbosity'),
+      '#description' => t('Inform the user about failed and remaining verification attempts?'),
+      '#type' => 'radios',
+      '#default_value' => variable_get(
+        'user_verify_verbosity',
+        USER_VERIFY_VERBOSITY
+      ),
+      '#required' => TRUE,
+      '#options' => array(
+        t('No'),
+        t('Yes')
+      ),
+    ),
+    'user_verify_delete' => array(
+      '#title' => t('Delete on abuse'),
+      '#description' => t(
+        'Delete the user account after exceeding the validation error limit instead of simply locking it?'
+      ),
+      '#type' => 'radios',
+      '#default_value' => variable_get(
+        'user_verify_delete',
+        USER_VERIFY_DELETE
+      ),
+      '#required' => TRUE,
+      '#options' => array(
+        t('No'),
+        t('Yes')
+      ),
+    ),
+    'user_verify_mail' => array(
+      '#type' => 'fieldset',
+      '#title' => t('Email settings'),
+      'user_verify_mail_hint' => array(
+        '#type' => 'fieldset',
+        '#title' => t('Available variables'),
+        '#collapsible' => TRUE,
+        '#collapsed' => TRUE,
+        'variables' => array(
+          '#markup' => t('The following variables can be used:') . '<ul>'. implode('', $token_keys) . '</ul>',
+        ),
+      ),
+      'user_verify_mail_subject' => array(
+        '#title' => t('Mail subject'),
+        '#type' => 'textfield',
+        '#description' => t(
+          'The subject for the verification code email sent to the new user'
+        ),
+        '#default_value' => variable_get(
+          'user_verify_mail_subject',
+          USER_VERIFY_DEFAULT_MAIL_SUBJECT
+        ),
+        '#required' => TRUE,
+      ),
+      'user_verify_mail_body' => array(
+        '#title' => t('Mail body'),
+        '#type' => 'textarea',
+        '#rows' => 15,
+        '#description' => t(
+          'The content for the verification code email sent to the new user'
+        ),
+        '#default_value' => variable_get(
+          'user_verify_mail_body',
+          USER_VERIFY_DEFAULT_MAIL_BODY
+        ),
+        '#required' => TRUE,
+      ),
+    ),
+  );
+  return system_settings_form($form);
+}

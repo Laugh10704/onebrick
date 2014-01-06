@@ -1,0 +1,31 @@
+name = One Brick Tarski
+description = sub-theme of Tarski theme for onebrick.org.
+base theme = tarski
+version = VERSION
+core = 7.x
+engine = phptemplate
+
+stylesheets[all][]   = css/onebrick.css
+stylesheets[all][]   = css/add-event.css
+stylesheets[all][]   = css/user.css
+stylesheets[all][]   = css/misc.css
+stylesheets[all][]   = colorbox/colorbox_onebrick.css
+scripts[] = onebrick.js
+scripts[] = colorbox/colorbox_onebrick.js
+
+regions[header]               = Header area
+regions[header_menu]          = Header menu
+regions[footer_menu]          = Footer menu
+regions[sidebar_first]        = First sidebar
+regions[sidebar_second]       = Second sidebar
+regions[content_top]          = Content top
+regions[content]              = Content
+regions[content_bottom]       = Content bottom
+regions[footer_column_first]  = Footer first column
+regions[footer_column_second] = Footer second column
+regions[footer_column_third]  = Footer third column
+regions[footer_column_fourth] = Footer fourth column
+regions[help]                 = Help
+regions[page_top]             = Page top
+regions[page_bottom]          = Page bottom
+

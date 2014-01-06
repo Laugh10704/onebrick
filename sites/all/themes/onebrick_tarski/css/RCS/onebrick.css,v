@@ -1,0 +1,933 @@
+head	1.3;
+access;
+symbols;
+locks; strict;
+comment	@# @;
+
+
+1.3
+date	2013.12.18.03.10.03;	author jordan;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2013.11.14.04.33.12;	author benson;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2013.11.14.04.23.23;	author ubuntu;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.3
+log
+@*** empty log message ***
+@
+text
+@/* onebrick_tarski css subtheme to tarski*/
+
+
+/* override header min max height in style.css
+    to adjust nav menu to bottom of header
+*/
+
+body, h1, h2, h3, form, input, td, p, ul, li {
+    font: 12px Verdana,Arial,Helvetica,sans-serif;
+    padding: 0;
+}
+
+.views-field-reconcile div {
+   display: inline;
+}
+
+.view-people-attending .views-row, .view-attending-managers .views-row {
+   margin-bottom: 5px;
+}
+
+.view-people-attending table, .view-attending-managers table {
+   border: 0;
+}
+
+.view-people-attending table tr, .view-attending-managers table tr {
+   border: 0;
+}
+
+.view-event-list-all-users .views-table .views-field-title {
+    width: 450px;   
+}
+
+.view-attending-volunteers-list td {
+   height: 20px;
+}
+
+.view-locations .views-table .views-field-title {
+    width: 250px;
+}
+
+.views-table td {
+   padding-top: 3px;
+   padding-bottom: 3px;
+   padding-left: 15px;
+}
+
+.views-table th {
+   background-color: #EEEEEE;
+   color: black;
+   font-weight: bold;
+}
+
+.views-table th a {
+   color: black !important;
+   font-weight: bold;
+}
+
+.views-table .views-field-field-event-date {
+   width: 75px;
+}
+
+.views-table .views-field-field-rsvp-role {
+   width: 150px;
+}
+
+h2 {
+    display: block;
+    font-size: 1.2em;
+    font-weight: bold;
+    margin: 1em 0;
+}
+
+h1, h2, h3 {
+    font-family: "Verdana","Helvetica","Arial",sans-serif;
+    color: #21759B;
+}
+
+#header {
+  min-height: 120px;
+  max-height: 150px;
+}
+
+/* css for the 'login' area in the banner */
+
+#loginArea .loginSpacer {
+  width: 100px;
+}
+
+#loginArea {
+    float:right;
+    background: url('http://v3.onebrick.org/sites/default/files/banner_bg.png') #43AFE4;
+    height: 100px;
+    text-align:  right;
+    padding-right:  20px;
+    padding-top: 20px;
+    color:  white;
+    font-size: 1.3em
+}
+
+
+#loginArea a {
+   cursor: pointer;
+   color: white;
+   text-decoration: none;
+   font-weight: bold;
+}
+
+#loginArea a:hover {
+   color: black;
+}
+
+/*  3-column layout */
+body.two-sidebars #header,
+body.two-sidebars #header-menu,
+body.two-sidebars #main,
+body.two-sidebars #footer {
+  margin: 0 auto;
+}
+body.two-sidebars #content-wrapper {
+  width: 540px;
+}
+body.two-sidebars #sidebar-first-wrapper {
+  width: 175px;
+}
+
+body.two-sidebars #sidebar-second-wrapper {
+  width: 200px;
+}
+
+body #sidebar-first {
+  padding-left: 15px !important;
+}
+
+/* sidebar when in 2 column mode */
+body.one-sidebar #sidebar-first-wrapper,
+body.one-sidebar #sidebar-second-wrapper {
+  width: 174px;
+}
+
+/* Override the default width of content in two sidebar mode */
+body.one-sidebar #content-wrapper {
+   width: 765px;
+}
+
+body.no-sidebars #content-wrapper {
+   width: 950px;
+}
+
+/* Hide title on the home page */
+.front .node-title {
+  display: none;
+}
+
+/* What? */
+table img {
+  margin-left: 0px;
+}
+
+/* change styling for columns -jk */
+
+/**
+ * Links (change for styling header nav men -jk)
+ */
+#header-menu a {
+  color: white;
+  text-decoration: none;
+    font-weight: bold;
+}
+#header-menu a:hover {
+  color: black;
+  border-bottom-color: #E59900;
+}
+
+/* change background color of first sidebar -jk */
+#sidebar-first-wrapper {
+    background: #d2edf7;
+    padding: 5px;
+
+}
+
+/* The following makes the gallery formatter show all the images, and removes the scrolling ability */
+
+#gallery-pager .pageLeft {
+    float:left;
+    color:darkblue;
+    cursor: pointer;
+}
+
+#gallery-pager .pageRight {
+   float:right;
+   color: darkblue;
+   padding-right: 12px;
+   cursor: pointer;
+}
+
+#gallery-pager .inactive {
+   cursor: auto;
+   color: #DDDDDD;
+}
+
+#gallery-pager {
+   position: absolute;
+   bottom: 20px;
+   width: 380px;
+}
+
+
+.galleryformatter .gallery-thumbs li a {
+   padding: 3px 6px 3px 0;
+}
+
+.galleryformatter .gallery-thumbs {
+  width: 290px !important;
+  padding: 0 0 0 5px !important;
+  border-right: solid lightgray 1px;
+  border-left: solid lightgray 1px;
+  border-top: none;
+  border-bottom: none;
+  height: 550px;
+  background-color: #EEEEEE;
+  float: right;
+  left: 0;
+}
+
+.galleryformatter .gallery-thumbs ul li {
+   padding: 0 0 0 10px;
+}
+
+.galleryformatter .gallery-thumbs .wrapper {
+   border: 0 !important;
+   overflow-y: scroll !important;
+   height: 100%;
+   padding-left: 5px;
+}
+
+.content .view-header, .content .view-header p {
+   color: #EA8324;
+   font-weight: bold !important;
+   font-size: 16px !important;
+}
+
+.content .view-header {
+   margin-bottom: 20px;
+}
+
+.page-event-gallery #cboxTitle {
+   font-size: 13px;
+}
+
+/* hide the ugly green arrows. Keep the other stuff */
+.galleryformatter-greenarrows .gallery-thumbs .arrow, .galleryformatter-greenarrows .gallery-thumbs .wrapper, .galleryformatter-greenarrows .gallery-thumbs li.active a, .galleryformatter-greenarrows .gallery-thumbs li a:hover, .galleryformatter-greenarrows .view-full {
+   background: none !important;
+}
+
+.galleryformatter .gallery-thumbs .arrow {
+  display: none;
+}
+
+div.gallery-processed {
+  width: 950px;
+}
+
+.galleryformatter .gallery-thumbs .wrapper ul {
+   width: 100% !important;
+}
+
+.galleryformatter .gallery-thumbs li {
+   padding-top: 0px !important;
+}
+
+.popupForm input, .popupForm textarea {
+   margin-bottom: 10px;
+}
+
+.gallery .item-row {
+   padding-bottom: 20px;
+}
+
+
+ .gallery {
+ }
+
+ .gallery .photos {
+   min-height: 160px;
+   text-align: center;
+ }
+
+.gallery .views-view-grid {
+  width: auto;
+}
+
+.gallery .views-view-grid, .gallery .views-view-grid tr {
+  border: none;
+}
+
+.gallery .views-view-grid td {
+  vertical-align: top; 
+}
+
+.gallery .event-gallery-img {
+  border: solid lightgray 1px;
+  border-radius: 5px 5px 5px 5px;
+  -webkit-border-radius: 5px 5px 5px 5px;
+  -moz-border-radius: 5px 5px 5px 5px;
+  width: 220px;
+  margin-right: 25px;
+}
+
+.gallery .event-gallery-img .info {
+  padding: 5px 10px 5px 10px;
+}
+
+.gallery .event-gallery-img:hover {
+  background-color: #F3F3F3;
+}
+
+.gallery .event-gallery-img ul {
+  margin: 0;
+}
+
+.gallery .event-gallery-img .event-title {
+   font-size: 14px;
+   font-weight: bold;
+   margin-bottom: 10px;
+}
+
+.gallery .event-gallery-img .event-title a {
+  color: #EA8324;
+  font-weight: bold;
+}
+
+.gallery .event-gallery-img .event-title a:hover {
+  color: #21759B;
+}
+
+.gallery .photos img {
+  margin: 0;
+}
+
+
+.gallery .info ul {
+   list-style-type: none;
+}
+                       
+
+/**
+ * Header menu
+ */
+/* 1st level */
+/* modify to match onebrick.org -jk */
+#header-menu {
+  width: 600 px;
+  background-color: #ea8324;
+  margin-top: 2px;
+}
+
+#header-menu .menu {
+}
+
+#header-menu .block {
+  font-size: 1.3em;
+  margin: 0;
+  font-weight: 900;
+}
+#header-menu .content ul {
+  margin: 0;
+}
+#header-menu .content li {
+  display: inline-block;
+  padding: 5px 20px 5px 20px !important;
+  margin: 0 !important;
+}
+
+#header-menu .content li.collapsed:after {
+  content: none;
+}
+#header-menu .content li a {
+  display: block;
+  text-decoration: none;
+  line-height: 1.3;
+ /*  width: 50px;*/ /* menu width -jk */
+}
+/* current page link in nav menu -jk menu items with submenus go black when submenu selected, that is more than one menu item is black font. So changed to white to match old onebrick site*/
+#header-menu .content li a.active {
+  color: white;
+}
+#header-menu .content li a.active:hover {
+  color: black;
+}
+/* adjust padding and margin between menu items and height of nav bar */
+#header-menu .content li.expanded {
+    position: relative;
+    background: none;
+}
+
+#header-menu .content li.expanded li {
+   padding: 0 0 0 7px !important;
+}
+
+#header-menu .content li.expanded ul {
+  margin-left: 12px; /* LTR */
+}
+
+/* 2nd level submenus */
+#header-menu .content li.expanded ul {
+  display: none;
+  padding: 2px 0 3px 0;
+  background-color: #ea8324;
+  position: absolute;
+  width: 145px;
+  margin-left: 25px; 
+  top: 23px; /* adjust so no gap between main and submenu */
+  /* left: 120px !important; /* LTR */
+  z-index: 100;
+  border: 0px solid #CCCCCC;
+}
+
+#header-menu .content li.expanded ul ul {
+  left: 120px !important;
+}
+
+/* padding between content and nav menu */
+#main {
+    padding: 5px 0;
+    width: 950px;
+}
+
+/* block title styling */
+.block h2 {
+    border-bottom: none;
+    color: #21759B;
+    font-family: "Verdana","Helvetica","Arial",sans-serif;
+    font-size: 1.2em;
+    font-weight: bold;
+    text-transform: none;
+}
+
+/* add orange top border to footer menu region */
+#closure {
+    border-top: 16px solid #EA8324;
+    padding-top: 2px !important;
+    float: left !important;
+}
+
+/* Tweaks to the calendar */
+
+.optinAvail {
+   color: green;
+}
+
+.optinPreferred {
+   color: red;
+}
+
+.optinAssigned {
+   background-color: yellow;
+   color: green;
+   font-weight: bold;
+}
+
+.optinSwitch {
+   cursor: pointer;
+}
+
+.calendar-calendar .views-field-optin {
+   margin-bottom: 10px !important;
+}
+
+.calendar-calendar .views-field-optin .form-type-radio {
+   float: left;
+   padding-right: 5px !important;
+}
+
+.calendar-calendar .inner .item {
+   margin-bottom: 5px !important;
+}
+
+.typeSocial {
+  font-weight: bold;
+  color: green;
+}
+
+.typeInternal {
+  font-weight: bold;
+  color: orange;
+}
+
+ul.calendar-links {
+  display: none;
+}
+
+.calendar-calendar td .inner div.calendar div,
+.calendar-calendar td .inner div.calendar div a { /* event block */
+  background:green;
+}
+
+.calendar-calendar td .inner div.calendar div.views-field { /* event block */
+  padding: 2px !important;
+}
+
+.calendar-calendar tr.date-box {
+  border: 0px;
+}
+
+.calendar-calendar .month-view .full td.single-day .calendar-empty,
+.calendar-calendar .month-view .full td.single-day.empty,
+.calendar-calendar .month-view .full td.date-box.empty {
+  background: #ddd;
+}
+
+.calendar-calendar .month-view .full tr td.today,
+.calendar-calendar .month-view .full tr.odd td.today,
+.calendar-calendar .month-view .full tr.even td.today {
+  background: #d2edf7;
+}
+
+.calendar-calendar td,
+.calendar-calendar td.empty,
+.calendar-calendar td div.day,
+.calendar-calendar div.date-nav,
+.calendar-calendar th.days,
+.calendar-calendar td.calendar-agenda-hour,
+.calendar-calendar td.calendar-agenda-items,
+.calendar-calendar .week-view .full tr.last td.multi-day,
+.calendar-calendar .week-view .full .first td.multi-day {
+  border-color: #000;
+}
+
+.calendar-calendar td div.day { /* number on top right of each day */
+  background:none;
+  color: black;
+  border: none;
+}
+
+.calendar-calendar th.days { /* header with days of the week */
+background-color: #63AEDE;
+color: white;
+font-weight: bold;
+}
+
+.calendar-calendar .month-view .full td.single-day div.monthview { /* Fix beautytips showing behind calendar days */
+  overflow: visible;
+}
+
+.date-nav div.date-heading h3 { /* Month Year Header */
+background-color: white;
+color: black;
+font-size: large;
+}
+
+.date-nav-wrapper .date-nav .date-next {
+  font-size: 0px;
+}
+
+/* Highly specific matching to override another very specific CSS rule.  All we
+ * really care about here is the "event-assigned" class. */
+.calendar-calendar .month-view .full td .inner div.view-item div.event-assigned {
+  background-color: #94FF8F; /* pale green */
+}
+
+.calendar-calendar .month-view .full td .inner div.view-item div.event-opted-in {
+  background-color: #ffc;
+}
+
+/* Cancelled event link color */
+.calendar-calendar .month-view .full td .inner div.view-item div.event-cancelled a {
+  color: rgb(110, 110, 110);
+}
+.calendar-calendar .month-view .full td .inner div.view-item div.event-cancelled a .typeInternal {
+  font-weight: normal;
+  color: rgb(110, 110, 110);
+}
+.calendar-calendar .month-view .full td .inner div.view-item div.event-cancelled a .typeSocial {
+  font-weight: normal;
+  color: rgb(110, 110, 110);
+}
+
+.view-calendar #edit-submit-top {
+   float: right;
+}
+
+/* Line up opt-out button with calendar heading */
+#brick-opt-out-form #opt-out-button {
+	position: absolute;
+	z-index: 99;
+}
+
+/* Upcoming Events */
+.calendar-image {
+  text-align: center;
+}
+
+/* Event Title */
+.upcoming-events-list {
+  text-align: center;
+}
+
+.upcoming-events-list .views-row .views-field-php .field-content a {
+  font-weight: bold;
+}
+
+/* Event Date */
+.upcoming-events-list .views-row .views-field-field-event-date .field-content .date-display-single {
+  font-weight: normal;
+}
+
+/* Site Name */
+.upcoming-events-list .views-row .views-field-field-event-site .field-content {
+  font-weight: bold;
+  font-size: 95%;
+}
+
+/* City */
+.upcoming-events-list .views-row .views-field-city {
+  font-weight: normal;
+  font-size: 95%;
+}
+
+/* Fix cbox overlay not scaling well on iphones etc. */
+#cboxOverlay {
+   width: 20000px !important;
+   height: 20000px !important;
+}
+
+#currentPopupForm {
+   padding-bottom: 20px;
+}
+
+
+#brick-login-form .form-item-password {
+   clear: both;
+}
+
+#brick-login-form .form-item-password label {
+   padding-bottom: 20px;
+}
+
+#brick-login-form label {
+   font-size: 14px;
+   color: #444444;
+}
+
+#brick-login-form #loginSection {
+   padding-left: 10px;
+}
+
+#brick-login-form #signupSection {
+  padding-left: 10px;
+}
+
+#brick-login-form #signupSection .ajax-progress {
+  float: right;
+}
+
+#brick-login-form #nopw {
+   margin-right: 10px;
+}
+
+.forgotPWMessage {
+   margin-bottom: 20px;
+}
+
+/* We put this here because for whatever reason drupal puts default margins on these buttons */
+#brick-login-form #buttonArea input {
+   margin: 0;
+}
+
+#brick-login-form #buttonArea {
+  height: 30px;
+}
+
+#loginFeedback {
+   color: red;
+}
+
+#brick-login-form #forgotPwLinkSection {
+   font-size: 10px;
+   position: relative;
+   top: -90px;
+   padding-left: 10px;
+}
+
+#brick-login-form #forgotPwLinkSection .throbber {
+   height: 22px;
+   margin: 0 0 0 5px;
+}
+
+#brick-login-form #forgotPwLink {
+}
+
+#brick-rsvp-form textarea {
+    height: 100px !important;
+}
+
+.loginHeader {
+   font-size: 16px;
+   font-family: arial;
+   color: darkorange;
+   margin-bottom: 15px;
+}
+
+.loginHeader#signup {
+}
+
+#brick-create-account-form .form-type-item label {
+   top: 0px;
+}
+
+
+#brick-create-account-form label {
+   font-size: 14px;
+}
+
+#brick-create-account-form #createButtonArea {
+   padding-left: 10px;
+   height: 27px;
+}
+
+#brick-create-account-form select {
+   margin-top: 5px;
+   padding: 0px;
+}
+
+#brick-create-account-form .form-item {
+   padding-left: 10px;
+}
+
+#brick-create-account-form .form-item-newsletter {
+   margin-top: 15px;
+   margin-bottom: 15px;
+   width: 300px;
+}
+
+#brick-create-account-form .form-item-newsletter label {
+   display: inline;
+   float: none;
+   top: 0;
+}
+
+#brick-login-form .existing-area {
+   float: left;
+   width: 400px;
+}
+
+#brick-login-form .guest-area {
+   float: right;
+   width: 400px;
+}
+
+.ajax-progress .throbber {
+  background: transparent url(/misc/throbber.gif) no-repeat 0px -18px;
+  float: left;
+  width: 15px;
+  height: 15px;
+  margin: 2px;
+}
+
+.assignBlock {
+  background-color: lightyellow;
+  border: solid black 1px;
+  padding: 10px;
+}
+
+.view-assign-events .views-row {
+  display: inline;
+  padding-right: 10px;
+}
+
+.view-assign-events .view-grouping-header {
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.view-assign-events h3 {
+  display: inline;
+  clear: left;
+}
+
+.view-assign-events .views-row-last {
+} 
+
+.view-assign-events .view-grouping {
+  margin-bottom: 20px;
+}
+
+.view-opt-in-staff .date-nav-wrapper {
+  display: none;
+}
+
+.optinPrefPreferred {
+  font-weight: bold;
+}
+
+.optinSelectedYes {
+  color: blue;
+}
+
+.optinSelectedStagedYes {
+  color: orange;
+}
+
+.optinSelectedStagedNo {
+  color: orange;
+  text-decoration: line-through;
+}
+
+.optinSelectedNo, .optinSelected {
+  color: red;
+}
+
+.optinHighlighted {
+  background-color: yellow;
+}
+
+.optinAssignedUnderCapacity {
+  color: green;
+}
+
+.optinAssignedAtCapacity {
+  color: blue;
+}
+
+.optinAssignedOverCapacity {
+  color: red;
+}
+
+.view-attending-managers .views-field-uid {
+   display: none;
+}
+
+/* webmgr menu */
+
+.webmgr-menu {
+   padding-left: 30px;
+   padding-bottom: 10px;
+   background-color: lightgoldenrodyellow;
+   border: solid gray 1px;
+}
+
+.webmgr-menu .divForClear {
+   clear:both;
+}
+
+.webmgr-menu .menu li {
+   float: left;
+   width: 150px;
+   list-style-type: none;
+}
+
+.webmgr-menu .menu li a {
+   text-decoration: underline;
+}
+
+.ckeditor_links {
+  font-size: 10px;
+  float: right;
+}
+.node-event-form label {
+  padding-top: 20px;
+	font-weight: bold;
+	color: black;
+}
+
+
+#cke_3_contents #cke_4_contents #cke_5_contents {
+  height: 50px;
+}
+
+@
+
+
+1.2
+log
+@prev/nex button fix
+@
+text
+@d21 1
+a21 1
+.view-people-attending table {
+d25 1
+a25 1
+.view-people-attending table tr {
+d33 4
+d236 1
+a236 1
+.page-event-gallery .view-header {
+d238 6
+a243 2
+   font-weight: bold;
+   font-size: 16px;
+d455 6
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d537 4
+@

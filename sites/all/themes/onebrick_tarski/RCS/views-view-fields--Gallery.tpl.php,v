@@ -1,0 +1,70 @@
+head	1.3;
+access;
+symbols;
+locks; strict;
+comment	@# @;
+
+
+1.3
+date	2012.09.21.03.56.07;	author jordan;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2012.02.21.09.46.35;	author jordan;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2012.01.25.02.42.50;	author ubuntu;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.3
+log
+@*** empty log message ***
+@
+text
+@<div class="event-gallery-img">
+<div class="photos">
+
+<?php
+print $fields['field_event_photos_1']->content;
+?>
+</div>
+<div class="info">
+<ul>
+<?php
+print "<li class='event-title'>".$fields['title']->content."</li>";
+print "<li class='photo-count'>".$fields['field_event_photos']->content." photos</li>";
+print "<li>".$fields['field_event_date']->content."</li>";
+?>
+</ul>
+</div>
+</div>
+@
+
+
+1.2
+log
+@*** empty log message ***
+@
+text
+@d11 1
+a11 1
+print "<li>".$fields['title']->content."</li>";
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d3 1
+@

@@ -1,0 +1,42 @@
+/* All for the Opt-in popup page */
+
+#edit-optin-title, #edit-optin-date, #edit-optin-address {
+	text-align: center;
+}
+
+#edit-optin-title {
+	font-size: large;
+}
+
+img {
+	vertical-align: middle;
+}
+
+#edit-optin-summary {
+	text-align: left;
+	width: 300px;
+	margin-left: auto;
+	margin-right: auto;
+	padding-top: 1em;
+	padding-bottom: 0.5em;
+}
+
+#edit-optin-manager, #edit-optin-coordinator {
+	display: table;
+}
+
+#edit-optin-manager div, #edit-optin-coordinator div {
+	display: table-cell;
+	padding-left: 3ex;
+}
+
+.form-item-optin-manager, .form-item-optin-coordinator {
+	width: 300px;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.form-item-optin-availability {
+	text-align: center;
+	margin-top: 2em;
+}

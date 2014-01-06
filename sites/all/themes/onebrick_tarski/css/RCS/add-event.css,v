@@ -1,0 +1,227 @@
+head	1.3;
+access;
+symbols;
+locks
+	ubuntu:1.3; strict;
+comment	@# @;
+
+
+1.3
+date	2013.07.03.02.48.42;	author jordan;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2013.02.26.05.48.33;	author jordan;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2013.02.26.03.47.43;	author jordan;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.3
+log
+@*** empty log message ***
+@
+text
+@/* This is formatting for the event adding page */
+
+html .node-event-form .form-wrapper {
+   /*float: left;
+   margin-right: 25px;*/
+}
+
+/* fix for a lot of weird image field issues */
+html #event-node-form .field-type-image {
+   float: none !important;
+}
+
+
+/* The following css repositions the fields into "rows" */
+#event-node-form .start-date-wrapper, #event-node-form .end-date-wrapper {
+   width: 450px !important;
+   float: left !important;
+   clear: none !important;
+}
+
+#event-node-form #edit-field-event-date {
+   width: 100%;
+   margin-right: 55px;
+   
+   clear: both;
+}
+
+#event-node-form #edit-field-event-date fieldset {
+   border-bottom: 3px double #CCCCCC;
+   border-top: 3px double #CCCCCC;
+   padding-bottom: 15px;
+   margin-bottom: 10px;
+}
+
+/* spacing */
+#event-node-form #edit-field-event-max-rsvp-capacity {
+   margin-bottom: 20px;
+}
+
+
+#event-node-form #edit-field-event-date label[for='edit-field-event-date-und-0-value']:before {
+   content: "from:";
+}
+
+#event-node-form .form-item-field-event-rsvp-date-und-0-value-date label {
+   display: none;
+}
+
+#event-node-form .form-type-date-popup .form-type-textfield label {
+   display: none;
+}
+
+#event-node-form #edit-field-event-date label {
+   float: left;
+   font-weight: bold;
+   padding-right: 30px;
+   width: 50px;
+   padding-top: 10px;
+}
+
+
+#event-node-form .field-type-datetime input {
+   width: 150px !important;
+   margin-right: 10px;
+}
+
+
+#event-node-form .form-type-date-text label {
+   display: none;
+}
+
+/* Hide the chapter selection field (should be defaulted to current chapter */
+#event-node-form #edit-field-event-chapter {
+   display: none;
+}
+
+
+#event-node-form #edit-field-event-organization, #event-node-form #edit-field-event-site {
+   clear: both;
+}
+
+#event-node-form #edit-field-event-site, #event-node-form #edit-field-event-organization, #event-node-form .field-type-user-reference {
+  float: left;
+  width: 450px;
+  margin-bottom: 10px;
+}
+
+#event-node-form #edit-field-event-site input, #event-node-form #edit-field-event-organization input, #event-node-form .field-type-user-reference input {
+   width: 400px;
+}
+
+#event-node-form #edit-field-event-requested,
+#event-node-form #edit-field-event-max-rsvp-capacity,
+#event-node-form #edit-field-event-status,
+#event-node-form #edit-field-event-type {
+   float: left;
+   margin-right: 4ex;
+   display: block;
+}
+
+#event-node-form #edit-field-event-max-rsvp-capacity {
+   clear: both;
+}
+
+#event-node-form #edit-field-event-max-rsvp-capacity {
+   clear: both;
+}
+
+#event-node-form .form-item #event-node-form .description {
+   margin: 0px !important;
+   margin-top: 10px !important;
+}
+
+#event-node-form .form-wrapper #event-node-form .fieldset-description {
+   margin-bottom: 0px !important;
+}
+
+/* hides the jargon under a textarea */
+#event-node-form .text-format-wrapper fieldset {
+   display: none;
+}
+
+/* hide the "Other Info" field for now */
+#event-node-form #edit-field-event-otherinfo {
+   display: none;
+}
+
+/* Hide the options at the bottom */
+#event-node-form .vertical-tabs {
+   display: none;
+}
+
+/* Hide calendar descriptions */
+#event-node-form .form-type-date-popup div.description,
+#event-node-form .form-type-date-popup .form-required {
+   display: none;
+}
+
+/* Hide photo upload */
+#event-node-form #edit-field-event-photos {
+  display:none;
+}
+
+#event-node-form #edit-actions {
+  clear: both;
+}
+
+#event-node-form fieldset {
+   border-top: none;
+   margin: 0;
+}
+
+
+#event-node-form .container-inline-date .date-padding {
+   padding: 0px;
+}
+@
+
+
+1.2
+log
+@*** empty log message ***
+@
+text
+@d57 2
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d15 2
+a16 2
+#event-node-form .container-inline-date {
+   width: 250px !important;
+d22 1
+a22 2
+   width: 500px;
+   float: left;
+d24 9
+d35 6
+d45 15
+d61 2
+a62 1
+   width: 200px !important;
+d65 1
+d86 4
+d95 1
+a95 1
+   margin-right: 2ex;
+d137 18
+@
