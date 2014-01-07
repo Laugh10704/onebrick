@@ -3,7 +3,10 @@
 /sites/*/private
 /files/*
 /cache
+
+#skip image files
 /sites/all/modules/brick/newsletter_tool/uploads/*
+*.jpg
 
 # ** Only works in OSs that support newer versions of fnmatch (Bash 4+)
 /sites/default/**/files
