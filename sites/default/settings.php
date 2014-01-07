@@ -177,21 +177,20 @@
  *   );
  * @endcode
  */
-$databases = array (
-  'default' => 
-  array (
-    'default' => 
-    array (
-      'database' => 'drupal7',
-      'username' => 'root',
-      'password' => '1_brick!',
-      'host' => 'localhost',
-      'port' => '',
-      'driver' => 'mysql',
-      'prefix' => '',
-    ),
-  ),
-);
+// Local development configuration.
+if (!defined('PANTHEON_ENVIRONMENT')) {
+  // Database.
+  $databases['default']['default'] = array(
+    'database' => 'DATABASE',
+    'username' => 'USERNAME',
+    'password' => 'PASSWORD',
+    'host' => 'localhost',
+    'driver' => 'mysql',
+    'port' => 3306,
+    'prefix' => '',
+  );
+}
+
 
 /**
  * Access control for update.php script.
@@ -302,7 +301,7 @@ ini_set('session.cookie_lifetime', 2000000);
  * between your various domains. Make sure to always start the $cookie_domain
  * with a leading dot, as per RFC 2109.
  */
-$cookie_domain = '.onebrick.org';
+$cookie_domain = '.gotpantheon.com';
 
 /**
  * Variable overrides:
