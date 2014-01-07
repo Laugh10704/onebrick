@@ -3,6 +3,7 @@
 /sites/*/private
 /files/*
 /cache
+/sites/all/modules/brick/newsletter_tool/uploads/*
 
 # ** Only works in OSs that support newer versions of fnmatch (Bash 4+)
 /sites/default/**/files
@@ -25,6 +26,7 @@
 ######################
 *.log
 *.sql
+*.swp
 
 # OS generated files #
 ######################
@@ -37,6 +39,7 @@ Thumbs.db
 # Vim generated files #
 ######################
 *.un~
+*~
 
 # SASS #
 ##########
