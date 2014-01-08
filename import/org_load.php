@@ -1,7 +1,12 @@
 <?php
 require("include.php");
-echo 1;
+echo 1."\n";
+echo shell_exec("pwd");
+echo "\n";
+echo shell_exec("ls");
+echo "\n";
 require("open_v3.php");
+echo "\n";
 echo 2;
 dmsg("orgid_offset is $orgid_offset");
 
