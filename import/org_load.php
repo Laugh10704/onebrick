@@ -1,6 +1,8 @@
 <?php
 require("include.php");
+echo 1;
 require("open_v3.php");
+echo 2;
 dmsg("orgid_offset is $orgid_offset");
 
 /* Load the User */
