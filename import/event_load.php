@@ -27,7 +27,7 @@ $q = "
 db_query($q) or die(db_error());
 
 $q = "
-	LOAD DATA LOCAL INFILE '".$file."' REPLACE INTO TABLE node_revision
+	LOAD DATA LOCAL INFILE '".$file."' REPLACE INTO TABLE node_access
 	FIELDS TERMINATED BY ',' ESCAPED BY '*' OPTIONALLY ENCLOSED BY '%' LINES TERMINATED BY 'XYXXY'
 				(@eventid, @name, @description, @shortdescription, @otherinfo, @capacity,  @rsvpcapacity, @time_start, @time_end, @rsvpdate, @locationid, @organizationid, @regionid, @status, @etype, @created, @modified)
 		SET 
@@ -36,12 +36,12 @@ $q = "
 			realm = 'all',
 			grant_view = 1,
 			grant_update = 0,
-			grant_delete = 0,
+			grant_delete = 0
 ";
 
 db_query($q) or die(db_error());
 $q = "
-	LOAD DATA LOCAL INFILE '".$file."' REPLACE INTO TABLE node_access
+	LOAD DATA LOCAL INFILE '".$file."' REPLACE INTO TABLE node_revision
 	FIELDS TERMINATED BY ',' ESCAPED BY '*' OPTIONALLY ENCLOSED BY '%' LINES TERMINATED BY 'XYXXY'
 				(@eventid, @name, @description, @shortdescription, @otherinfo, @capacity,  @rsvpcapacity, @time_start, @time_end, @rsvpdate, @locationid, @organizationid, @regionid, @status, @etype, @created, @modified)
 		SET 
