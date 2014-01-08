@@ -1,5 +1,5 @@
 <?php
-require("include.php");
+//require("include.php");
 echo 1."\n";
 //echo shell_exec("pwd");
 //echo "\n";
