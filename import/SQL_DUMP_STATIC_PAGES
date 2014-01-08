@@ -1,0 +1,21 @@
+// dump nodes
+
+SELECT * FROM  `node` WHERE  `type` LIKE  'page'
+
+//dump node_revisions
+
+SELECT * FROM node_revision
+LEFT JOIN node ON node_revision.nid = node.nid
+WHERE node.type LIKE  'page'
+
+//field_data_body
+
+SELECT * FROM  field_data_body
+LEFT JOIN node ON field_data_body.entity_id = node.nid
+WHERE node.type LIKE  'page'
+
+//field_revision_body
+
+SELECT * FROM  field_data_body
+LEFT JOIN node ON field_data_body.entity_id = node.nid
+WHERE node.type LIKE  'page'
