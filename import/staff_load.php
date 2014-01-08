@@ -33,7 +33,7 @@ foreach ($two_types as $t) {
 	db_query($q) or die(db_error());
 	//All users are private volunteers until THEY set they visibility as public
 	$q = "
-	LOAD DATA LOCAL INFILE '".$file."' REPLACE INTO TABLE field_".$t."_field_user_public_rsvp
+	LOAD DATA LOCAL INFILE '".$file."' REPLACE INTO TABLE field_".$t."_field_public
 	FIELDS TERMINATED BY ',' ESCAPED BY '*' 
 			(@uid, @rid)
 		SET 
@@ -42,7 +42,7 @@ foreach ($two_types as $t) {
 			entity_id = @uid,
 			revision_id = @uid,
 			language = 'und',
-			field_user_public_rsvp_value=1
+			field_public_value=1
 	";
 	db_query($q) or die(db_error());
 }
