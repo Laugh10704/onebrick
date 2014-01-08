@@ -1,13 +1,14 @@
 <?php
 require("include.php");
 echo 1."\n";
-echo shell_exec("pwd");
-echo "\n";
-echo shell_exec("ls");
-echo "\n";
-require("open_v3.php");
-echo "\n";
-echo 2;
+//echo shell_exec("pwd");
+//echo "\n";
+//echo shell_exec("ls");
+//echo "\n";
+//require("open_v3.php");
+//echo "\n";
+//echo 2;
+exit 0;
 dmsg("orgid_offset is $orgid_offset");
 
 /* Load the User */
