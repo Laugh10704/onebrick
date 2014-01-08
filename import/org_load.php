@@ -1,18 +1,23 @@
 <?php
-//require("include.php");
-echo 1."\n";
-//echo shell_exec("pwd");
-//echo "\n";
-//echo shell_exec("ls");
-//echo "\n";
-//require("open_v3.php");
-//echo "\n";
-//echo 2;
-exit 0;
-dmsg("orgid_offset is $orgid_offset");
+require("include.php");
+echo 1;
+$output = shell_exec('pwd');
+echo $output;
+echo "\n";
+$output = shell_exec('ls ./open_v3.php');
+echo $output;
+echo "\n";
+require("./open_v3.php");
+echo "\n";
+echo 2;
+echo "\n";
+echo  "orgid_offset is $orgid_offset";
 
 /* Load the User */
 $file = 'data/orgs.csv';
+
+$output = shell_exec("ls $file");
+echo $output;
 
 $q = "
 	LOAD DATA LOCAL INFILE '".$file."' REPLACE INTO TABLE node
