@@ -568,9 +568,7 @@ font-size: large;
 }
 
 .calendar-calendar .month-view .full td .inner div.view-item span.status-Pending a {
-  font-style: italic;
-  color: rgb(255, 140, 105);
-  font-weight: bold;
+  color: rgb(227, 66, 52);
 }
 
 
