@@ -562,21 +562,16 @@ font-size: large;
   background-color: #ffc;
 }
 
-/* Cancelled event link color */
+/* Different status event link formatting */
 .calendar-calendar .month-view .full td .inner div.view-item span.status-Cancelled a {
   color: rgb(110, 110, 110);
 }
 
-/*
-.calendar-calendar .month-view .full td .inner div.view-item div.event-cancelled a .typeInternal {
-  font-weight: normal;
-  color: rgb(110, 110, 110);
+.calendar-calendar .month-view .full td .inner div.view-item span.status-Pending a {
+  font-style: italic;
 }
-.calendar-calendar .month-view .full td .inner div.view-item div.event-cancelled a .typeSocial {
-  font-weight: normal;
-  color: rgb(110, 110, 110);
-}
-*/
+
+
 .view-calendar #edit-submit-top {
    float: right;
 }
