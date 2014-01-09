@@ -1,6 +1,9 @@
 <?php
+echo 1;
 require("include.php");
+echo 2;
 require("open_v3.php");
+echo 3;
 //$limit=1;
 
 $now = time();
