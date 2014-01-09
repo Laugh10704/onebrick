@@ -55,7 +55,7 @@ db_query($q) or die(db_error());
 
 $q = "
 	LOAD DATA LOCAL INFILE '".$file."' REPLACE INTO TABLE node_access
-	FIELDS TERMINATED BY ',' ESCAPED BY '*' OPTIONALLY ENCLOSED BY '%' 
+	FIELDS TERMINATED BY ',' ESCAPED BY '*' OPTIONALLY ENCLOSED BY '%'  LINES TERMINATED BY 'XYXXY'
 	(@orgid,@name, @description, @url, @regionid, @created, @modified)
 		SET 
 			nid = @orgid+$orgid_offset,
