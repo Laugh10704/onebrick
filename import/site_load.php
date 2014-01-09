@@ -45,7 +45,7 @@ db_query($q) or die(db_error());
 
 $q = "
 	LOAD DATA LOCAL INFILE '".$file."' REPLACE INTO TABLE node_access
-	FIELDS TERMINATED BY ',' ESCAPED BY '*' OPTIONALLY ENCLOSED BY '%' 
+	FIELDS TERMINATED BY ',' ESCAPED BY '*' OPTIONALLY ENCLOSED BY '%' LINES TERMINATED BY 'XYXXY'
 			(@lid,  @name, @address1, @address2, @city, @state, @postal, 
 			@directions_drive, @directions_transit, @directions_other, @longitude, @latitude, @created, @modified, @chapter)
 		SET 
