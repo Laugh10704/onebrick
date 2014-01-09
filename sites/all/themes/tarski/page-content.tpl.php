@@ -78,6 +78,7 @@
  */
 ?>
 <?php if ($page['content']): ?>
+
   <?php $column++; ?>
   <div id="content-wrapper">
     <div id="content" class="<?php if ($column == 1): ?>first<?php endif; ?><?php if ($column == $main_columns_number): ?> last<?php endif; ?>">
@@ -90,10 +91,10 @@
       <a id="main-content"></a>
   
 
-      <?php print render($page['help']); ?>
+<?php print render($page['help']); ?>
       <?php if ($action_links): ?><ul class="action-links"><?php print render($action_links); ?></ul><?php endif; ?>
 
-			<?  // Expand One Brick Variables, skip edit page it's too confusing!
+			<?php  // Expand One Brick Variables, skip edit page it's too confusing!
       if (strpos($_SERVER['REQUEST_URI'], "/edit")) {
 				print render($page['content']);
 			}
