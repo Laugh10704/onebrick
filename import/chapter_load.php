@@ -43,7 +43,7 @@ db_query($q) or die(db_error());
 
 $q = "
 	LOAD DATA LOCAL INFILE '".$file."' REPLACE INTO TABLE node_access
-	FIELDS TERMINATED BY ',' ESCAPED BY '*' OPTIONALLY ENCLOSED BY '%' 
+	FIELDS TERMINATED BY ',' ESCAPED BY '*' OPTIONALLY ENCLOSED BY '%' LINES TERMINATED BY 'XYXXY'
 	(@chapid, @name, @facebook_url, @twitter_url, @craigslist_stub, @created, @modified)
 		SET 
 			nid = @chapid+$chapid_offset,
