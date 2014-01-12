@@ -181,9 +181,9 @@
 if (!defined('PANTHEON_ENVIRONMENT')) {
   // Database.
   $databases['default']['default'] = array(
-    'database' => 'DATABASE',
-    'username' => 'USERNAME',
-    'password' => 'PASSWORD',
+    'database' => 'onebrick',
+    'username' => 'www',
+    'password' => '',
     'host' => 'localhost',
     'driver' => 'mysql',
     'port' => 3306,
@@ -244,7 +244,7 @@ $drupal_hash_salt = 'EXwS8TnMaNMEhj0fH797CKfDSqH36AuTrYpDcY7_lMQ';
  * It is not allowed to have a trailing slash; Drupal will add it
  * for you.
  */
-#$base_url = 'http://v3.onebrick.org';  // NO trailing slash!
+#$base_url = 'http://local.onebrick.org';  // NO trailing slash!
 
 /**
  * PHP settings:
@@ -302,6 +302,10 @@ ini_set('session.cookie_lifetime', 2000000);
  * with a leading dot, as per RFC 2109.
  */
 $cookie_domain = '.gotpantheon.com';
+
+if (!defined('PANTHEON_ENVIRONMENT')) {
+  $cookie_domain = '.onebrick.org';
+}
 
 /**
  * Variable overrides:

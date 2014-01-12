@@ -427,7 +427,7 @@ function brick_pw_reset_sent_form($form, $form_state, $user) {
         );
 
         $form['thanks']['buttonArea']['submit'] = array(
-                '#markup' => "<INPUT TYPE=\"button\" VALUE=\"Close\" class=\"form-button\" onClick=\"parent.location='http://v3.onebrick.org'\">"
+                '#markup' => "<INPUT TYPE=\"button\" VALUE=\"Close\" class=\"form-button\" onClick=\"parent.location='/'\">"
         );
 
 

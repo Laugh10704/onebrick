@@ -122,7 +122,8 @@ td.title {
          <input type='button' class='form-submit' id='rsvpButton' value='RSVP Now!' onclick="javascript: resetPopupForm('#initialRSVPForm', 'RSVPFormWrapper')"/>
             <div id="initialRSVPForm" style='display:none'>
                <?php
-                   print drupal_render(drupal_get_form('brick_rsvp_form', $node->nid));
+                   $form = drupal_get_form('brick_rsvp_form', $node->nid);
+                   print drupal_render($form);
                ?>
             </div>         
 

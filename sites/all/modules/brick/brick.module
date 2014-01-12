@@ -1022,7 +1022,7 @@ function brick_html_head_alter(&$head_elements) {
   $head_elements['chrome_frame'] = array(
     '#type' => 'html_tag',
     '#tag' => 'meta',
-    '#attributes' => array('property' => 'og:image', 'content' => 'http://v3.onebrick.org/sites/default/files/images/Square_Logo.jpg'),
+    '#attributes' => array('property' => 'og:image', 'content' => '/sites/default/files/images/Square_Logo.jpg'),
   );
 }
 

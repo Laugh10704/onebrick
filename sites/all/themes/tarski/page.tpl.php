@@ -133,10 +133,10 @@
 	</div>
 	<div style="display:none">
 	<div id="initialForm">
-	      <?php print drupal_render(drupal_get_form('brick_login_form')); ?>
+	      <?php $form = drupal_get_form('brick_login_form'); print drupal_render($form); ?>
 	</div>
 	<div id="initialSignupForm">
-      	      <?php print drupal_render(drupal_get_form('brick_create_account_form')); ?>
+      	      <?php $form = drupal_get_form('brick_create_account_form'); print drupal_render($form); ?>
 	</div>
       </div>
 

@@ -2,14 +2,14 @@
 <div id="promoteArea">
 
 <?php
+  global $base_url;
   $chapter = $_SESSION['CHAPTER'];
 
   // search for craigslist code
   $q = "SELECT field_chapter_craigslist_stub_value FROM field_data_field_chapter_craigslist_stub WHERE entity_id=$chapter";
   $region = db_query($q)->fetchField();
 
-  $url = "http://v3.onebrick.org";
-  $node_url = "$url/node/$node->nid";
+  $node_url = "$base_url/node/$node->nid";
 
   $q = "SELECT field_chapter_craigslist_code_value FROM field_data_field_chapter_craigslist_code WHERE entity_id=$chapter";
   $shortregion = db_query($q)->fetchField();
@@ -58,10 +58,12 @@ For each of the following sections: (If you use a Mac, replace 'Ctrl' with the '
 
 <textarea readonly style="height:100px">
 <?php
+  global $base_url;
+
   // get promotion header
   $q = "SELECT body_value FROM field_data_body WHERE entity_id=$headers[$i]";
   $code = db_query($q)->fetchField();
-  $code = str_replace(array('<strong>', '</strong>', '<em>', '</em>', 'www.onebrick.org'), array('<b>', '</b>', '<i>', '</i>', "v3.onebrick.org"), $code);
+  $code = str_replace(array('<strong>', '</strong>', '<em>', '</em>', '$base_url'), array('<b>', '</b>', '<i>', '</i>', "$base_url"), $code);
   print(htmlentities($code));
 
   // date
@@ -89,13 +91,13 @@ For each of the following sections: (If you use a Mac, replace 'Ctrl' with the '
   $text = "<p>View <a href='$node_url'>more information</a> about this event at:<br><a href='$node_url'>$node_url</a></p>";
   print(htmlentities($text));
 
-  $text = "<p>Please <a href='$node_url'><b>RSVP here</b></a></p><br/><p>Check out our <a href='$url/calendar/'>event calendar</b></a> for other upcoming volunteer opportunities.</p>";
+  $text = "<p>Please <a href='$node_url'><b>RSVP here</b></a></p><br/><p>Check out our <a href='$base_url/calendar/'>event calendar</b></a> for other upcoming volunteer opportunities.</p>";
   print(htmlentities($text));
 
   // get promotion footer
   $q = "SELECT body_value FROM field_data_body WHERE entity_id=$footers[$i]";
   $code = db_query($q)->fetchField();
-  $code = str_replace(array('<strong>', '</strong>', '<em>', '</em>', 'www.onebrick.org'), array('<b>', '</b>', '<i>', '</i>', "v3.onebrick.org"), $code);
+  $code = str_replace(array('<strong>', '</strong>', '<em>', '</em>', 'www.onebrick.org'), array('<b>', '</b>', '<i>', '</i>', "$base_url"), $code);
   print(htmlentities($code));
 ?>
 
