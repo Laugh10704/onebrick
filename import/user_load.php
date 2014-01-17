@@ -28,8 +28,6 @@ db_query($q) or die(db_error());
 $two_types = array('data', 'revision');
 	foreach ($two_types as $t) {
 
-	db_query($q) or die(db_error());
-
 	$q = "
 		LOAD DATA LOCAL INFILE '".$file."' REPLACE INTO TABLE field_".$t."_field_user_chapter
 		FIELDS  TERMINATED BY ',' ESCAPED BY '*' OPTIONALLY ENCLOSED BY '%'
@@ -146,8 +144,13 @@ $q = "
 			(@uid, @fname, @sname, @fullname, @mail, @phone, @timezone, @chapter, @created, @1bmail)
 		SET 
 			uid = @uid,
+			status = 1,
 			name = @1bmail,
 			mail = @1bmail,
 			init = @1bmail
+			timezone = @timezone,
+			signature_format = 'filtered_html',
+			created = @created,
+			language = 'und'
 ";
 db_query($q) or die(db_error());

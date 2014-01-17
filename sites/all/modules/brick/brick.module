@@ -631,8 +631,7 @@ function brick_gen_roster($nid) {
 }
 
 function brick_create_google_apps_client() {
-return 0; // Hack, avoid Zend for now, switching chapters works fine! -- Clive
-   //require_once '../../../../zf/library/Zend/Loader.php';
+   require_once 'Zend/Loader.php';
 
    Zend_Loader::loadClass('Zend_Gdata_ClientLogin');
    Zend_Loader::loadClass('Zend_Gdata_Gapps');

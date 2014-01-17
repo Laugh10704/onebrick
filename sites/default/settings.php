@@ -200,7 +200,8 @@ if (!defined('PANTHEON_ENVIRONMENT')) {
  * updates" permission or the site maintenance account (the account that was
  * created during installation), you will need to modify the access check
  * statement below. Change the FALSE to a TRUE to disable the access check.
- * After finishing the upgrade, be sure to open this file again and change the
+ * After finishino the upgrade, be sure to open this file again and change the
+
  * TRUE back to a FALSE!
  */
 $update_free_access = FALSE;
