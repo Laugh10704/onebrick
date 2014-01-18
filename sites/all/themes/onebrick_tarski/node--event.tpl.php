@@ -72,8 +72,7 @@ td.title {
         <?php echo brick_event_from_to($node); ?>
 	<a title="Add to Calendar" href="/ical/<?php echo $node->nid; ?>/event.ics"><img width="20" src="/sites/default/files/images/Download_Event.png" /></a>
 
-    </td>
-  <tr>
+    </td> <tr>
     <td class='title'>Staff:</td> 
     <td> <?php print(brick_format_managment_list($node, TRUE)); ?></td>
   </tr>
@@ -132,69 +131,48 @@ td.title {
         ?>
 </td>
 
-  <tr> 
-  </tr>
-  <tr>
-    <td class='title'>Description:</td>
-    <td><?php print($node->body['und'][0]['value']) ?>
+  </table>
 
-    <?php
-	if (!empty($node->field_event_otherinfo)) {
-	  $other = $node->field_event_otherinfo['und'][0]['value'];
-	  if(!empty($other)) {
-	    print("<br><br>$other");
-	  }
-	}
-	?>
-    </td>
-  </tr>
+<div id="Main Event Info" style="padding-top: 10px;padding-bottom: 10px">
+  <?php
+  print ("<H3>Event Descrption: </H3>");
+  print($node->body['und'][0]['value']);
 
-<?php // "What we'll be doing"
-  if (!empty($node->field_tasks)) {
+  if($node->field_tasks) {
     $tasks = $node->field_tasks['und'][0]['value'];
     if (!empty($tasks)) {
-?>
-  <tr>
-    <td class='title'>What we'll be doing:</td>
-    <td><?php print($tasks) ?>
-    </td>
-  </tr>
-<?php
+      print ("<H3>What we'll be doing: </H3>$tasks");
     }
   }
-?>
 
-<?php // "What you should know"
-  if (!empty($node->should_know)) {
-    $should_know = $node->field_should_know['und'][0]['value'];
-    if (!empty($should_know)) {
-?>
-  <tr>
-    <td class='title'>What you should know:</td>
-    <td><?php print($should_know) ?>
-    </td>
-  </tr>
-<?php
+  if ($node->field_should_know) {
+    $know = $node->field_should_know['und'][0]['value'];
+    if (!empty($know)) {
+      print ("<H3>What you should know: </H3>$know");
     }
   }
-?>
 
-<?php // "Where to meet"
-  if (!empty($node->field_where_meet)) {
-    $where_meet = $node->field_where_meet['und'][0]['value'];
-    if (!empty($where_meet)) {
-?>
-  <tr>
-    <td class='title'>Where to meet:</td>
-    <td><?php print($where_meet) ?>
-    </td>
-  </tr>
-<?php
+  if ($node->field_where_meet) {
+    $meet = $node->field_where_meet['und'][0]['value'];
+    if (!empty($meet)) {
+      print ("<H3>Where to Meet: </H3>$meet");
     }
   }
-?>
 
-  <tr>
+  if ($node->field_event_otherinfo) {
+    $other = $node->field_event_otherinfo['und'][0]['value'];
+    if (!empty($other)) {
+      print ("<H3>Other Info: </H3>$other");
+    }
+  }
+
+  ?>
+</div>
+
+
+<table valign="middle" id="Organization Details"; width="97%" border="0" cellpadding="0" cellspacing="0">
+
+<tr>
     <td class='title'>Organization: </td>
     <td> <?php
 	 if(isset($node->field_event_organization)) {

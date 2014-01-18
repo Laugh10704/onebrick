@@ -151,7 +151,8 @@ function remap_manager_data($evid, $newList, $oldList, $volunteers, $userType, $
 
 	 $optNd = node_load($optinId);
 
-	 if ($optNd && $optNd->field_optin_created_when_assign['und'][0]['value'] == 'TRUE') {
+	 if ($optNd && $optNd->field_optin_created_when_assign &&
+         $optNd->field_optin_created_when_assign['und'][0]['value'] == 'TRUE') {
             node_delete($optinId);	    
 	 }
    }
