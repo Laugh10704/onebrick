@@ -1,8 +1,8 @@
 <?php
 
 /**
-* Implements of hook_services_resources().
-*/
+ * Implements of hook_services_resources().
+ */
 function brick_services_resources() {
   $api = array(
     'event' => array(
@@ -58,10 +58,9 @@ function brick_services_resources() {
 function brick_event_retrieve_full($nid) {
 // select the events using a basic query
   $query = db_select('node', 'n')->distinct();
-  
+
   select_basic_event_info($query);
 
-  $query->join('field_data_body', 'bd', 'bd.entity_id = n.nid');
   $query->fields('bd', array('body_value'));
 
   $query->condition('n.nid', $nid, '=');
@@ -69,11 +68,11 @@ function brick_event_retrieve_full($nid) {
   $items = $query->execute()->fetchAll();
 
   if (count($items)> 0) {
-  	append_rsvp_data($items);
+    append_rsvp_data($items);
 
-  	return $items[0];
+    return $items[0];
   }
- 
+
   return NULL;
 }
 
@@ -82,6 +81,7 @@ function select_basic_event_info($query) {
   $query->join('field_data_field_event_chapter', 'c', 'n.nid = c.entity_id');
   $query->join('field_data_field_event_site', 'es', 'n.nid = es.entity_id');
   $query->join('field_data_field_event_max_rsvp_capacity', 'mxc', 'n.nid = mxc.entity_id');
+  $query->join('field_data_body', 'bd', 'bd.entity_id = n.nid');
   $query->join('node', 'esn', 'esn.nid = es.field_event_site_nid');
   $query->join('location_instance', 'loci', 'loci.nid = esn.nid');
   $query->join('location', 'loc', 'loc.lid = loci.lid');
@@ -101,12 +101,14 @@ function brick_event_retrieve($chapter, $nitems) {
 
   select_basic_event_info($query);
 
+  $query->fields('bd', array('body_summary'));
+
   $query->condition('n.type', 'event', '=');
-  
+
   if ($chapter) {
-     $query->condition('c.field_event_chapter_nid', $chapter, '=');
+    $query->condition('c.field_event_chapter_nid', $chapter, '=');
   }
-  
+
   // must be newer than now
   $query->where('d.field_event_date_value2 > CURDATE()');
   $query->orderBy('d.field_event_date_value', 'ASC');
@@ -116,17 +118,17 @@ function brick_event_retrieve($chapter, $nitems) {
     $query->range(0, $nitems);
   }
   $items = $query->execute()->fetchAll();
- 
+
   append_rsvp_data($items);
- 
-  return $items;   
+
+  return $items;
 }
 
 function append_rsvp_data($items) {
   $nidToItem = array();
 
   foreach ($items as $record) {
-     $nidToItem[$record->nid] = $record;
+    $nidToItem[$record->nid] = $record;
   }
 
   $nidStr = implode(",", array_keys($nidToItem));
@@ -141,7 +143,7 @@ function append_rsvp_data($items) {
   $rsvpCnts = db_query($q);
 
   foreach ($rsvpCnts as $rsvpDat) {
-     $nidToItem[$rsvpDat->nid]->rsvpCnt = $rsvpDat->cnt;
+    $nidToItem[$rsvpDat->nid]->rsvpCnt = $rsvpDat->cnt;
   }
 }
 
