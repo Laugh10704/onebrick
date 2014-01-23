@@ -2,7 +2,7 @@
 require("include.php");
 require("open_v3.php");
 
-$dir="/var/www/drupal/sites/default/files"; chdir($dir);
+$dir="../../files"; chdir($dir);
 
 $q = "delete FROM file_managed WHERE filename like '%staff%'";
 db_query($q) or die(db_error());
@@ -17,20 +17,21 @@ foreach ($files as $fname) {
 //echo "$fname\n";
 
 	$userid = basename($fname, ".jpg");
-	$fsize = filesize($dir."/".$fname);
+	$fsize = filesize($fname);
+
 
 	$q = " INSERT INTO file_managed
 		SET
 			uid = " . $userid . ",
 			filename = '" .$fname. "',
-			uri = 'public://" .$fname. "',
+			uri = 'public://" .$fname."',
 			filemime = 'image/jpeg',
-			filesize = " .$fsize. ",
+			filesize = " .$fsize.",
 			status = 1,
-			timestamp = now() ";
+			timestamp = now();";
 
-	//echo $q;
-	//echo "\n";
+	echo $q;
+	echo "\n";
 	db_query($q) or die(db_error());
 	$fileid = mysql_insert_id();
 
@@ -40,8 +41,8 @@ foreach ($files as $fname) {
 		module = 'user',
 		type = 'user',
 		id = " . $userid . ",
-		count = 1";
-	//echo $q;
+		count = 1;";
+echo $q;
 
 	db_query($q) or die(db_error());
 

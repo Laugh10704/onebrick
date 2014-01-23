@@ -1,6 +1,5 @@
 <?php
 require("include.php");
-
 /**
 * find files matching a pattern
 * using PHP "glob" function and recursion
@@ -33,7 +32,7 @@ function find($dir, $pattern){
 	return $files;
 }
 
-$dir="/tmp/EVENT_IMAGES"; chdir($dir);
+$dir="../../files/event_photos"; chdir($dir);
 
 $files = find(".", "*.jpg");
 
@@ -57,12 +56,14 @@ foreach ($files as $fname) {
 	
 	if ($fsize > 10000) {	//skip small thumbnail images.
 		//echo "$eventid, $seq, $fname\n";
-		fprintf($fp, "%d,%d,%d,%s,public://%s,%d\n", $fileid, $eventid, $seq, $fname, $fname, $fsize);
+		fprintf($fp, "%d,%d,%d,event_photos/%s,public://event_photos/%s,%d\n", $fileid, $eventid, $seq, $fname, $fname, $fsize);
 		$seq += 1;
 	}
 	else {
 		unlink($dir."/".$fname);
 	}
 }
+
+print ("SEQ: $seq");
 
 fclose($fp);

@@ -1,6 +1,8 @@
 <?php
+print ("1\n");
 require("include.php");
 require("open_v3.php");
+print ("2\n");
 
 /* Load the User */
 $file = 'data/org_users.csv';
