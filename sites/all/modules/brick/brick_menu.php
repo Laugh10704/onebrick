@@ -98,7 +98,6 @@ function brick_menu() {
       'type' => MENU_LOCAL_TASK
   );
  
-  /*
   $items['event/%/roster'] = array(
       'title' => 'Roster',
       'page callback' => 'brick_gen_roster',
@@ -107,7 +106,6 @@ function brick_menu() {
       'weight' => 20,
       'type' => MENU_LOCAL_TASK
   );
-  */
 
   brick_set_globals();
 
