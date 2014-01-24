@@ -552,6 +552,13 @@ font-size: large;
   font-size: 0px;
 }
 
+.date-nav-wrapper .date-nav .date-prev .ajax-progress-throbber {
+  display: none;
+}
+.date-nav-wrapper .date-nav .date-next .ajax-progress-throbber {
+  display: none;
+}
+
 /* Highly specific matching to override another very specific CSS rule.  All we
  * really care about here is the "event-assigned" class. */
 .calendar-calendar .month-view .full td .inner div.view-item div.event-assigned {
