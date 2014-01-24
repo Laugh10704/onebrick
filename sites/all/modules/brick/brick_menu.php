@@ -93,7 +93,7 @@ function brick_menu() {
       'title' => 'Promote',
       'page callback' => 'brick_promote',
       'page arguments' => array(1),
-      'access callback' => 'brick_manager_access',
+      'access callback' => array('Event Creator'),
       'weight' => 20,
       'type' => MENU_LOCAL_TASK
   );
