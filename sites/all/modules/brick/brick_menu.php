@@ -89,7 +89,7 @@ function brick_menu() {
 
   // FYI The "Edit Roster" button is dynamically created in an alter hook in brick.module
 
-  $items['event/%/promote'] = array(
+  $items['node/%/promote'] = array(
       'title' => 'Promote',
       'page callback' => 'brick_promote',
       'page arguments' => array(1),
@@ -98,7 +98,7 @@ function brick_menu() {
       'type' => MENU_LOCAL_TASK
   );
  
-  $items['event/%/roster'] = array(
+  $items['node/%/roster'] = array(
       'title' => 'Roster',
       'page callback' => 'brick_gen_roster',
       'page arguments' => array(1),
