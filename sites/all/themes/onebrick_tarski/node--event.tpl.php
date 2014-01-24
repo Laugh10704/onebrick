@@ -10,14 +10,6 @@ if (preg_match('/^\/ical\//', $_SERVER['REQUEST_URI'])) {
       if (promoteButton) {
          promoteButton.colorbox({inline:true, href:"#promoteArea", title:"Promote", transition:"none", width:"600"});
       }
-
-      /*
-      var rosterButton = jQuery("ul.tabs").find("a:contains('Roster')");
-      
-      if (rosterButton) {
-	rosterButton.attr("target", "_blank");
-      }
-      */
   });
 
 </script>

@@ -67,16 +67,6 @@ function brick_menu() {
     'access arguments' => array(1),
   );
 
-  $items['event/%/add'] = array(
-      'title' => 'Add',
-      'page callback' => 'brick_add_node',
-      'page arguments' => array(1),
-      'access callback' => 'user_has_role',
-      'access arguments' => array('Event Creator'),
-      'weight' => 10,
-      'type' => MENU_LOCAL_TASK
-  );
-
   $items['node/%/copy'] = array(
       'title' => 'Copy',
       'page callback' => 'brick_copy_node',
