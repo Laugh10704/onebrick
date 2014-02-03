@@ -631,7 +631,6 @@ function brick_gen_roster($nid) {
 }
 
 function brick_create_google_apps_client() {
-   return; // temporarily skip this to get the chapter change working for CD meeting demo - Clive
    require_once 'Zend/Loader.php';
 
    Zend_Loader::loadClass('Zend_Gdata_ClientLogin');
