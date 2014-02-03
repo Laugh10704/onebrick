@@ -205,28 +205,57 @@ function brick_manager_add_rsvp($eid, $uid) {
    drupal_goto( $_SERVER['HTTP_REFERER'] );
 }
 
+/**
+ * Add an RSVP to the database. Uses a semaphore to prevent duplicate rsvps from being added.
+ *
+ * returns the RSVP node if the RSVP was successfully added to the database. Returns NULL if the
+ * RSVP already exists.
+ */
 function brick_add_rsvp($eid, $uid, $note, $public = 1, $role = 'Volunteer', $assigned = '') {
-    $node = new StdClass();
-    $node->type = 'rsvp';
-    $node->status = 1;
-    $node->title = 'new rsvp';
-    $node->uid = $uid;
-    $node->created = REQUEST_TIME;
-    $node->changed = REQUEST_TIME;
-    $node->comment = 2;
-    $node->language = 'und';
-    $node->field_rsvp_event['und'][0]['nid'] = $eid;
-    $node->field_rsvp_person['und'][0]['uid'] = $uid;
-    $node->field_rsvp_role['und'][0]['value'] = $role;
-    $node->field_rsvp_note['und'][0]['value'] = $note;
-    $node->field_public['und'][0]['value'] = $public;
 
-    if ($assigned) {
-        $node->field_rsvp_created_when_assigned['und'][0]['value'] = $assigned;
+    // synchronization
+    $key = 928313;
+    $maxAcquire = 1;
+    $permissions =0666;
+    $autoRelease = 1;
+
+    $semaphore = sem_get($key, $maxAcquire, $permissions, $autoRelease);
+
+    try {
+      sem_acquire($semaphore);  //blocking
+      $node = null;
+
+      // check to see if one already exists before adding
+      if (brick_get_rsvp_id($eid, $uid) == 0) {
+        $node = new StdClass();
+        $node->type = 'rsvp';
+        $node->status = 1;
+        $node->title = 'new rsvp';
+        $node->uid = $uid;
+        $node->created = REQUEST_TIME;
+        $node->changed = REQUEST_TIME;
+        $node->comment = 2;
+        $node->language = 'und';
+        $node->field_rsvp_event['und'][0]['nid'] = $eid;
+        $node->field_rsvp_person['und'][0]['uid'] = $uid;
+        $node->field_rsvp_role['und'][0]['value'] = $role;
+        $node->field_rsvp_note['und'][0]['value'] = $note;
+        $node->field_public['und'][0]['value'] = $public;
+
+        if ($assigned) {
+          $node->field_rsvp_created_when_assigned['und'][0]['value'] = $assigned;
+        }
+
+        $node = node_submit($node);
+        node_save($node);
+      }
+      sem_release($semaphore);
+      return $node;
+
+    } catch (Exception $e) {
+      sem_release($semaphore);
+      throw $e;
     }
-
-    $node = node_submit($node);
-    node_save($node);
 }
 
 function brick_rsvp_get_attended($rsvp_id) {
@@ -271,7 +300,10 @@ function brick_get_rsvp_id($eid, $uid) {
    if ($r->rowCount() < 1)
        return 0;
    $arr = $r->fetchCol();
-   return $arr[0];
+   if (count($arr) > 0) {
+       return $arr[0];
+   }
+   return 0;
 }
 
 function brick_get_rsvp_query($nid, $uid) {
