@@ -101,7 +101,7 @@ function brick_menu() {
 
   $items['chapters'] = array(
      'title' => 'Chapters',
-     'page callback' => 'brick_switch_chapter',
+     'page callback' => 'brick_stay_on_same_page',
      'access callback' => 'brick_access',
      'weight' => -50,
      'menu_name' => 'main-menu',
