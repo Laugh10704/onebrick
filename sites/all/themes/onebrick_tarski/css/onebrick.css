@@ -342,7 +342,9 @@ div.gallery-processed {
    list-style-type: none;
 }
                        
-
+#newUserLink {
+   cursor: pointer;
+}
 /**
  * Header menu
  */

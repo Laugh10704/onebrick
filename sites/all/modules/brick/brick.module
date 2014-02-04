@@ -1,4 +1,4 @@
-<?php 
+<?php
 //$Id: brick.module,v 1.58 2013/12/18 03:08:40 jordan Exp jordan $
 
 include 'brick_event.php';
@@ -37,7 +37,7 @@ function brick_watchdog(array $log_entry) {
 */
 
 function brick_views_api() {
-   return array(
+  return array(
     'api' => 3,
     'path' => drupal_get_path('module', 'brick') . '/views',
   );
@@ -45,24 +45,27 @@ function brick_views_api() {
 
 // Return a standard UTC timestamp from a date object
 function brick_get_adjusted_timestamp($value) {
-	if (!$value) {
-	   return $value;
-	}	
+  if (!$value) {
+    return $value;
+  }
 
-	$from_tz = 'UTC';
-	$to_tz = NULL;
+  $from_tz = 'UTC';
+  $to_tz = NULL;
 
-        if (array_key_exists('timezone', $value))
-		$to_tz = $value['timezone'];
+  if (array_key_exists('timezone', $value)) {
+    $to_tz = $value['timezone'];
+  }
 
-	// Just in case.
-	if (array_key_exists('timezone_db', $value))
-		$from_tz = $value['timezone_db'];
+  // Just in case.
+  if (array_key_exists('timezone_db', $value)) {
+    $from_tz = $value['timezone_db'];
+  }
 
-	$obj = new DateObject($value['value'], $from_tz);
-	if ($to_tz)
-		date_timezone_set($obj, timezone_open($to_tz));
-	return $obj->getTimestamp();
+  $obj = new DateObject($value['value'], $from_tz);
+  if ($to_tz) {
+    date_timezone_set($obj, timezone_open($to_tz));
+  }
+  return $obj->getTimestamp();
 }
 
 function brick_event_start($node) {
@@ -73,20 +76,21 @@ function brick_event_open_date($node) {
   $date = @$node->field_rsvp_date['und'][0]['value'];
 
   if ($date) {
-     return strtotime($date);
+    return strtotime($date);
   }
 
   return $date;
 }
 
 function brick_validate_event($node) {
-    $event_start = brick_event_start($node);
-    $rsvp_date = brick_event_open_date($node);
+  $event_start = brick_event_start($node);
+  $rsvp_date = brick_event_open_date($node);
 
-    if (!empty($event_start) && !empty($rsvp_date) &&
-        $event_start < $rsvp_date) {
-      form_set_error('field_rsvp_date', t('RSVP date must be before event date'));
-    }
+  if (!empty($event_start) && !empty($rsvp_date) &&
+    $event_start < $rsvp_date
+  ) {
+    form_set_error('field_rsvp_date', t('RSVP date must be before event date'));
+  }
 }
 
 function brick_node_validate($node, $form, &$form_state) {
@@ -96,7 +100,7 @@ function brick_node_validate($node, $form, &$form_state) {
 }
 
 function brick_load_chapters() {
-	$q = "
+  $q = "
 		SELECT nid, title, f1.field_chapter_events_email_value, f2.field_chapter_recruiting_email_value, f3.field_chapter_staff_value from node 
 			left join field_data_field_chapter_hide_from_menu on field_data_field_chapter_hide_from_menu.entity_id = nid 
 			left join field_data_field_chapter_events_email f1 on f1.entity_id = nid and f1.deleted = 0
@@ -107,8 +111,8 @@ function brick_load_chapters() {
 			field_data_field_chapter_hide_from_menu.field_chapter_hide_from_menu_value != 1
 			ORDER BY TITLE;
 	";
-   $r = db_query($q);
-   return $r;            
+  $r = db_query($q);
+  return $r;
 }
 
 /*
@@ -121,182 +125,192 @@ function brick_menu_local_tasks_alter(&$data, $router_item, $root_path) {
     $node = node_load($nid);
     $type = $node->type;
     if ($type == 'event') {
-     $tabs = $data['tabs'][0]['output'];
+      $tabs = $data['tabs'][0]['output'];
       // Add a tab linking to roster page
-     $newtab = array(array(
-    	'#theme' => 'menu_local_task',
-    	'#link' => array(
-      		'title' => t('Edit Roster'),
-      		'href' => 'roster/' . $nid,
-      		'localized_options' => array(
-        		'attributes' => array(
-          			'title' => t('Edit the Roster for this event')
-			),
-      		),
-    	),
-    ));
-   
-    // add our new tab as the THIRD menu item (after view and edit) 
-    array_splice($data['tabs'][0]['output'], 2, 0, $newtab);
+      $newtab = array(
+        array(
+          '#theme' => 'menu_local_task',
+          '#link' => array(
+            'title' => t('Edit Roster'),
+            'href' => 'roster/' . $nid,
+            'localized_options' => array(
+              'attributes' => array(
+                'title' => t('Edit the Roster for this event')
+              ),
+            ),
+          ),
+        )
+      );
 
-    // really dont know why I need to do this. I get an error message unless this is set to a number > 1.
-    $data['tabs']['0']['count'] = 2;
-   }
- }
+      // add our new tab as the THIRD menu item (after view and edit)
+      array_splice($data['tabs'][0]['output'], 2, 0, $newtab);
+
+      // really dont know why I need to do this. I get an error message unless this is set to a number > 1.
+      $data['tabs']['0']['count'] = 2;
+    }
+  }
 }
 
 // requires a loaded user object
 function brick_get_user_name($user) {
-    $fullname = "";
- 
-    if ($user && !empty($user->field_user_fullname)) {
-       $fullname = $user->field_user_fullname[LANGUAGE_NONE][0]['value'];
-    }
-    
-    return $fullname;
+  $fullname = "";
+
+  if ($user && !empty($user->field_user_fullname)) {
+    $fullname = $user->field_user_fullname[LANGUAGE_NONE][0]['value'];
+  }
+
+  return $fullname;
 }
 
 // redirect messages intended for a onebrick group to all users within that group
-function brick_mail_alter(&$message) { 
-  $users = NULL; 
+function brick_mail_alter(&$message) {
+  $users = NULL;
   global $user;
- 
+
   if ($message['to'] == 'obstaff@onebrick.org') {
     $users = brick_get_staff_mailing_list(brick_current_chapter());
   }
-  else if ($message['to'] == 'mailing_list@onebrick.org') {
-    $users = brick_get_mailing_list(brick_current_chapter());
-  }
-  else if ($message['to'] == 'events@onebrick.org') {
-    $users = brick_get_events_mailing_list(brick_current_chapter());
-  }
-  else if ($message['to'] == 'recruiting@onebrick.org') {
-    $users = brick_get_recruiting_mailing_list(brick_current_chapter());
-  }
-  else if ($message['to'] == 'currentuser@onebrick.org') {
-    $message['to'] = $user->mail;
+  else {
+    if ($message['to'] == 'mailing_list@onebrick.org') {
+      $users = brick_get_mailing_list(brick_current_chapter());
+    }
+    else {
+      if ($message['to'] == 'events@onebrick.org') {
+        $users = brick_get_events_mailing_list(brick_current_chapter());
+      }
+      else {
+        if ($message['to'] == 'recruiting@onebrick.org') {
+          $users = brick_get_recruiting_mailing_list(brick_current_chapter());
+        }
+        else {
+          if ($message['to'] == 'currentuser@onebrick.org') {
+            $message['to'] = $user->mail;
+          }
+        }
+      }
+    }
   }
 
   if ($users) {
-     $bccList = implode(",", $users);
-     $message['headers'] += array('Bcc' => $bccList);
+    $bccList = implode(",", $users);
+    $message['headers'] += array('Bcc' => $bccList);
   }
 }
 
 function brick_count_staff() {
-	$q = "SELECT COUNT(DISTINCT(mail)) FROM STAFF WHERE 1;";
-	$r = db_query($q);
-	return $r->fetchField();
+  $q = "SELECT COUNT(DISTINCT(mail)) FROM STAFF WHERE 1;";
+  $r = db_query($q);
+  return $r->fetchField();
 }
 
 function brick_get_events_mailing_list($forChapter = NULL) {
-        $q = "SELECT DISTINCT mail from ROLES 
+  $q = "SELECT DISTINCT mail from ROLES
 							where role in ('Event Creation', 'Event Assignment')";
 
-        if ($forChapter) {
-					$q = $q . " AND chapterid = ".$forChapter;
-        }
+  if ($forChapter) {
+    $q = $q . " AND chapterid = " . $forChapter;
+  }
 
-        $r = db_query($q);
-        return $r->fetchCol();
+  $r = db_query($q);
+  return $r->fetchCol();
 }
 
 
 function brick_get_recruiting_mailing_list($forChapter = NULL) {
-        $q = "SELECT DISTINCT mail from ROLES 
+  $q = "SELECT DISTINCT mail from ROLES
 							where role in ('Recruiting')";
 
-        if ($forChapter) {
-					$q = $q . " AND chapterid = ".$forChapter;
-        }
+  if ($forChapter) {
+    $q = $q . " AND chapterid = " . $forChapter;
+  }
 
-        $r = db_query($q);
-        return $r->fetchCol();
+  $r = db_query($q);
+  return $r->fetchCol();
 }
 
 
 function brick_get_staff_mailing_list($forChapter = NULL) {
-        $q = "SELECT DISTINCT mail FROM STAFF WHERE 1";
+  $q = "SELECT DISTINCT mail FROM STAFF WHERE 1";
 
-        if ($forChapter) {
-					$q = $q . " AND chapterid = ".$forChapter;
-        }
+  if ($forChapter) {
+    $q = $q . " AND chapterid = " . $forChapter;
+  }
 
-        $r = db_query($q);
-        return $r->fetchCol();
+  $r = db_query($q);
+  return $r->fetchCol();
 }
 
 function brick_get_mailing_list($forChapter = NULL) {
-    $q = "SELECT DISTINCT(mail) FROM SUBSCRIBED WHERE 1";
-  
-        if ($forChapter) {
-					$q = $q . " AND chapterid = ".$forChapter;
-        }
+  $q = "SELECT DISTINCT(mail) FROM SUBSCRIBED WHERE 1";
 
-        $r = db_query($q);
-        return $r->fetchCol();
+  if ($forChapter) {
+    $q = $q . " AND chapterid = " . $forChapter;
+  }
+
+  $r = db_query($q);
+  return $r->fetchCol();
 }
 
 function brick_permission() {
   return array(
     'is_staff' => array(
-      'title' => t('Is Staff'), 
+      'title' => t('Is Staff'),
       'description' => t('Is this role a staff member'),
     ),
   );
 }
 
 function brick_build_refresh_page_command() {
-   $commands = array();
+  $commands = array();
 
-   $commands[] = ajax_command_invoke(NULL, 'reloadPage');
+  $commands[] = ajax_command_invoke(NULL, 'reloadPage');
 
-   return array('#type' => 'ajax', '#commands' => $commands);
+  return array('#type' => 'ajax', '#commands' => $commands);
 }
 
 function brick_move_to_new_cbox_form($new_title, $form_html, $selector = NULL) {
-    $commands = array();
-    
-    $commands[] = ajax_command_html($selector, $form_html) + array("effect" => "fade");
-    $commands[] = ajax_command_html("#cboxTitle", $new_title);
- 
-    
-    return array('#type' => 'ajax', '#commands' => $commands); 
+  $commands = array();
+
+  $commands[] = ajax_command_html($selector, $form_html) + array("effect" => "fade");
+  $commands[] = ajax_command_html("#cboxTitle", $new_title);
+
+
+  return array('#type' => 'ajax', '#commands' => $commands);
 }
 
 function ctools_ajax_command_func($selector, $value) {
-   return array(
-     'command' => 'func',
-     'selector' => $selector,
-     'value' => $value,
-   );
+  return array(
+    'command' => 'func',
+    'selector' => $selector,
+    'value' => $value,
+  );
 }
 
 function brick_count_volunteer_events() {
-	$q = "	SELECT COUNT(*)
+  $q = "	SELECT COUNT(*)
 		FROM field_data_field_event_type
 		LEFT JOIN field_data_field_event_date
 		ON field_data_field_event_type.entity_id = field_data_field_event_date.entity_id
 		WHERE field_event_type_value = 'Volunteer' AND field_event_date_value2 < CURDATE();
 	";
-	$r = db_query($q);
-	return $r->fetchField();
+  $r = db_query($q);
+  return $r->fetchField();
 }
 
-function round_to_power_of_10($n,$d) {
-  return $n - $n % pow(10,$d);
+function round_to_power_of_10($n, $d) {
+  return $n - $n % pow(10, $d);
 }
 
 function brick_set_globals() {
 
   // count number of volunteer events
-  $num_volunteer_events = number_format(round_to_power_of_10(brick_count_volunteer_events(),3));
-  variable_set('brick_num_volunteer_events',$num_volunteer_events);
+  $num_volunteer_events = number_format(round_to_power_of_10(brick_count_volunteer_events(), 3));
+  variable_set('brick_num_volunteer_events', $num_volunteer_events);
 
 
   // count number of staff
-  $num_staff = number_format(round_to_power_of_10(brick_count_staff(),2));
-  variable_set('brick_num_staff',$num_staff);
+  $num_staff = number_format(round_to_power_of_10(brick_count_staff(), 2));
+  variable_set('brick_num_staff', $num_staff);
 
 
   // create recruiting email array
@@ -306,7 +320,7 @@ function brick_set_globals() {
   while ($row = $emails->fetchAssoc()) {
     $recruiting_emails[$row['entity_id']] = $row['field_chapter_recruiting_email_value'];
   }
-  variable_set('brick_recruiting_emails',$recruiting_emails);
+  variable_set('brick_recruiting_emails', $recruiting_emails);
 
 
   // create events team email array
@@ -316,8 +330,7 @@ function brick_set_globals() {
   while ($row = $emails->fetchAssoc()) {
     $events_emails[$row['entity_id']] = $row['field_chapter_events_email_value'];
   }
-  variable_set('brick_events_emails',$events_emails);
-
+  variable_set('brick_events_emails', $events_emails);
 
 
   // Generate a comma seperated list of chapters.
@@ -337,40 +350,41 @@ function brick_set_globals() {
 
     if ($nextC) {
       $chapter_list .= ", " . $c['title'];
-    } else {
+    }
+    else {
       $chapter_list .= ", and " . $c['title'];
     }
 
     $chapters[] = $c;
-    $num_chapters +=1;
+    $num_chapters += 1;
     $c = $nextC;
   }
 
-  foreach($chapters as $chapter) {
+  foreach ($chapters as $chapter) {
     $chapterMap[$chapter['nid']] = $chapter;
   }
 
   variable_set('brick_chapter_count', brick_convert_number($num_chapters));
-  variable_set('brick_chapter_list',$chapter_list);
-  variable_set('brick_chapters',$chapters);
-  variable_set('brick_chapter_map',$chapterMap);
-      
-	watchdog("Info", "Setting brick_chapter_list[] to " . print_r($chapters, true));
+  variable_set('brick_chapter_list', $chapter_list);
+  variable_set('brick_chapters', $chapters);
+  variable_set('brick_chapter_map', $chapterMap);
+
+  watchdog("Info", "Setting brick_chapter_list[] to " . print_r($chapters, TRUE));
 }
 
 function brick_chapter_header() {
 
- //$_SESSION['HEADER'] = 'header-sv.png'; // debug
- return(file_create_url(file_build_uri($_SESSION['HEADER'])));
+  //$_SESSION['HEADER'] = 'header-sv.png'; // debug
+  return (file_create_url(file_build_uri($_SESSION['HEADER'])));
 }
 
 function brick_stay_on_same_page() {
-   // just return to the same page
-   drupal_goto($_SERVER["HTTP_REFERER"]);
+  // just return to the same page
+  drupal_goto($_SERVER["HTTP_REFERER"]);
 }
 
 function brick_view_roster($id) {
-   drupal_goto("roster/" . $id);
+  drupal_goto("roster/" . $id);
 }
 
 function brick_do_nothing() {
@@ -382,9 +396,9 @@ function brick_user_presave(&$edit, $account, $category) {
   $existing = array();
 
   if (property_exists($account, "roles")) {
-     $existing = array_keys($account->roles);
+    $existing = array_keys($account->roles);
   }
-  
+
   $newRoles = array();
   $roleVals = array();
   $roleKeys = array();
@@ -397,7 +411,7 @@ function brick_user_presave(&$edit, $account, $category) {
   // calculate the array of new roles about to be applied
   foreach ($roleKeys as $roleKey) {
     if ($roleVals[$roleKey] > 0) {
-    	$newRoles[] = $roleKey;
+      $newRoles[] = $roleKey;
     }
   }
 
@@ -413,24 +427,27 @@ function brick_user_presave(&$edit, $account, $category) {
 
   if (array_key_exists('mail', $edit)) {
     if (!property_exists($account, "mail")) {
-       brick_map_user_to_google_groups($edit['mail'], null, $newRoleNames);
+      brick_map_user_to_google_groups($edit['mail'], NULL, $newRoleNames);
     }
-  
+
     // if the email changed, we remove ALL groups for the old email and add ALL groups for the new one
-    else if ($account->mail != $edit['mail']) {
-       watchdog("Info", "Mapping user to " . print_r($existingRoleNames, true));
-  
-       // email changed, switch groups
-       brick_map_user_to_google_groups($account->mail, $existingRoleNames, null);
-       brick_map_user_to_google_groups($edit['mail'], null, $newRoleNames);
+    else {
+      if ($account->mail != $edit['mail']) {
+        watchdog("Info", "Mapping user to " . print_r($existingRoleNames, TRUE));
+
+        // email changed, switch groups
+        brick_map_user_to_google_groups($account->mail, $existingRoleNames, NULL);
+        brick_map_user_to_google_groups($edit['mail'], NULL, $newRoleNames);
+      }
     }
-  } else {
-     // use the above data to calculate which names were added and which were removed
-     $removedRoleNames = array_diff($existingRoleNames, $newRoleNames);
-     $addedRoleNames = array_diff($newRoleNames, $existingRoleNames);
- 
-     // actually do the mapping in Google groups.
-     brick_map_user_to_google_groups($account->mail, $removedRoleNames, $addedRoleNames);
+  }
+  else {
+    // use the above data to calculate which names were added and which were removed
+    $removedRoleNames = array_diff($existingRoleNames, $newRoleNames);
+    $addedRoleNames = array_diff($newRoleNames, $existingRoleNames);
+
+    // actually do the mapping in Google groups.
+    brick_map_user_to_google_groups($account->mail, $removedRoleNames, $addedRoleNames);
   }
 
   // the user's signature is their full name so we have this in the users table (for node reference)
@@ -440,49 +457,53 @@ function brick_user_presave(&$edit, $account, $category) {
 }
 
 function brick_entity_insert($entity, $type) {
-   if (property_exists($entity, "type") && $entity->type == "event") {
-   	db_insert('node_access')->fields(array(
-    	  'nid' => $entity->nid,
-    	  'gid' => 0,
-    	  'realm' => 'all',
-    	  'grant_view' => 1,
-    	  'grant_update' => 0,
-    	  'grant_delete' => 0,
-  	))->execute();
-   }
+  if (property_exists($entity, "type") && $entity->type == "event") {
+    db_insert('node_access')->fields(array(
+      'nid' => $entity->nid,
+      'gid' => 0,
+      'realm' => 'all',
+      'grant_view' => 1,
+      'grant_update' => 0,
+      'grant_delete' => 0,
+    ))->execute();
+  }
 }
 
 function brick_entity_presave($entity, $type) {
-   if (property_exists($entity, "type") && $entity->type == "chapter") {
-  	watchdog("info", print_r($entity, true));
-  	// create the groups in Google Groups for the given chapter, if they do not exist
-   	brick_create_groups_if_necessary(array($entity->field_chapter_staff['und'][0]['value'], $entity->field_chapter_events_email['und'][0]['value'], $entity->field_chapter_recruiting_email['und'][0]['value']));
-   }
-   // we only do the following if the event has a node id
-   if (property_exists($entity, "type") && $entity->type == "event" && $entity->nid) {
-        watchdog("info", print_r($entity, true));
-        // remap the rsvps for the manager and coordinators
-	$managers = array();
-	$x = 0;
-	$coordinators = array();
+  if (property_exists($entity, "type") && $entity->type == "chapter") {
+    watchdog("info", print_r($entity, TRUE));
+    // create the groups in Google Groups for the given chapter, if they do not exist
+    brick_create_groups_if_necessary(array(
+      $entity->field_chapter_staff['und'][0]['value'],
+      $entity->field_chapter_events_email['und'][0]['value'],
+      $entity->field_chapter_recruiting_email['und'][0]['value']
+    ));
+  }
+  // we only do the following if the event has a node id
+  if (property_exists($entity, "type") && $entity->type == "event" && $entity->nid) {
+    watchdog("info", print_r($entity, TRUE));
+    // remap the rsvps for the manager and coordinators
+    $managers = array();
+    $x = 0;
+    $coordinators = array();
 
-        $managerCount = count($entity->field_manager['und']);
+    $managerCount = count($entity->field_manager['und']);
 
-	for ($x = 0; $x < $managerCount; $x++) {
-	   $managers[] = $entity->field_manager['und'][$x]['uid'];
-	}
+    for ($x = 0; $x < $managerCount; $x++) {
+      $managers[] = $entity->field_manager['und'][$x]['uid'];
+    }
 
-        $coordinatorCount = count($entity->field_coordinator['und']);
+    $coordinatorCount = count($entity->field_coordinator['und']);
 
-        for ($x = 0; $x < $coordinatorCount; $x++) {
-           $coordinators[] = $entity->field_coordinator['und'][$x]['uid'];
-        }
+    for ($x = 0; $x < $coordinatorCount; $x++) {
+      $coordinators[] = $entity->field_coordinator['und'][$x]['uid'];
+    }
 
-	brick_remap_manager_coordinator_rsvps($entity, $managers, $coordinators);
+    brick_remap_manager_coordinator_rsvps($entity, $managers, $coordinators);
 
-	watchdog("info", print_r($managers, true));
-	watchdog("info", print_r($coordinators, true));
-   }
+    watchdog("info", print_r($managers, TRUE));
+    watchdog("info", print_r($coordinators, TRUE));
+  }
 }
 
 
@@ -490,31 +511,31 @@ function brick_entity_presave($entity, $type) {
 function role_ids_to_group_names($chapterId, $roleIds) {
   $names = array();
   foreach ($roleIds as $roleId) {
-     $names = array_merge($names, role_id_to_group_names($chapterId, $roleId));
+    $names = array_merge($names, role_id_to_group_names($chapterId, $roleId));
   }
   return array_unique($names);
 }
 
 // Get the group names that should be tied for the given roleId
 function role_id_to_group_names($chapterId, $roleId) {
-   $chapters = variable_get('brick_chapter_map');
+  $chapters = variable_get('brick_chapter_map');
 
-   $chapter = $chapters[$chapterId];
+  $chapter = $chapters[$chapterId];
 
-   // event manager / coordinator
-   if ($roleId == 6 || $roleId == 7) {
-      return array($chapter['field_chapter_staff_value']);
-   }
-   // event creation / assignment
-   if ($roleId == 8 || $roleId == 9) {
-      return array($chapter['field_chapter_events_email_value'], $chapter['field_chapter_staff_value']);
-   }
-   // recruiter
-   if ($roleId == 10) {
-      return array($chapter['field_chapter_recruiting_email_value'], $chapter['field_chapter_staff_value']);
-   }
+  // event manager / coordinator
+  if ($roleId == 6 || $roleId == 7) {
+    return array($chapter['field_chapter_staff_value']);
+  }
+  // event creation / assignment
+  if ($roleId == 8 || $roleId == 9) {
+    return array($chapter['field_chapter_events_email_value'], $chapter['field_chapter_staff_value']);
+  }
+  // recruiter
+  if ($roleId == 10) {
+    return array($chapter['field_chapter_recruiting_email_value'], $chapter['field_chapter_staff_value']);
+  }
 
-   return array();
+  return array();
 }
 
 function brick_switch_chapter($nid) {
@@ -531,7 +552,7 @@ function brick_switch_chapter($nid) {
  * if $user is not set then they are not logged in and set set the value to the first chapter (SF)
  */
 function brick_load_current_user_chapter() {
-   brick_set_chapter_globals(brick_load_user_home_chapter());
+  brick_set_chapter_globals(brick_load_user_home_chapter());
 }
 
 function brick_is_user_in_home_chapter() {
@@ -539,19 +560,19 @@ function brick_is_user_in_home_chapter() {
 }
 
 function brick_load_user_home_chapter() {
-   global $user;
+  global $user;
 
-   $chapter_nid = 101; // default to chapter 101 - San Francisco
+  $chapter_nid = 101; // default to chapter 101 - San Francisco
 
-   if ($user && $user->uid) {
-     $loadedUser = user_load($user->uid);
+  if ($user && $user->uid) {
+    $loadedUser = user_load($user->uid);
 
-     if ($loadedUser->field_user_chapter) {
-        $chapter_nid = $loadedUser->field_user_chapter['und'][0]['nid'];
-     }
-   }
+    if ($loadedUser->field_user_chapter) {
+      $chapter_nid = $loadedUser->field_user_chapter['und'][0]['nid'];
+    }
+  }
 
-   return $chapter_nid;
+  return $chapter_nid;
 }
 
 function brick_set_chapter_globals($chapter_nid) {
@@ -586,7 +607,7 @@ function brick_set_chapter_globals($chapter_nid) {
 	  FROM field_data_field_timezone
 	  WHERE entity_id = $chapter_nid";
   $TZ = db_query($q)->fetchField();
-  
+
   global $user;
 
   if ($user && $user->uid) {
@@ -596,9 +617,9 @@ function brick_set_chapter_globals($chapter_nid) {
   }
   $_SESSION['TIMEZONE'] = $TZ;
 
-	if (function_exists('drupal_goto')) {
-		drupal_goto("");
-	}
+  if (function_exists('drupal_goto')) {
+    drupal_goto("");
+  }
 }
 
 /* 
@@ -607,114 +628,115 @@ function brick_set_chapter_globals($chapter_nid) {
  * If it is not set then we initialize $_SESSION from the users account.
  */
 function brick_current_chapter() {
-	if ($_SESSION && array_key_exists('CHAPTER', $_SESSION)) {
-		// do nothing, we already have a chapter set
-	} else {
-   		brick_load_current_user_chapter(); // set the $_SESSION variables from the user account.
-	}
-	return ($_SESSION['CHAPTER']);
+  if ($_SESSION && array_key_exists('CHAPTER', $_SESSION)) {
+    // do nothing, we already have a chapter set
+  }
+  else {
+    brick_load_current_user_chapter(); // set the $_SESSION variables from the user account.
+  }
+  return ($_SESSION['CHAPTER']);
 }
 
 function brick_get_chapter_name() {
-	$chapter_id = brick_current_chapter();
-        $q = "
+  $chapter_id = brick_current_chapter();
+  $q = "
                 SELECT name 
 		FROM CHAPTER_DETAILS
 		WHERE chapter_id = 101;
         ";
-	$r = db_query($q);
-	return $r->fetchField();
+  $r = db_query($q);
+  return $r->fetchField();
 }
 
 function brick_add_node($nid) {
-   $node = node_load($nid);
-   drupal_goto('node/add/'.$node->type);
+  $node = node_load($nid);
+  drupal_goto('node/add/' . $node->type);
 }
 
 function brick_gen_roster($nid) {
-   generate_pdf($nid);
+  generate_pdf($nid);
 }
 
 function brick_create_google_apps_client() {
-   require_once 'Zend/Loader.php';
+  require_once 'Zend/Loader.php';
 
-   Zend_Loader::loadClass('Zend_Gdata_ClientLogin');
-   Zend_Loader::loadClass('Zend_Gdata_Gapps');
+  Zend_Loader::loadClass('Zend_Gdata_ClientLogin');
+  Zend_Loader::loadClass('Zend_Gdata_Gapps');
 
 
-   $client = Zend_Gdata_ClientLogin::getHttpClient(_GOOGLE_APPS_LOGIN_, _GOOGLE_APPS_PW_, Zend_Gdata_Gapps::AUTH_SERVICE_NAME);
-   $serv = new Zend_Gdata_Gapps($client, _OB_EMAIL_);
+  $client = Zend_Gdata_ClientLogin::getHttpClient(_GOOGLE_APPS_LOGIN_, _GOOGLE_APPS_PW_, Zend_Gdata_Gapps::AUTH_SERVICE_NAME);
+  $serv = new Zend_Gdata_Gapps($client, _OB_EMAIL_);
 
-   return $serv;
+  return $serv;
 }
 
 function brick_map_user_to_google_groups($email, $removeFromGroups, $addToGroups) {
-   $serv = brick_create_google_apps_client();
+  $serv = brick_create_google_apps_client();
 
-   try {
-      if ($removeFromGroups) {
-         foreach($removeFromGroups as $group) {
-            if ($group) {
-	       $serv->removeMemberFromGroup($email, $group . "-test");
-            }
-	 }
+  try {
+    if ($removeFromGroups) {
+      foreach ($removeFromGroups as $group) {
+        if ($group) {
+          $serv->removeMemberFromGroup($email, $group . "-test");
+        }
       }
+    }
 
-      if ($addToGroups) {
-         foreach($addToGroups as $group) {
-            if ($group) {
-                $serv->addMemberToGroup($email, $group . "-test");
-            }
-         }
+    if ($addToGroups) {
+      foreach ($addToGroups as $group) {
+        if ($group) {
+          $serv->addMemberToGroup($email, $group . "-test");
+        }
       }
-   } catch (Exception $e) {
-      watchdog("GData Error", $e->getMessage());
-      watchdog("GData Error", $e);
-   }
+    }
+  } catch (Exception $e) {
+    watchdog("GData Error", $e->getMessage());
+    watchdog("GData Error", $e);
+  }
 }
 
 function brick_group_members($group) {
-	 $emails = array();
-   $serv = brick_create_google_apps_client();
+  $emails = array();
+  $serv = brick_create_google_apps_client();
 
-   watchdog("info", "Listing group " . $group);
+  watchdog("info", "Listing group " . $group);
 
-		$feed = $serv->retrieveAllRecipients($group);
- 
- 		foreach ($feed as $recipient) {
-   				$emails[] = $recipient->who->email;
-		}
-		return($emails);
+  $feed = $serv->retrieveAllRecipients($group);
+
+  foreach ($feed as $recipient) {
+    $emails[] = $recipient->who->email;
+  }
+  return ($emails);
 }
 
 
 function brick_create_groups_if_necessary($groups) {
-   $serv = brick_create_google_apps_client();
+  $serv = brick_create_google_apps_client();
 
-   watchdog("info", "Creating groups " . print_r($groups, true));
- 
-   try {
-      foreach($groups as $group) {
-         if ($group) {
-            $val = $serv->retrieveGroup($group);
-            if (!$val) {
-	       $serv->createGroup($group, $group);
-		// Google Groups requires at least one member for a group in order for it to show up in the interface
-	       $serv->addMemberToGroup(_GOOGLE_APPS_LOGIN_, $group);
-            } 
-	}
+  watchdog("info", "Creating groups " . print_r($groups, TRUE));
+
+  try {
+    foreach ($groups as $group) {
+      if ($group) {
+        $val = $serv->retrieveGroup($group);
+        if (!$val) {
+          $serv->createGroup($group, $group);
+          // Google Groups requires at least one member for a group in order for it to show up in the interface
+          $serv->addMemberToGroup(_GOOGLE_APPS_LOGIN_, $group);
+        }
       }
-      watchdog("Info", "Successfully created Google groups");
-   } catch (Exception $e) {
-      watchdog("GData Error", $e->getMessage());
-      watchdog("GData Error", $e);
-   }
+    }
+    watchdog("Info", "Successfully created Google groups");
+  } catch (Exception $e) {
+    watchdog("GData Error", $e->getMessage());
+    watchdog("GData Error", $e);
+  }
 }
 
 function brick_copy_node($nid) {
   global $user;
 
-  drupal_goto('node/add/event', array('query'=>array('copy_id'=>$nid)));
+  drupal_goto('node/add/event', array('query' => array('copy_id' => $nid)));
 }
 
 
@@ -723,10 +745,10 @@ function brick_trigger_info() {
     'rsvp' => array(
       'brick_rsvp' => array(
         'label' => t('After the user RSVPs for an event'),
-      ), 
+      ),
       'brick_unrsvp' => array(
         'label' => t('After the user Un-RSVPs for an event'),
-      ), 
+      ),
     ),
   );
 }
@@ -754,7 +776,7 @@ function brick_staff_access() {
 
 function brick_manager_access($user = NULL) {
   if ($user == NULL) {
-     global $user;
+    global $user;
   }
 
   return user_has_role('Coordinator', $user) || user_has_role('Manager', $user);
@@ -765,9 +787,10 @@ function user_has_role($role, $user = NULL) {
     global $user;
   }
 
-  if (is_array($user->roles) && 
-      (in_array($role, array_values($user->roles)) ||
-       in_array('Administrator', array_values($user->roles)))) {
+  if (is_array($user->roles) &&
+    (in_array($role, array_values($user->roles)) ||
+      in_array('Administrator', array_values($user->roles)))
+  ) {
     return TRUE;
   }
 
@@ -776,17 +799,17 @@ function user_has_role($role, $user = NULL) {
 
 function brick_safe_mailto($email, $subject) {
 
-  if (!isset($email)) {// person doesn't have an email address in the system
-    return("");
+  if (!isset($email)) { // person doesn't have an email address in the system
+    return ("");
   }
 
-  if (!stristr($email, "@onebrick.org")) {// the email is not a one brick email address
-    return("");
+  if (!stristr($email, "@onebrick.org")) { // the email is not a one brick email address
+    return ("");
   }
 
   $link = 'mailto:' . $email;
   $obfuscatedLink = "";
-  for ($i=0; $i<strlen($link); $i++) {
+  for ($i = 0; $i < strlen($link); $i++) {
     $obfuscatedLink .= "&#" . ord($link[$i]) . ";";
   }
   $result = "<a title=\"Send Email\" href=\" $obfuscatedLink";
@@ -795,19 +818,19 @@ function brick_safe_mailto($email, $subject) {
   }
 
   $result .= "\"> ";
-	$result .= "<img width=\"20\" src=\"/sites/default/files/images/email_icon.jpg\" />";
+  $result .= "<img width=\"20\" src=\"/sites/default/files/images/email_icon.jpg\" />";
 
 
-	$result .= "</a>";
-  return($result);
+  $result .= "</a>";
+  return ($result);
 }
 
 function brick_get_management_list($node) {
   $rsvp_list = brick_get_rsvp_list($node);
   $result = array();
 
-  while($rsvp = $rsvp_list->fetchAssoc()) {
-    if($rsvp['role'] == "Manager" || $rsvp['role'] = "Coordinator") {
+  while ($rsvp = $rsvp_list->fetchAssoc()) {
+    if ($rsvp['role'] == "Manager" || $rsvp['role'] = "Coordinator") {
       $result[] = $rsvp['uid'];
     }
   }
@@ -820,66 +843,68 @@ function brick_format_name($name) {
   $names = explode(" ", $name);
   $name = $names[0];
   if (sizeof($names) > 1) {
-    $name .= " " . substr($names[1],0,1); // Fname 1st Initial
+    $name .= " " . substr($names[1], 0, 1); // Fname 1st Initial
   }
   return ucwords($name);
 }
 
 /**
- * $node is an event note. 
+ * $node is an event note.
  *
  */
 function brick_format_managment_list($node, $addlink) {
-  
+
   $result = "";
   $rsvp_list = brick_get_rsvp_list($node);
-  $first_manager = true;
-  while($rsvp = $rsvp_list->fetchAssoc()) {
-	if($rsvp['role'] == "Manager") {
-		if ($first_manager) {
-			$first_manager = false;
-			$result .= "Manager: ";
-		}
-		else {
-			$result .= ", ";
-		}
-		$result .= brick_format_name($rsvp['fullname']) . " ";
-		if($addlink)
-			$result .= brick_safe_mailto($rsvp['mail'], $node->title);
-	}
+  $first_manager = TRUE;
+  while ($rsvp = $rsvp_list->fetchAssoc()) {
+    if ($rsvp['role'] == "Manager") {
+      if ($first_manager) {
+        $first_manager = FALSE;
+        $result .= "Manager: ";
+      }
+      else {
+        $result .= ", ";
+      }
+      $result .= brick_format_name($rsvp['fullname']) . " ";
+      if ($addlink) {
+        $result .= brick_safe_mailto($rsvp['mail'], $node->title);
+      }
+    }
   }
 
   $rsvp_list = brick_get_rsvp_list($node);
-  $first_coordinator = true;
-  while($rsvp = $rsvp_list->fetchAssoc()) {
-	if($rsvp['role'] == "Coordinator") {
-		if ($first_coordinator) {
-			$first_coordinator = false;
-			if(!$first_manager) {
-				$result .= "; ";
-			}
-			$result .= "Coordinator: ";
-		}
-		else {
-			$result .= ", ";
-		}
-		$result .= brick_format_name($rsvp['fullname']) . " ";
-		if($addlink)
-			$result .= brick_safe_mailto($rsvp['mail'], $node->title);
-	}
+  $first_coordinator = TRUE;
+  while ($rsvp = $rsvp_list->fetchAssoc()) {
+    if ($rsvp['role'] == "Coordinator") {
+      if ($first_coordinator) {
+        $first_coordinator = FALSE;
+        if (!$first_manager) {
+          $result .= "; ";
+        }
+        $result .= "Coordinator: ";
+      }
+      else {
+        $result .= ", ";
+      }
+      $result .= brick_format_name($rsvp['fullname']) . " ";
+      if ($addlink) {
+        $result .= brick_safe_mailto($rsvp['mail'], $node->title);
+      }
+    }
   }
 
-	if ($result == "") {
-		$result = "Events Team: ";
+  if ($result == "") {
+    $result = "Events Team: ";
 
-		$q = "SELECT email_events FROM CHAPTER_DETAILS WHERE chapter_id = ".$_SESSION['CHAPTER'];
+    $q = "SELECT email_events FROM CHAPTER_DETAILS WHERE chapter_id = " . $_SESSION['CHAPTER'];
 
-		$r = db_query($q)->fetchAssoc();
+    $r = db_query($q)->fetchAssoc();
 
-	$result .= brick_safe_mailto($r['email_events']."@onebrick.org", $node->title);
-	} 
+    $result .= brick_safe_mailto($r['email_events'] . "@onebrick.org", $node->title);
+  }
 
-  return($result);
+  return ($result);
 }
 
 
@@ -896,18 +921,18 @@ function brick_theme() {
       'arguments' => array('field' => NULL),
     );
   }
- 
+
   return $theme_functions;
 }
 
 function brick_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
-   $element = array();
-   $element[0]['#markup'] = "<span class='count'>".sizeof($items)."</span>";
-   return $element;
+  $element = array();
+  $element[0]['#markup'] = "<span class='count'>" . sizeof($items) . "</span>";
+  return $element;
 }
 
 function brick_field_formatter_info() {
-    return array(
+  return array(
     'brick_item_count' => array(
       'label' => t('Image Count'),
       'field types' => array('image'),
@@ -916,64 +941,64 @@ function brick_field_formatter_info() {
 }
 
 
-function brick_boot () {
-  if(empty($_SESSION['HEADER'])) {
-     //watchdog("BOOT", $_SESSION);
-     brick_set_chapter_globals(101);// The first time someone visits the site we set them to the SF chapter.
+function brick_boot() {
+  if (empty($_SESSION['HEADER'])) {
+    //watchdog("BOOT", $_SESSION);
+    brick_set_chapter_globals(101); // The first time someone visits the site we set them to the SF chapter.
   }
 }
 
 function brick_form_alter(&$form, &$form_state, $form_id) {
-     if ($form_id == 'views_form_calendar_calendar') {
-       // add a submit button to the top of the form
-       $form["submit-top"] = $form['actions']['submit'];
-       $form["submit-top"]['#weight'] = -500;
-     }
+  if ($form_id == 'views_form_calendar_calendar') {
+    // add a submit button to the top of the form
+    $form["submit-top"] = $form['actions']['submit'];
+    $form["submit-top"]['#weight'] = -500;
+  }
 
-     if ($form_id == 'event_node_form') {
-    	$form['field_event_chapter']['und'][0]['nid']['#default_value'] = brick_current_chapter();
-    
-	if (@$_REQUEST['copy_id']) {
-	   $cn = node_load($_REQUEST['copy_id']);
+  if ($form_id == 'event_node_form') {
+    $form['field_event_chapter']['und'][0]['nid']['#default_value'] = brick_current_chapter();
 
-	   // copy over the node values into the "default" values of create form
-	   $form['title']['#default_value'] = @$cn->title;
-           $form['body']['und'][0]['#default_value'] = @$cn->body['und'][0]['value'];
-	   $form['body']['und'][0]['summary']['#default_value'] = @$cn->body['und'][0]['summary'];
-	   $form['field_event_max_rsvp_capacity']['und'][0]['value']['#default_value'] = @$cn->field_event_max_rsvp_capacity['und'][0]['value'];
-	   $form['field_event_requested']['und'][0]['value']['#default_value'] = @$cn->field_event_requested['und'][0]['value'];
-	   $form['field_event_organization']['und'][0]['nid']['#default_value'] = @$cn->field_event_organization['und'][0]['nid'];
-	   $form['field_event_site']['und'][0]['nid']['#default_value'] = @$cn->field_event_site['und'][0]['nid'];
-	   $form['field_manager']['und'][0]['uid']['#default_value'] = @$cn->field_manager['und'][0]['uid'];
-	   $form['field_coordinator']['und'][0]['uid']['#default_value'] = @$cn->field_coordinator['und'][0]['uid'];
-	   $form['field_event_type']['und'][0]['#default_value'] = @$cn->field_event_type['und'][0]['value'];
-	   $form['field_where_meet']['und'][0]['value']['#default_value'] = @$cn->field_where_meet['und'][0]['value'];
-	   $form['field_should_know']['und'][0]['value']['#default_value'] = @$cn->field_should_know['und'][0]['value'];
-	   $form['field_tasks']['und'][0]['value']['#default_value'] = @$cn->field_tasks['und'][0]['value'];
-	}
+    if (@$_REQUEST['copy_id']) {
+      $cn = node_load($_REQUEST['copy_id']);
+
+      // copy over the node values into the "default" values of create form
+      $form['title']['#default_value'] = @$cn->title;
+      $form['body']['und'][0]['#default_value'] = @$cn->body['und'][0]['value'];
+      $form['body']['und'][0]['summary']['#default_value'] = @$cn->body['und'][0]['summary'];
+      $form['field_event_max_rsvp_capacity']['und'][0]['value']['#default_value'] = @$cn->field_event_max_rsvp_capacity['und'][0]['value'];
+      $form['field_event_requested']['und'][0]['value']['#default_value'] = @$cn->field_event_requested['und'][0]['value'];
+      $form['field_event_organization']['und'][0]['nid']['#default_value'] = @$cn->field_event_organization['und'][0]['nid'];
+      $form['field_event_site']['und'][0]['nid']['#default_value'] = @$cn->field_event_site['und'][0]['nid'];
+      $form['field_manager']['und'][0]['uid']['#default_value'] = @$cn->field_manager['und'][0]['uid'];
+      $form['field_coordinator']['und'][0]['uid']['#default_value'] = @$cn->field_coordinator['und'][0]['uid'];
+      $form['field_event_type']['und'][0]['#default_value'] = @$cn->field_event_type['und'][0]['value'];
+      $form['field_where_meet']['und'][0]['value']['#default_value'] = @$cn->field_where_meet['und'][0]['value'];
+      $form['field_should_know']['und'][0]['value']['#default_value'] = @$cn->field_should_know['und'][0]['value'];
+      $form['field_tasks']['und'][0]['value']['#default_value'] = @$cn->field_tasks['und'][0]['value'];
     }
-    if ($form_id == 'user_profile_form') {
+  }
+  if ($form_id == 'user_profile_form') {
+  }
+  // remove the save button if you dont have permission to submit this form
+  if ($form_id == 'views_form_people_attending_block') {
+    if (!brick_staff_access()) {
+      $form['actions']['submit'] = NULL;
     }
-    // remove the save button if you dont have permission to submit this form
-    if ($form_id == 'views_form_people_attending_block') {
-       if (!brick_staff_access()) {
-          $form['actions']['submit'] = NULL;
-       }
-    }
+  }
 }
 
 function array_insert($arr, $insert, $position) {
-    $i = 0;
-    foreach ($arr as $key => $value) {
-            if ($i == $position) {
-                    foreach ($insert as $ikey => $ivalue) {
-                            $ret[$ikey] = $ivalue;
-                    }
-            }
-            $ret[$key] = $value;
-            $i++;
+  $i = 0;
+  foreach ($arr as $key => $value) {
+    if ($i == $position) {
+      foreach ($insert as $ikey => $ivalue) {
+        $ret[$ikey] = $ivalue;
+      }
     }
-    return $ret;
+    $ret[$key] = $value;
+    $i++;
+  }
+  return $ret;
 }
 
 function brick_webform_mail_headers($node, $submission, $email) {
@@ -981,44 +1006,44 @@ function brick_webform_mail_headers($node, $submission, $email) {
 }
 
 function brick_webform_submission_presave($node, &$submission) {
-	$emails = "";
-	$url = $_SERVER['HTTP_REFERER'];
-	$parts = explode('/', $url);
-	$eventid = end($parts);
+  $emails = "";
+  $url = $_SERVER['HTTP_REFERER'];
+  $parts = explode('/', $url);
+  $eventid = end($parts);
 
 
-	$nd = node_load($eventid);
+  $nd = node_load($eventid);
 
-watchdog("info", $url);
-watchdog("info", print_r($nd, true));
+  watchdog("info", $url);
+  watchdog("info", print_r($nd, TRUE));
 
-	if(isset($nd) && isset($nd->type) && $nd->type === 'event') {
-		// For events we automatically set the TO list and an initial value for the SUBJECT
-		if( $nd->field_reconciled['und'][0]['value'] ) {
-      	$r = brick_get_attendee_list($nd);
-		}
-		else {
-      	$r = brick_get_rsvp_list($nd);
-		}
+  if (isset($nd) && isset($nd->type) && $nd->type === 'event') {
+    // For events we automatically set the TO list and an initial value for the SUBJECT
+    if ($nd->field_reconciled['und'][0]['value']) {
+      $r = brick_get_attendee_list($nd);
+    }
+    else {
+      $r = brick_get_rsvp_list($nd);
+    }
     $users = $r->fetchCol(2);
 
-  	if ($users) {
-    	$emails = implode(",", $users);
-			$submission->data[10]['value'][0] = $emails;
-  	}
+    if ($users) {
+      $emails = implode(",", $users);
+      $submission->data[10]['value'][0] = $emails;
+    }
 
-	}
+  }
 
-watchdog("node->webform['redirect_url']", print_r($node->webform['redirect_url'], true));
-watchdog("node->webform", print_r($node->webform, true));
+  watchdog("node->webform['redirect_url']", print_r($node->webform['redirect_url'], TRUE));
+  watchdog("node->webform", print_r($node->webform, TRUE));
 //watchdog("node->webform['submitbutton']", print_r($node->webform['submitbutton'], true));
-watchdog("webform submission_presave():submission->data", print_r($submission->data, true));
+  watchdog("webform submission_presave():submission->data", print_r($submission->data, TRUE));
 
-if($node->webform['redirect_url'] === "%HTTP_REFERER") {
-	$node->webform['redirect_url'] = $url; // redirect back to the page we came from
-}
+  if ($node->webform['redirect_url'] === "%HTTP_REFERER") {
+    $node->webform['redirect_url'] = $url; // redirect back to the page we came from
+  }
 
-	//$submission->data[10]['value'][0] = "Clive+presave@onebrick.org";// override for testing
+  //$submission->data[10]['value'][0] = "Clive+presave@onebrick.org";// override for testing
 }
 
 function brick_html_head_alter(&$head_elements) {

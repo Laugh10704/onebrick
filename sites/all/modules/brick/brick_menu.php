@@ -183,8 +183,7 @@ function brick_menu() {
   $order = 0;
   foreach($chapters as $chapter) {
 	$order += 1;
-watchdog("info", $order);
-watchdog("info", 'adding menu chapters'.$chapter['nid'].' - '.$chapter['title']);
+
     $items['chapters/' . $chapter['nid']] = array(
           'title' => $chapter['title'],
           'page callback' => 'brick_switch_chapter',
