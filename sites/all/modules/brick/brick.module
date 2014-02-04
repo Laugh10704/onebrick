@@ -434,7 +434,9 @@ function brick_user_presave(&$edit, $account, $category) {
   }
 
   // the user's signature is their full name so we have this in the users table (for node reference)
-  $edit['signature'] = $edit['field_user_fullname']['und'][0]['value'];
+  if (array_key_exists("field_user_fullname", $edit)) {
+    $edit['signature'] = $edit['field_user_fullname']['und'][0]['value'];
+  }
 }
 
 function brick_entity_insert($entity, $type) {
