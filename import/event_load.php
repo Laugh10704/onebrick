@@ -11,7 +11,7 @@ $file = 'data/events.csv';
 $q = "
 	LOAD DATA LOCAL INFILE '".$file."' REPLACE INTO TABLE node
 	FIELDS TERMINATED BY ',' ESCAPED BY '*' OPTIONALLY ENCLOSED BY '%' LINES TERMINATED BY 'XYXXY'
-				(@eventid, @name, @description, @shortdescription, @otherinfo, @capacity,  @rsvpcapacity, @time_start, @time_end, @rsvpdate, @locationid, @organizationid, @regionid, @status, @etype, @created, @modified)
+				(@eventid, @name, @description, @shortdescription, @otherinfo, @capacity,  @rsvpcapacity, @time_start, @time_end, @rsvpdate, @locationid, @organizationid, @regionid, @status, @etype, @created, @modified, @reconciled)
 	SET
 			nid = @eventid+$eventid_offset,
 			vid = @eventid+$eventid_offset,
@@ -29,7 +29,7 @@ db_query($q) or die(db_error());
 $q = "
 	LOAD DATA LOCAL INFILE '".$file."' REPLACE INTO TABLE node_access
 	FIELDS TERMINATED BY ',' ESCAPED BY '*' OPTIONALLY ENCLOSED BY '%' LINES TERMINATED BY 'XYXXY'
-				(@eventid, @name, @description, @shortdescription, @otherinfo, @capacity,  @rsvpcapacity, @time_start, @time_end, @rsvpdate, @locationid, @organizationid, @regionid, @status, @etype, @created, @modified)
+				(@eventid, @name, @description, @shortdescription, @otherinfo, @capacity,  @rsvpcapacity, @time_start, @time_end, @rsvpdate, @locationid, @organizationid, @regionid, @status, @etype, @created, @modified, @reconciled)
 		SET 
 			nid = @eventid+$eventid_offset,
 			gid = 0,
@@ -43,7 +43,7 @@ db_query($q) or die(db_error());
 $q = "
 	LOAD DATA LOCAL INFILE '".$file."' REPLACE INTO TABLE node_revision
 	FIELDS TERMINATED BY ',' ESCAPED BY '*' OPTIONALLY ENCLOSED BY '%' LINES TERMINATED BY 'XYXXY'
-				(@eventid, @name, @description, @shortdescription, @otherinfo, @capacity,  @rsvpcapacity, @time_start, @time_end, @rsvpdate, @locationid, @organizationid, @regionid, @status, @etype, @created, @modified)
+				(@eventid, @name, @description, @shortdescription, @otherinfo, @capacity,  @rsvpcapacity, @time_start, @time_end, @rsvpdate, @locationid, @organizationid, @regionid, @status, @etype, @created, @modified, @reconciled)
 		SET 
 			nid = @eventid+$eventid_offset,
 			vid = @eventid+$eventid_offset,
@@ -58,7 +58,7 @@ db_query($q) or die(db_error());
 $q = "
 	LOAD DATA LOCAL INFILE '".$file."' REPLACE INTO TABLE node_comment_statistics
 	FIELDS TERMINATED BY ',' ESCAPED BY '*' OPTIONALLY ENCLOSED BY '%' LINES TERMINATED BY 'XYXXY'
-				(@eventid, @name, @description, @shortdescription, @otherinfo, @capacity,  @rsvpcapacity, @time_start, @time_end, @rsvpdate, @locationid, @organizationid, @regionid, @status, @etype, @created, @modified)
+				(@eventid, @name, @description, @shortdescription, @otherinfo, @capacity,  @rsvpcapacity, @time_start, @time_end, @rsvpdate, @locationid, @organizationid, @regionid, @status, @etype, @created, @modified, @reconciled)
 		SET 
 			nid = @eventid+$eventid_offset,
 			cid = 0,
@@ -74,7 +74,7 @@ foreach ($two_types as $t) {
 				$q = "
 					LOAD DATA LOCAL INFILE '".$file."' REPLACE INTO TABLE field_".$t."_body
 					FIELDS TERMINATED BY ',' ESCAPED BY '*' OPTIONALLY ENCLOSED BY '%' LINES TERMINATED BY 'XYXXY'
-				(@eventid, @name, @description, @shortdescription, @otherinfo, @capacity,  @rsvpcapacity, @time_start, @time_end, @rsvpdate, @locationid, @organizationid, @regionid, @status, @etype, @created, @modified)
+				(@eventid, @name, @description, @shortdescription, @otherinfo, @capacity,  @rsvpcapacity, @time_start, @time_end, @rsvpdate, @locationid, @organizationid, @regionid, @status, @etype, @created, @modified, @reconciled)
 						SET 
 							entity_type='node',
 							bundle='event',
@@ -91,7 +91,7 @@ foreach ($two_types as $t) {
 				$q = "
 					LOAD DATA LOCAL INFILE '".$file."' REPLACE INTO TABLE field_".$t."_field_event_chapter
 					FIELDS TERMINATED BY ',' ESCAPED BY '*' OPTIONALLY ENCLOSED BY '%' LINES TERMINATED BY 'XYXXY'
-				(@eventid, @name, @description, @shortdescription, @otherinfo, @capacity,  @rsvpcapacity, @time_start, @time_end, @rsvpdate, @locationid, @organizationid, @regionid, @status, @etype, @created, @modified)
+				(@eventid, @name, @description, @shortdescription, @otherinfo, @capacity,  @rsvpcapacity, @time_start, @time_end, @rsvpdate, @locationid, @organizationid, @regionid, @status, @etype, @created, @modified, @reconciled)
 						SET 
 							entity_type='node',
 							bundle='event',
@@ -105,7 +105,7 @@ foreach ($two_types as $t) {
 				$q = "
 					LOAD DATA LOCAL INFILE '".$file."' REPLACE INTO TABLE field_".$t."_field_event_date
 					FIELDS TERMINATED BY ',' ESCAPED BY '*' OPTIONALLY ENCLOSED BY '%' LINES TERMINATED BY 'XYXXY'
-				(@eventid, @name, @description, @shortdescription, @otherinfo, @capacity,  @rsvpcapacity, @time_start, @time_end, @rsvpdate, @locationid, @organizationid, @regionid, @status, @etype, @created, @modified)
+				(@eventid, @name, @description, @shortdescription, @otherinfo, @capacity,  @rsvpcapacity, @time_start, @time_end, @rsvpdate, @locationid, @organizationid, @regionid, @status, @etype, @created, @modified, @reconciled)
 						SET 
 							entity_type='node',
 							bundle='event',
@@ -120,7 +120,7 @@ foreach ($two_types as $t) {
 				$q = "
 					LOAD DATA LOCAL INFILE '".$file."' REPLACE INTO TABLE field_".$t."_field_event_organization
 					FIELDS TERMINATED BY ',' ESCAPED BY '*' OPTIONALLY ENCLOSED BY '%' LINES TERMINATED BY 'XYXXY'
-				(@eventid, @name, @description, @shortdescription, @otherinfo, @capacity,  @rsvpcapacity, @time_start, @time_end, @rsvpdate, @locationid, @organizationid, @regionid, @status, @etype, @created, @modified)
+				(@eventid, @name, @description, @shortdescription, @otherinfo, @capacity,  @rsvpcapacity, @time_start, @time_end, @rsvpdate, @locationid, @organizationid, @regionid, @status, @etype, @created, @modified, @reconciled)
 						SET 
 							entity_type='node',
 							bundle='event',
@@ -134,7 +134,7 @@ foreach ($two_types as $t) {
 				$q = "
 					LOAD DATA LOCAL INFILE '".$file."' REPLACE INTO TABLE field_".$t."_field_event_requested
 					FIELDS TERMINATED BY ',' ESCAPED BY '*' OPTIONALLY ENCLOSED BY '%' LINES TERMINATED BY 'XYXXY'
-				(@eventid, @name, @description, @shortdescription, @otherinfo, @capacity,  @rsvpcapacity, @time_start, @time_end, @rsvpdate, @locationid, @organizationid, @regionid, @status, @etype, @created, @modified)
+				(@eventid, @name, @description, @shortdescription, @otherinfo, @capacity,  @rsvpcapacity, @time_start, @time_end, @rsvpdate, @locationid, @organizationid, @regionid, @status, @etype, @created, @modified, @reconciled)
 						SET 
 							entity_type='node',
 							bundle='event',
@@ -148,7 +148,7 @@ foreach ($two_types as $t) {
 				$q = "
 					LOAD DATA LOCAL INFILE '".$file."' REPLACE INTO TABLE field_".$t."_field_event_otherinfo
 					FIELDS TERMINATED BY ',' ESCAPED BY '*' OPTIONALLY ENCLOSED BY '%' LINES TERMINATED BY 'XYXXY'
-				(@eventid, @name, @description, @shortdescription, @otherinfo, @capacity,  @rsvpcapacity, @time_start, @time_end, @rsvpdate, @locationid, @organizationid, @regionid, @status, @etype, @created, @modified)
+				(@eventid, @name, @description, @shortdescription, @otherinfo, @capacity,  @rsvpcapacity, @time_start, @time_end, @rsvpdate, @locationid, @organizationid, @regionid, @status, @etype, @created, @modified, @reconciled)
 						SET 
 							entity_type='node',
 							bundle='event',
@@ -166,7 +166,7 @@ foreach ($two_types as $t) {
 				$q = "
 					LOAD DATA LOCAL INFILE '".$file."' REPLACE INTO TABLE field_".$t."_field_event_max_rsvp_capacity
 					FIELDS TERMINATED BY ',' ESCAPED BY '*' OPTIONALLY ENCLOSED BY '%' LINES TERMINATED BY 'XYXXY'
-				(@eventid, @name, @description, @shortdescription, @otherinfo, @capacity,  @rsvpcapacity, @time_start, @time_end, @rsvpdate, @locationid, @organizationid, @regionid, @status, @etype, @created, @modified)
+				(@eventid, @name, @description, @shortdescription, @otherinfo, @capacity,  @rsvpcapacity, @time_start, @time_end, @rsvpdate, @locationid, @organizationid, @regionid, @status, @etype, @created, @modified, @reconciled)
 						SET 
 							entity_type='node',
 							bundle='event',
@@ -180,7 +180,7 @@ foreach ($two_types as $t) {
 				$q = "
 					LOAD DATA LOCAL INFILE '".$file."' REPLACE INTO TABLE field_".$t."_field_rsvp_date
 					FIELDS TERMINATED BY ',' ESCAPED BY '*' OPTIONALLY ENCLOSED BY '%' LINES TERMINATED BY 'XYXXY'
-				(@eventid, @name, @description, @shortdescription, @otherinfo, @capacity,  @rsvpcapacity, @time_start, @time_end, @rsvpdate, @locationid, @organizationid, @regionid, @status, @etype, @created, @modified)
+				(@eventid, @name, @description, @shortdescription, @otherinfo, @capacity,  @rsvpcapacity, @time_start, @time_end, @rsvpdate, @locationid, @organizationid, @regionid, @status, @etype, @created, @modified, @reconciled)
 						SET 
 							entity_type='node',
 							bundle='event',
@@ -194,7 +194,7 @@ foreach ($two_types as $t) {
 				$q = "
 					LOAD DATA LOCAL INFILE '".$file."' REPLACE INTO TABLE field_".$t."_field_event_site
 					FIELDS TERMINATED BY ',' ESCAPED BY '*' OPTIONALLY ENCLOSED BY '%' LINES TERMINATED BY 'XYXXY'
-				(@eventid, @name, @description, @shortdescription, @otherinfo, @capacity,  @rsvpcapacity, @time_start, @time_end, @rsvpdate, @locationid, @organizationid, @regionid, @status, @etype, @created, @modified)
+				(@eventid, @name, @description, @shortdescription, @otherinfo, @capacity,  @rsvpcapacity, @time_start, @time_end, @rsvpdate, @locationid, @organizationid, @regionid, @status, @etype, @created, @modified, @reconciled)
 						SET 
 							entity_type='node',
 							bundle='event',
@@ -208,7 +208,7 @@ foreach ($two_types as $t) {
 				$q = "
 					LOAD DATA LOCAL INFILE '".$file."' REPLACE INTO TABLE field_".$t."_field_event_status
 					FIELDS TERMINATED BY ',' ESCAPED BY '*' OPTIONALLY ENCLOSED BY '%' LINES TERMINATED BY 'XYXXY'
-				(@eventid, @name, @description, @shortdescription, @otherinfo, @capacity,  @rsvpcapacity, @time_start, @time_end, @rsvpdate, @locationid, @organizationid, @regionid, @status, @etype, @created, @modified)
+				(@eventid, @name, @description, @shortdescription, @otherinfo, @capacity,  @rsvpcapacity, @time_start, @time_end, @rsvpdate, @locationid, @organizationid, @regionid, @status, @etype, @created, @modified, @reconciled)
 						SET 
 							entity_type='node',
 							bundle='event',
@@ -222,7 +222,7 @@ foreach ($two_types as $t) {
 				$q = "
 					LOAD DATA LOCAL INFILE '".$file."' REPLACE INTO TABLE field_".$t."_field_event_type
 					FIELDS TERMINATED BY ',' ESCAPED BY '*' OPTIONALLY ENCLOSED BY '%' LINES TERMINATED BY 'XYXXY'
-				(@eventid, @name, @description, @shortdescription, @otherinfo, @capacity,  @rsvpcapacity, @time_start, @time_end, @rsvpdate, @locationid, @organizationid, @regionid, @status, @etype, @created, @modified)
+				(@eventid, @name, @description, @shortdescription, @otherinfo, @capacity,  @rsvpcapacity, @time_start, @time_end, @rsvpdate, @locationid, @organizationid, @regionid, @status, @etype, @created, @modified, @reconciled)
 						SET 
 							entity_type='node',
 							bundle='event',

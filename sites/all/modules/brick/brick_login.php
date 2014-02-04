@@ -553,6 +553,24 @@ function brick_move_to_login_form() {
   return brick_move_to_new_cbox_form("Login", drupal_render(drupal_get_form('brick_login_form')));
 }
 
+function brick_check_password($password, $user) {
+  // Wrap user_check_password to check for imported md5 hashes.
+
+  $hash_type = substr($user->pass, 0, 3);
+  $stored_hash = substr($user->pass, 3);
+
+  if ($hash_type == '$I$') {
+    // The users account has a hash imported from the old systems
+    $hash = md5($password);
+    if ($stored_hash == $hash) {
+      // The password matches, update the stored hash and fall through to the normal check/login code
+      $user->pass = user_hash_password($password);
+      user_save($user);
+    }
+  }
+
+  return(user_check_password($password, $user));
+}
 function brick_login_ajax($form, $form_state) {
   if (form_get_errors()) {
     return $form['loginWrapper']['loginSection'];
@@ -581,7 +599,7 @@ function brick_login_ajax($form, $form_state) {
       }
       else {
         require_once DRUPAL_ROOT . '/' . variable_get('password_inc', 'includes/password.inc');
-        if (user_check_password($password, $loadedUser)) {
+        if (brick_check_password($password, $loadedUser)) {
           $user = $loadedUser;
 
           user_login_finalize();
