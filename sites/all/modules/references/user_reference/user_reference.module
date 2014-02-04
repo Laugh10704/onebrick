@@ -554,7 +554,7 @@ function _user_reference_get_user_names($uids, $known_titles = array()) {
   }
   if ($uids_query) {
     $query = db_select('users', 'u')
-      ->fields('u', array('uid', 'name'))
+      ->fields('u', array('uid', 'signature'))
       ->condition('u.uid', $uids);
     $titles += $query->execute()->fetchAllKeyed();
   }
@@ -656,7 +656,7 @@ function user_reference_autocomplete_value($element, $input = FALSE, $form_state
     $uid = $element['#default_value'];
     if (!empty($uid)) {
       $q = db_select('users', 'u');
-      $q->addField('u', 'name');
+      $q->addField('u', 'signature');
 
       $q->condition('u.uid', $uid)
         ->range(0, 1);
@@ -832,7 +832,7 @@ function user_reference_potential_references($field, $options = array()) {
  */
 function _user_reference_potential_references_views($field, $options) {
   $settings = $field['settings']['view'];
-  $options['title_field'] = 'name';
+  $options['title_field'] = 'signature';
   return references_potential_references_view('user', $settings['view_name'], $settings['display_name'], $settings['args'], $options);
 }
 
@@ -1122,7 +1122,7 @@ function user_reference_field_views_data($field) {
       // data table.
       $data[$table][$id_column]['argument']['handler'] = 'references_handler_argument';
       $data[$table][$id_column]['argument']['name table'] = $table . '_reference';
-      $data[$table][$id_column]['argument']['name field'] = 'name';
+      $data[$table][$id_column]['argument']['name field'] = 'signature';
       $data[$table . '_reference']['table']['join'][$table] = array(
         'left_field' => $id_column,
         'table' => 'users',
