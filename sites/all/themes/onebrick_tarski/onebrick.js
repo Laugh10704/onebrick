@@ -1,9 +1,8 @@
 
-/*
+// necessary for chrome and the like
 jQuery(document).ajaxComplete(function(e, xhr, settings) {
    jQuery.colorbox.resize();
 });
-*/
 
 jQuery.fn.reloadPage = function(data) {
    location.reload();
