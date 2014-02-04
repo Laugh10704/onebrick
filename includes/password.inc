@@ -244,6 +244,10 @@ function user_check_password($password, $account) {
       // A normal Drupal 7 password using sha512.
       $hash = _password_crypt('sha512', $password, $stored_hash);
       break;
+    case '$I$':
+      // Imported from the old One Brick System
+      $hash = '$I$'.md5($password);
+      break;
     case '$H$':
       // phpBB3 uses "$H$" for the same thing as "$P$".
     case '$P$':

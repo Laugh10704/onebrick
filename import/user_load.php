@@ -11,7 +11,7 @@ $subs = 'data/users_subscription.csv';
 $q = "
 	LOAD DATA LOCAL INFILE '".$file."' REPLACE INTO TABLE users
 	FIELDS TERMINATED BY ',' ESCAPED BY '*' OPTIONALLY ENCLOSED BY '%' 
-			(@uid, @fname, @sname, @fullname, @mail, @phone, @timezone, @chapter, @created, @1bmail)
+			(@uid, @fname, @sname, @fullname, @mail, @phone, @timezone, @chapter, @created, @pass, @1bmail)
 		SET 
 			uid = @uid,
 			name = @mail,
@@ -19,9 +19,11 @@ $q = "
 			init = @mail,
 			timezone = @timezone,
 			status = 1,
+			signature = @fullname,
 			signature_format = 'filtered_html',
 			created = @created,
-			language = 'und'
+			language = 'und',
+			pass= CONCAT('\$I\$', @pass)
 ";
 db_query($q) or die(db_error());
 
@@ -31,7 +33,7 @@ $two_types = array('data', 'revision');
 	$q = "
 		LOAD DATA LOCAL INFILE '".$file."' REPLACE INTO TABLE field_".$t."_field_user_chapter
 		FIELDS  TERMINATED BY ',' ESCAPED BY '*' OPTIONALLY ENCLOSED BY '%'
-			(@uid, @fname, @sname, @fullname, @mail, @phone, @timezone, @chapter, @created, @1bmail)
+			(@uid, @fname, @sname, @fullname, @mail, @phone, @timezone, @chapter, @created, @pass, @1bmail)
 		SET
 			entity_type = 'user',
 			bundle = 'user',
@@ -45,7 +47,7 @@ $two_types = array('data', 'revision');
 	$q = "
 		LOAD DATA LOCAL INFILE '".$file."' REPLACE INTO TABLE field_".$t."_field_user_phone
 		FIELDS  TERMINATED BY ',' ESCAPED BY '*' OPTIONALLY ENCLOSED BY '%'
-			(@uid, @fullname, @sname, @fullname, @mail, @phone, @timezone, @chapter, @created, @1bmail)
+			(@uid, @fullname, @sname, @fullname, @mail, @phone, @timezone, @chapter, @created, @pass, @1bmail)
 		SET
 			entity_type = 'user',
 			bundle = 'user',
@@ -59,7 +61,7 @@ $two_types = array('data', 'revision');
 	$q = "
 		LOAD DATA LOCAL INFILE '".$file."' REPLACE INTO TABLE field_".$t."_field_user_fullname
 		FIELDS  TERMINATED BY ',' ESCAPED BY '*' OPTIONALLY ENCLOSED BY '%'
-			(@uid, @fullname, @sname, @fullname, @mail, @phone, @timezone, @chapter, @created, @1bmail)
+			(@uid, @fullname, @sname, @fullname, @mail, @phone, @timezone, @chapter, @created, @pass, @1bmail)
 		SET
 			entity_type = 'user',
 			bundle = 'user',
@@ -73,7 +75,7 @@ $two_types = array('data', 'revision');
 	$q = "
 		LOAD DATA LOCAL INFILE '".$file."' REPLACE INTO TABLE field_".$t."_field_copied_over
 		FIELDS  TERMINATED BY ',' ESCAPED BY '*' OPTIONALLY ENCLOSED BY '%'
-			(@uid, @fullname, @sname, @fullname, @mail, @phone, @timezone, @chapter, @created, @1bmail)
+			(@uid, @fullname, @sname, @fullname, @mail, @phone, @timezone, @chapter, @created, @pass, @1bmail)
 		SET
 			entity_type = 'user',
 			bundle = 'user',
@@ -88,7 +90,7 @@ $two_types = array('data', 'revision');
 	//$q = "
 		//LOAD DATA LOCAL INFILE '".$file."' REPLACE INTO TABLE field_".$t."_field_user_public_rsvp
 		//FIELDS  TERMINATED BY ',' ESCAPED BY '*' OPTIONALLY ENCLOSED BY '%'
-			//(@uid, @fullname, @sname, @fullname, @mail, @phone, @timezone, @chapter, @created, @1bmail)
+			//(@uid, @fullname, @sname, @fullname, @mail, @phone, @timezone, @chapter, @created, @pass, @1bmail)
 		//SET
 			//entity_type = 'user',
 			//bundle = 'user',
@@ -103,7 +105,7 @@ $two_types = array('data', 'revision');
 	$q = "
 		LOAD DATA LOCAL INFILE '".$file."' REPLACE INTO TABLE field_".$t."_field_user_subscribed
 		FIELDS  TERMINATED BY ',' ESCAPED BY '*' OPTIONALLY ENCLOSED BY '%'
-			(@uid, @fullname, @sname, @fullname, @mail, @phone, @timezone, @chapter, @created, @1bmail)
+			(@uid, @fullname, @sname, @fullname, @mail, @phone, @timezone, @chapter, @created, @pass, @1bmail)
 		SET
 			entity_type = 'user',
 			bundle = 'user',
@@ -141,16 +143,18 @@ exec("grep 'onebrick.org%\$' < $file > $team");
 $q = "
 	LOAD DATA LOCAL INFILE '".$team."' REPLACE INTO TABLE users
 	FIELDS TERMINATED BY ',' ESCAPED BY '*' OPTIONALLY ENCLOSED BY '%' 
-			(@uid, @fname, @sname, @fullname, @mail, @phone, @timezone, @chapter, @created, @1bmail)
+			(@uid, @fname, @sname, @fullname, @mail, @phone, @timezone, @chapter, @created, @pass, @1bmail)
 		SET 
 			uid = @uid,
 			status = 1,
 			name = @1bmail,
 			mail = @1bmail,
-			init = @1bmail
+			init = @1bmail,
 			timezone = @timezone,
+			signature = @fullname,
 			signature_format = 'filtered_html',
 			created = @created,
-			language = 'und'
+			language = 'und',
+			pass= CONCAT('\$I\$', @pass)
 ";
 db_query($q) or die(db_error());
