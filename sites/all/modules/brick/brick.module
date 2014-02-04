@@ -1002,7 +1002,7 @@ function array_insert($arr, $insert, $position) {
 }
 
 function brick_webform_mail_headers($node, $submission, $email) {
-  watchdog(print_r($node, TRUE));
+  watchdog("info", print_r($node, TRUE));
 }
 
 function brick_webform_submission_presave($node, &$submission) {
