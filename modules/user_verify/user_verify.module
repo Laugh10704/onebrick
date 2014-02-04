@@ -555,10 +555,14 @@ function _user_verify_send_code($data) {
       )
     );
     // Debug state. I just forgot why. ;)
-    if (TRUE || $msg['result']) {
+    if ($msg['result']) {
       drupal_write_record('user_verify', $data, 'uid');
     }
+
+    return $msg['result'];
   }
+
+  return false;
 }
 
 //------------------------------------------------------------------------------

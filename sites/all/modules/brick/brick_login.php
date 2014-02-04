@@ -42,7 +42,7 @@ function brick_create_account($form, $form_state) {
    $pass = $form_state['values']['pw'];
    $fullname = $form_state['values']['fullname'];
    $chapter = $form_state['values']['chapters'];
-   $newsletter = $form_state['values']['newsletter']; 
+   $newsletter = $form_state['values']['newsletter'];
    $mail = $form_state['values']['username'];
    // an admin is creating this user
    $isAdmin = $form_state['values']['is_admin'] == "YES";
@@ -52,62 +52,83 @@ function brick_create_account($form, $form_state) {
    }
 
    $update = array();
-   
-   if (!empty($uid)) {
-       // user that already exists, carried over from signin screen
-       $account = user_load($uid);
+   $conn = null;
+   $transName = "createAccount";
+
+   try {
+     // we don't want anyone writing to the output buffer. Especially lame modules which don't know how to use echo.
+     ob_start();
+     $conn = Database::getConnection();
+     $conn->pushTransaction($transName);
+
+     if (!empty($uid)) {
+         // user that already exists, carried over from signin screen
+         $account = user_load($uid);
+     }
+     else {
+        // check to see if this is a user with no password (old user)
+        $account = load_user($mail);
+     }
+
+     if (!$account) {
+         // brand new user
+         $update['name'] = $mail;
+         $update['mail'] = $mail;
+         $update['init'] = $mail;
+     }
+
+     $update['field_user_fullname'][LANGUAGE_NONE][0]['value'] = $fullname;
+     $update['pass'] = $pass;
+     $update['roles'] = array(DRUPAL_AUTHENTICATED_RID => true);
+     $update['status'] = 0;
+     $update['timezone'] = "America/Los_Angeles";
+     $update['field_user_chapter']['und'][0]['nid'] = $chapter;
+
+     $createdUser = user_save($account, $update);
+
+     // if the user themselves added an account, we switch their user variable here
+     if (!$isAdmin) {
+        $user = $createdUser;
+     }
+
+     if (!empty($createdUser->uid)) {
+          db_update('field_data_field_user_chapter')
+              ->fields(array('field_user_chapter_nid'=>$chapter))
+              ->condition('entity_id', $createdUser->uid, '=')
+              ->execute();
+          db_update('field_data_field_user_subscribed')
+              ->fields(array('field_user_subscribed_value'=>$newsletter))
+              ->condition('entity_id', $createdUser->uid, '=')
+              ->execute();
+     }
+
+     //watchdog("Info", "Logging in User");
+
+     //user_login_finalize();
+
+     //send approval email
+     //_user_mail_notify('register_no_approval_required', $user);
+
+     // requires user_verify module: send a user verification email
+     $udata->uid = $createdUser->uid;
+     drupal_write_record('user_verify', $udata);
+
+     if (_user_verify_send_code($udata)) {
+       $conn->popTransaction($transName);
+     }
+     else {
+       throw new Exception("Failure sending verify email");
+     }
    }
-   else {
-      // check to see if this is a user with no password (old user)
-      $account = load_user($mail);
+   catch (Exception $ex) {
+     ob_end_clean();
+     drupal_set_message("There was an error setting up your account. Please contact us at bugs@onebrick.org");
+     $conn->rollback($transName);
+     return $form;
    }
 
-   if (!$account) {
-       // brand new user
-       $update['name'] = $mail;
-       $update['mail'] = $mail; 
-       $update['init'] = $mail;
-   }
-   
-   $update['field_user_fullname'][LANGUAGE_NONE][0]['value'] = $fullname;
-   $update['pass'] = $pass;
-   $update['roles'] = array(DRUPAL_AUTHENTICATED_RID => true);
-   $update['status'] = 0;
-   $update['timezone'] = "America/Los_Angeles";
-   $update['field_user_chapter']['und'][0]['nid'] = $chapter; 
+   ob_end_clean();
 
-   watchdog("Info", "Saving new user 2");
-    
-   $createdUser = user_save($account, $update);
- 
-   // if the user themselves added an account, we switch their user variable here
-   if (!$isAdmin) {
-      $user = $createdUser;
-   }
-
-   if (!empty($createdUser->uid)) {
-        db_update('field_data_field_user_chapter') 
-            ->fields(array('field_user_chapter_nid'=>$chapter))
-            ->condition('entity_id', $createdUser->uid, '=')
-            ->execute();
-        db_update('field_data_field_user_subscribed') 
-            ->fields(array('field_user_subscribed_value'=>$newsletter))
-            ->condition('entity_id', $createdUser->uid, '=')
-            ->execute();
-   }
-
-   //watchdog("Info", "Logging in User");
-
-   //user_login_finalize();
-   
-   //send approval email
-   //_user_mail_notify('register_no_approval_required', $user);
-
-   // requires user_verify module: send a user verification email
-   $udata->uid = $createdUser->uid;
-   drupal_write_record('user_verify', $udata); 
-   _user_verify_send_code($udata);
-   
    if ($isAdmin) {
      drupal_set_message("Account created. The user will need to verify the account before it can be used.");
      $commands = brick_build_refresh_page_command(); 
