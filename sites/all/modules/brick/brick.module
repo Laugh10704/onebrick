@@ -538,10 +538,10 @@ function role_id_to_group_names($chapterId, $roleId) {
   return array();
 }
 
-function brick_switch_chapter($nid) {
-  watchdog("SWITCH", $nid);
-
-  brick_set_chapter_globals($nid);
+function brick_switch_chapter($nid = 0) {
+  if ($nid > 0) {
+    brick_set_chapter_globals($nid);
+  }
 
   // return to the same page that switched the chapter
   drupal_goto($_SERVER["HTTP_REFERER"]);
