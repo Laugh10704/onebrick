@@ -235,7 +235,7 @@ function brick_create_account_form($form, $form_state, $uid = NULL, $username = 
   );
 
   $chapters = variable_get('brick_chapters');
-  $chapterMap = [];
+  $chapterMap = array();
 
   foreach ($chapters as $chapter) {
     $chapterMap[$chapter['nid']] = $chapter['title'];
