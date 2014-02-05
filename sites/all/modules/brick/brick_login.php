@@ -116,7 +116,7 @@ function brick_create_account($form, $form_state) {
     $udata->uid = $createdUser->uid;
     drupal_write_record('user_verify', $udata);
 
-    if (TRUE) { //)_user_verify_send_code($udata)) {
+    if (_user_verify_send_code($udata)) {
       $conn->popTransaction($transName);
     }
     else {
