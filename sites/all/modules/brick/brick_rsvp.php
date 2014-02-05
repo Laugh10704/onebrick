@@ -215,11 +215,8 @@ function brick_add_rsvp($eid, $uid, $note, $public = 1, $role = 'Volunteer', $as
 
     // synchronization
     $key = 928313;
-    $maxAcquire = 1;
-    $permissions =0666;
-    $autoRelease = 1;
 
-    $semaphore = sem_get($key, $maxAcquire, $permissions, $autoRelease);
+    $semaphore = sem_get($key);
 
     try {
       sem_acquire($semaphore);  //blocking
