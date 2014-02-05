@@ -21,12 +21,15 @@ define("_OB_EMAIL_", "onebrick.org");
 
 if (!function_exists('sem_get')) {
     function sem_get($key, $max_acquire = 1, $perm = 0666, $auto_release = 1) {
+	return (TRUE);
         return fopen(__FILE__ . '.sem.' . $key, 'w+');
     }
     function sem_acquire($sem_id) {
+	return (TRUE);
         return flock($sem_id, LOCK_EX);
     }
     function sem_release($sem_id) {
+	return (TRUE);
         return flock($sem_id, LOCK_UN);
     }
 }
