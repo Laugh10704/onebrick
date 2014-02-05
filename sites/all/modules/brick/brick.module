@@ -19,6 +19,17 @@ define("_GOOGLE_APPS_LOGIN_", "gapps_login@onebrick.org");
 define("_GOOGLE_APPS_PW_", "1_brick!");
 define("_OB_EMAIL_", "onebrick.org");
 
+if (!function_exists('sem_get')) {
+    function sem_get($key, $max_acquire = 1, $perm = 0666, $auto_release = 1) {
+        return fopen(__FILE__ . '.sem.' . $key, 'w+');
+    }
+    function sem_acquire($sem_id) {
+        return flock($sem_id, LOCK_EX);
+    }
+    function sem_release($sem_id) {
+        return flock($sem_id, LOCK_UN);
+    }
+}
 
 // handler for the watchdog to log the stacktrace
 /*
