@@ -44,7 +44,7 @@ function brick_services_resources() {
               'type' => 'bool',
               'description' => 'when restricting by user, return events which occurred in the past. By default these are filtered out',
               'source' => array('param' => 'includePastEvents'),
-              'default' => false,
+              'default' => FALSE,
               'optional' => TRUE
             ),
           ),
@@ -69,6 +69,7 @@ function brick_services_resources() {
               'type' => 'int',
               'description' => 'add a boolean variable indicating whether this user has rsvpd for this event or not',
               'source' => array('param' => 'uid'),
+              'default' => -1,
               'optional' => TRUE
             ),
           ),
@@ -76,7 +77,7 @@ function brick_services_resources() {
       ),
       'targeted_actions' => array(
         'rsvp' => array(
-          'help' => 'Retrieves latest events',
+          'help' => 'Create an rsvp for the given user and event',
           'callback' => 'brick_api_dorsvp',
           'access callback' => 'brick_access',
           'access arguments' => array(),
@@ -96,18 +97,48 @@ function brick_services_resources() {
             ),
           ),
         ),
+        'unrsvp' => array(
+          'help' => 'Delete an rsvp for the given user and event',
+          'callback' => 'brick_api_dounrsvp',
+          'access callback' => 'brick_access',
+          'access arguments' => array(),
+          'access arguments append' => TRUE,
+          'args' => array(
+            array(
+              'name' => 'uid',
+              'type' => 'int',
+              'description' => 'user id',
+              'source' => array('data' => 'uid'),
+            ),
+            array(
+              'name' => 'nid',
+              'type' => 'int',
+              'description' => 'id',
+              'source' => array('path' => 0),
+            ),
+          )
+        )
       ),
     )
   );
   return $api;
 }
 
-function brick_event_retrieve_full($nid, $uid) {
+function brick_event_retrieve_full($nid, $uid = -1) {
 // select the events using a basic query
   $query = db_select('node', 'n')->distinct();
 
+  $uid = intval($uid);
+
   select_basic_event_info($query);
 
+  $query->leftJoin('field_data_field_manager', 'manager', 'n.nid = manager.entity_id');
+  $query->leftJoin('field_revision_field_coordinator', 'coordinator', 'n.nid = coordinator.entity_id');
+  $query->leftJoin('users', 'um', 'manager.field_manager_uid = um.uid');
+  $query->leftJoin('users', 'uc', 'coordinator.field_coordinator_uid = uc.uid');
+
+  $query->addField('um', 'mail', 'manager_email');
+  $query->addField('uc', 'mail', 'coordinator_email');
   $query->fields('bd', array('body_value'));
 
   $query->condition('n.nid', $nid, '=');
@@ -157,6 +188,28 @@ function brick_api_dorsvp($uid, $eid) {
   return create_rsvp_result($RSVP_NO_USER, "INVALID_USER");
 }
 
+function brick_api_dounrsvp($uid, $eid) {
+  static $RSVP_OK = 0;
+  static $RSVP_NOT_FOUND = 1;
+  static $RSVP_NO_USER = -1;
+
+  $usr = user_load($uid);
+
+  if ($usr) {
+    $rsvpId = brick_get_rsvp_id($eid, $uid);
+
+    if (!$rsvpId) {
+      return create_rsvp_result($RSVP_NOT_FOUND, "NOT_FOUND");
+    }
+
+    brick_delete_rsvp($rsvpId);
+
+    return create_rsvp_result($RSVP_OK, "OK");
+  }
+
+  return create_rsvp_result($RSVP_NO_USER, "INVALID_USER");
+}
+
 function create_rsvp_result($cid, $message) {
   $res = new stdClass();
 
@@ -166,7 +219,7 @@ function create_rsvp_result($cid, $message) {
   return $res;
 }
 
-function brick_event_retrieve($chapter, $nitems, $uid, $includePastEvents = false) {
+function brick_event_retrieve($chapter, $nitems, $uid, $includePastEvents = FALSE) {
   $nitems = intval($nitems);
   $chapter = intval($chapter);
   $uid = intval($uid);
@@ -185,11 +238,13 @@ function brick_event_retrieve($chapter, $nitems, $uid, $includePastEvents = fals
   if ($chapter) {
     $query->condition('c.field_event_chapter_nid', $chapter, '=');
   }
-  else if ($uid >= 0) {
-    $query->join('field_data_field_rsvp_event', 'pev', 'n.nid = pev.field_rsvp_event_nid');
-    $query->join('field_data_field_rsvp_person', 'p', 'p.entity_id = pev.entity_id');
+  else {
+    if ($uid >= 0) {
+      $query->join('field_data_field_rsvp_event', 'pev', 'n.nid = pev.field_rsvp_event_nid');
+      $query->join('field_data_field_rsvp_person', 'p', 'p.entity_id = pev.entity_id');
 
-    $query->condition('p.field_rsvp_person_uid', $uid, '=');
+      $query->condition('p.field_rsvp_person_uid', $uid, '=');
+    }
   }
 
   if (!$includePastEvents) {

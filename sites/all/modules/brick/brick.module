@@ -176,6 +176,17 @@ function brick_get_user_name($user) {
   return $fullname;
 }
 
+function brick_hashcode($key)
+{
+  $hashCode = 0;
+
+  for ($i = 0; $i < strlen($key); $i++) {
+    $hashCode = ($hashCode * 31 + ord($key[$i])) % PHP_INT_MAX;
+  }
+
+  return $hashCode;
+}
+
 // redirect messages intended for a onebrick group to all users within that group
 function brick_mail_alter(&$message) {
   $users = NULL;
