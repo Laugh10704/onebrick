@@ -558,7 +558,8 @@ function brick_switch_chapter($nid = 0) {
   }
 
   // return to the same page that switched the chapter
-  drupal_goto($_SERVER["HTTP_REFERER"]);
+  //drupal_goto($_SERVER["HTTP_REFERER"]);
+  drupal_goto(); // Goto to the home page for the new chapter
 }
 
 /*
@@ -576,7 +577,7 @@ function brick_is_user_in_home_chapter() {
 function brick_load_user_home_chapter() {
   global $user;
 
-  $chapter_nid = 101; // default to chapter 101 - San Francisco
+  //$chapter_nid = 101; // default to chapter 101 - San Francisco
 
   if ($user && $user->uid) {
     $loadedUser = user_load($user->uid);
@@ -591,7 +592,6 @@ function brick_load_user_home_chapter() {
 
 function brick_set_chapter_globals($chapter_nid) {
   $_SESSION['CHAPTER'] = $chapter_nid;
-  $_SESSION['HEADER'] = 'header-sv.png'; // debug
 
   $q = "SELECT field_chapter_craigslist_stub_value
 	  FROM field_data_field_chapter_craigslist_stub
@@ -631,9 +631,9 @@ function brick_set_chapter_globals($chapter_nid) {
   }
   $_SESSION['TIMEZONE'] = $TZ;
 
-  if (function_exists('drupal_goto')) {
-    drupal_goto("");
-  }
+  //if (function_exists('drupal_goto')) {
+  // drupal_goto("");
+  //}
 }
 
 /* 
@@ -656,8 +656,7 @@ function brick_get_chapter_name() {
   $q = "
                 SELECT name 
 		FROM CHAPTER_DETAILS
-		WHERE chapter_id = 101;
-        ";
+		WHERE chapter_id = " . $chapter_id . ";";
   $r = db_query($q);
   return $r->fetchField();
 }

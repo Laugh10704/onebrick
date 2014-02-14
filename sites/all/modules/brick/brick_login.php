@@ -1,6 +1,25 @@
 <?php
 // $Id: brick_login.php,v 1.25 2013/12/18 03:09:17 jordan Exp crc $
 
+function brick_check_password($password, $user) {
+  // Wrap user_check_password to check for imported md5 hashes.
+
+  $hash_type = substr($user->pass, 0, 3);
+  $stored_hash = substr($user->pass, 3);
+
+  if ($hash_type == '$I$') {
+    // The users account has a hash imported from the old systems
+    $hash = md5($password);
+    if ($stored_hash == $hash) {
+      // The password matches, update the stored hash and fall through to the normal check/login code
+      $user->pass = user_hash_password($password);
+      user_save($user);
+    }
+  }
+
+  return (user_check_password($password, $user));
+}
+
 function brick_colorbox_form_access() {
   return TRUE;
 }
@@ -192,16 +211,16 @@ function brick_create_account_form($form, $form_state, $uid = NULL, $username = 
 
   // if this isn't a full user, show them a message
   if ($isGuestUser) {
-    if ($loadedUser->field_copied_over[LANGUAGE_NONE][0]['value'] == TRUE) {
-      $form['create']['message'] = array(
-        '#markup' => "<div class='messages status'><b>We've recently updated our system!</b> Please provide a new password to login. Sorry for the inconvienence!</div>"
-      );
-    }
-    else {
-      $form['create']['message'] = array(
+    //if ($loadedUser->field_copied_over[LANGUAGE_NONE][0]['value'] == TRUE) {
+    //$form['create']['message'] = array(
+    //'#markup' => "<div class='messages status'><b>We've recently updated our system!</b> Please provide a new password to login. Sorry for the inconvienence!</div>"
+    //);
+    //}
+    //else {
+    $form['create']['message'] = array(
         '#markup' => "<div class='messages status'><b>Welcome Back!</b> Please provide a password to continue logging in with</div>"
       );
-    }
+    //}
   }
 
   $form['create']['username'] = array(
@@ -581,7 +600,7 @@ function brick_login_ajax($form, $form_state) {
       }
       else {
         require_once DRUPAL_ROOT . '/' . variable_get('password_inc', 'includes/password.inc');
-        if (user_check_password($password, $loadedUser)) {
+        if (brick_check_password($password, $loadedUser)) {
           $user = $loadedUser;
 
           user_login_finalize();
