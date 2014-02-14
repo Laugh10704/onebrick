@@ -56,8 +56,17 @@ function brick_create_account($form, $form_state) {
   $update = array();
   $conn = NULL;
   $transName = "createAccount";
+  $baseVal = 100000000;
+
+  // give me a number representation for this email
+  $mailId = $baseVal + brick_hashcode($mail) % $baseVal;
+
+  // make sure we have exclusive eaccess to this user
+  $semaphore = sem_get($mailId);
 
   try {
+    sem_acquire($semaphore);
+
     // we don't want anyone writing to the output buffer. Especially lame modules which don't know how to use echo.
     ob_start();
     $conn = Database::getConnection();
@@ -70,6 +79,9 @@ function brick_create_account($form, $form_state) {
     else {
       // check to see if this is a user with no password (old user)
       $account = load_user($mail);
+      if ($account->pass) {
+        throw new Exception("User already exists");
+      }
     }
 
     if (!$account) {
@@ -122,7 +134,10 @@ function brick_create_account($form, $form_state) {
     else {
       throw new Exception("Failure sending verify email");
     }
+
+    sem_release($semaphore);
   } catch (Exception $ex) {
+    sem_release($semaphore);
     ob_end_clean();
     drupal_set_message("There was an error setting up your account. Please contact us at bugs@onebrick.org");
     $conn->rollback($transName);
