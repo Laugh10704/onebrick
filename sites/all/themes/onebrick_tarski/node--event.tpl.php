@@ -172,6 +172,8 @@ td.title {
 
 	   if(isset($organization->body)) {
              print($organization->body['und'][0]['value']);
+	   } else {
+             print($organization->title['und'][0]['value']);
 	   }
 	}
 	?>
