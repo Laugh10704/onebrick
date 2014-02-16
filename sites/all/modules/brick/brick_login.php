@@ -557,7 +557,7 @@ function brick_login_form($form, $form_state) {
 
 
   $form['signupArea']['signupHeader'] = array(
-    '#markup' => "<h3 class='loginHeader' id='signup'>Sign Up</h3>"
+    '#markup' => "<h3 class='loginHeader' id='signup'>Create Account</h3>"
   );
   $form['signupArea']['signupLinkContainer'] = array(
     '#type' => "container",

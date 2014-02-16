@@ -87,9 +87,9 @@
      		jQuery('#newUserLink').colorbox({inline:true, href:"#currentPopupForm", transition:"elastic", width:"350", title: "Sign Up", opacity: "0.50", reposition: false});
                 
 		var addVolunteerMenuItem = jQuery("li .expanded .leaf a[title=\"Add a new volunteer\"]");
-		addVolunteerMenuItem.colorbox({inline:true, href:"#currentPopupForm", transition:"none", width:"350", title: "Sign Up", opacity: "0.50", reposition: false});
-                addVolunteerMenuItem.click(function() {
-			resetPopupForm('#initialSignupForm', 'formWrapper');
+          addVolunteerMenuItem.colorbox({inline: true, href: "#currentPopupForm", transition: "none", width: "350", title: "Add Volunteer", opacity: "0.50", reposition: false});
+          addVolunteerMenuItem.click(function () {
+            resetPopupForm('#initialSignupForm', 'formWrapper');
 			// mark that this is an admin adding a volunteer - not the person themselves
 			jQuery("#brick-create-account-form #isAdminSubmit").val("YES");
 		});
@@ -101,9 +101,9 @@
 		function toSignupForm() {
 			resetPopupForm('#initialSignupForm', 'formWrapper');
 			jQuery.colorbox.resize();
-			jQuery("#cboxTitle").text("Sign Up");
-		}
-	</script>
+          jQuery("#cboxTitle").text("Create Account");
+        }
+        </script>
 
 	<div id='loginArea'>
 		<div class="loginSpacer"></div>
@@ -115,10 +115,10 @@
 				$fullname = $loadedUser ->field_user_fullname['und'][0]['safe_value'];
 				$names= explode(" ", $fullname);
 
-				echo "<div class='welcomeMessage'>Hey " . "<a href='/user'>" . $names[0]. "!</a></div>";
-				echo "<a id='logoutLink' href=\"/user/logout\">Log out</a>";
-			}
-			else {
+              echo "<div class='welcomeMessage'>Welcome " . "<a href='/user'>" . $names[0] . "!</a></div>";
+              echo "<a id='logoutLink' href=\"/user/logout?destination=/\">Log out</a>";
+            }
+            else {
 		?>
 			<div>
 			<a id="loginLink" onclick="resetPopupForm('#initialForm', 'formWrapper')">Login</a>
