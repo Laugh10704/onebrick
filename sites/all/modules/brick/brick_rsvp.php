@@ -394,8 +394,8 @@ function brick_rsvp_form($form, $form_state, $nid) {
         '#required' => FALSE,
         '#default_value' => TRUE
     );
-    
-    $rsvpAgree = "By submitting my RSVP, I acknowledge that I am over 18 years of age. 
+
+  $rsvpAgree = "By submitting my RSVP, I acknowledge that I am over 21 years of age.
         I have read, and agree to <a href='/waiver' 
         target='_blank'>​One Brick's Waiver, Assumption of Risk and Release.​</a>​";
     
