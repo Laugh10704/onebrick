@@ -116,7 +116,7 @@
 				$names= explode(" ", $fullname);
 
               echo "<div class='welcomeMessage'>Welcome " . "<a href='/user'>" . $names[0] . "!</a></div>";
-              echo "<a id='logoutLink' href=\"/user/logout?destination=/\">Log out</a>"; // Jump to a visible page
+              echo "<a id='logoutLink' href=\"/user/logout?destination=/\">Log out</a>";
             }
             else {
 		?>
