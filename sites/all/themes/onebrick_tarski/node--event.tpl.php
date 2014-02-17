@@ -170,9 +170,11 @@ td.title {
 	 if(isset($node->field_event_organization)) {
 	   $organization = node_load($node->field_event_organization['und']['0']['nid']);
 
+	   $text = "";
 	   if(isset($organization->body)) {
-             print($organization->body['und'][0]['value']);
+	     $text = $organization->body['und'][0]['value'];
 	   }
+	   print($text);
 	}
 	?>
     </td>
