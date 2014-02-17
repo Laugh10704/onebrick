@@ -67,77 +67,79 @@
  */
 ?>
 
-<style type="text/css"> 
-#header-wrapper #header {
-  background: url("<?php print brick_chapter_header(); ?>") no-repeat 0 0;
-}
+<style type="text/css">
+  #header-wrapper #header {
+    background: url("<?php print brick_chapter_header(); ?>") no-repeat 0 0;
+  }
 </style>
 
-<?php if ( !(theme_get_setting('header_image') == 'none' && !$site_name && !$site_slogan) ): ?>
+<?php if (!(theme_get_setting('header_image') == 'none' && !$site_name && !$site_slogan)): ?>
   <div id="header-wrapper">
     <div id="header">
 
-        <script language="javascript">
-		jQuery(document).ready(function(){
-     		setupPopupForm("#initialForm");
-     		setupPopupForm("#initialSignupForm");
+      <script language="javascript">
+        jQuery(document).ready(function () {
+          setupPopupForm("#initialForm");
+          setupPopupForm("#initialSignupForm");
 
-     		jQuery('#loginLink').colorbox({inline:true, href:"#currentPopupForm", transition:"none", width:"350", title: "Login", opacity: "0.50", reposition: false});
-     		jQuery('#signupLink').colorbox({inline:true, href:"#currentPopupForm", transition:"none", width:"350", title: "Sign Up", opacity: "0.50", reposition: false});
-     		jQuery('#newUserLink').colorbox({inline:true, href:"#currentPopupForm", transition:"elastic", width:"350", title: "Sign Up", opacity: "0.50", reposition: false});
-                
-		var addVolunteerMenuItem = jQuery("li .expanded .leaf a[title=\"Add a new volunteer\"]");
+          jQuery('#loginLink').colorbox({inline: true, href: "#currentPopupForm", transition: "none", width: "350", title: "Login", opacity: "0.50", reposition: false});
+          jQuery('#signupLink').colorbox({inline: true, href: "#currentPopupForm", transition: "none", width: "350", title: "Sign Up", opacity: "0.50", reposition: false});
+          jQuery('#newUserLink').colorbox({inline: true, href: "#currentPopupForm", transition: "elastic", width: "350", title: "Sign Up", opacity: "0.50", reposition: false});
+
+          var addVolunteerMenuItem = jQuery("li .expanded .leaf a[title=\"Add a new volunteer\"]");
           addVolunteerMenuItem.colorbox({inline: true, href: "#currentPopupForm", transition: "none", width: "350", title: "Add Volunteer", opacity: "0.50", reposition: false});
           addVolunteerMenuItem.click(function () {
             resetPopupForm('#initialSignupForm', 'formWrapper');
-			// mark that this is an admin adding a volunteer - not the person themselves
-			jQuery("#brick-create-account-form #isAdminSubmit").val("YES");
-		});
+            // mark that this is an admin adding a volunteer - not the person themselves
+            jQuery("#brick-create-account-form #isAdminSubmit").val("YES");
+          });
 
-    	 	// Also make the banner a link
-    		jQuery('#header').wrap('<a href="/" />');
-	})
+          // Also make the banner a link
+          jQuery('#header').wrap('<a href="/" />');
+        })
 
-		function toSignupForm() {
-			resetPopupForm('#initialSignupForm', 'formWrapper');
-			jQuery.colorbox.resize();
+        function toSignupForm() {
+          resetPopupForm('#initialSignupForm', 'formWrapper');
+          jQuery.colorbox.resize();
           jQuery("#cboxTitle").text("Create Account");
         }
-        </script>
+      </script>
 
-	<div id='loginArea'>
-		<div class="loginSpacer"></div>
-		<?php
-			if (user_is_logged_in()) {
-				global $user;
+      <div id='loginArea'>
+        <div class="loginSpacer"></div>
+        <?php
+        if (user_is_logged_in()) {
+          global $user;
 
-				$loadedUser = user_load($user->uid);
-				$fullname = $loadedUser ->field_user_fullname['und'][0]['safe_value'];
-				$names= explode(" ", $fullname);
+          $loadedUser = user_load($user->uid);
+          $fullname = $loadedUser->field_user_fullname['und'][0]['safe_value'];
+          $names = explode(" ", $fullname);
 
-              echo "<div class='welcomeMessage'>Welcome " . "<a href='/user'>" . $names[0] . "!</a></div>";
-              echo "<a id='logoutLink' href=\"/user/logout?destination=/\">Log out</a>";
-            }
-            else {
-		?>
-			<div>
-			<a id="loginLink" onclick="resetPopupForm('#initialForm', 'formWrapper')">Login</a>
-			</div>
-			<a id="signupLink" onclick="resetPopupForm('#initialSignupForm', 'formWrapper')">Sign Up</a>
-			<script language='javascript'>
-				jQuery('a:contains("My One Brick")').css('display', 'none');
-			</script>
-		<?php
-			}
-		?>
-	</div>
-	<div style="display:none">
-	<div id="initialForm">
-	      <?php $form = drupal_get_form('brick_login_form'); print drupal_render($form); ?>
-	</div>
-	<div id="initialSignupForm">
-      	      <?php $form = drupal_get_form('brick_create_account_form'); print drupal_render($form); ?>
-	</div>
+          echo "<div class='welcomeMessage'>Welcome " . "<a href='/user'>" . $names[0] . "!</a></div>";
+          echo "<a id='logoutLink' href=\"/user/logout?destination=<front>\">Log out</a>";
+        }
+        else {
+          ?>
+          <div>
+            <a id="loginLink" onclick="resetPopupForm('#initialForm', 'formWrapper')">Login</a>
+          </div>
+          <a id="signupLink" onclick="resetPopupForm('#initialSignupForm', 'formWrapper')">Sign Up</a>
+          <script language='javascript'>
+            jQuery('a:contains("My One Brick")').css('display', 'none');
+          </script>
+        <?php
+        }
+        ?>
+      </div>
+      <div style="display:none">
+        <div id="initialForm">
+          <?php $form = drupal_get_form('brick_login_form');
+          print drupal_render($form); ?>
+        </div>
+        <div id="initialSignupForm">
+          <?php $form = drupal_get_form('brick_create_account_form');
+          print drupal_render($form); ?>
+        </div>
       </div>
 
       <?php if ($site_name || $site_slogan): ?>
@@ -145,22 +147,26 @@
           <?php if ($site_name): ?>
             <?php if ($title): ?>
               <div id="site-name"<?php if (!$site_slogan): ?> class="no-slogan"<?php endif; ?>>
-                <a href="<?php print $front_page; ?>" title="<?php print t('Home'); ?>" rel="home"><?php print $site_name; ?></a>
+                <a href="<?php print $front_page; ?>" title="<?php print t('Home'); ?>"
+                   rel="home"><?php print $site_name; ?></a>
               </div>
             <?php else: /* Use h1 when the content title is empty */ ?>
               <h1 id="site-name"<?php if (!$site_slogan): ?> class="no-slogan"<?php endif; ?>>
-                <a href="<?php print $front_page; ?>" title="<?php print t('Home'); ?>" rel="home"><?php print $site_name; ?></a>
+                <a href="<?php print $front_page; ?>" title="<?php print t('Home'); ?>"
+                   rel="home"><?php print $site_name; ?></a>
               </h1>
             <?php endif; ?>
           <?php endif; ?>
 
           <?php if ($site_slogan): ?>
-            <div id="site-slogan"<?php if (!$site_name): ?> class="no-site-name"<?php endif; ?>><?php print $site_slogan; ?></div>
+            <div
+              id="site-slogan"<?php if (!$site_name): ?> class="no-site-name"<?php endif; ?>><?php print $site_slogan; ?></div>
           <?php endif; ?>
         </div> <!-- /#branding -->
       <?php endif; ?>
 
-    </div> <!-- /#header -->
+    </div>
+    <!-- /#header -->
   </div> <!-- /#header-wrapper -->
 <?php endif; ?>
 
@@ -175,20 +181,22 @@
 <div id="main-wrapper">
   <div id="main">
 
-      <div id="main-columns" class="clearfix">
-        <?php
-        $column = 0;
-        for ($n = -2; $n <= 2; $n++) {
-          foreach (array('content', 'sidebar-first', 'sidebar-second') as $a) {
-            if ($weight[$a] == $n) {
-              include 'page-' . $a .'.tpl.php';
-            }
+    <div id="main-columns" class="clearfix">
+      <?php
+      $column = 0;
+      for ($n = -2; $n <= 2; $n++) {
+        foreach (array('content', 'sidebar-first', 'sidebar-second') as $a) {
+          if ($weight[$a] == $n) {
+            include 'page-' . $a . '.tpl.php';
           }
         }
-        ?>
-      </div> <!-- /#main-columns -->
+      }
+      ?>
+    </div>
+    <!-- /#main-columns -->
 
-  </div> <!-- /#main -->
+  </div>
+  <!-- /#main -->
 </div> <!-- /#main-wrapper -->
 
 <div id="footer-wrapper">
@@ -198,25 +206,29 @@
       <h2 class="element-invisible"><?php print t('Footer'); ?></h2>
       <div id="footer-columns" class="columns-<?php print $footer_columns_number; ?>">
         <?php if ($page['footer_column_first']): ?>
-          <div id="footer-column-first" class="column first<?php if (!$page['footer_column_second'] && !$page['footer_column_third'] && !$page['footer_column_fourth']): ?> last<?php endif; ?>">
+          <div id="footer-column-first"
+               class="column first<?php if (!$page['footer_column_second'] && !$page['footer_column_third'] && !$page['footer_column_fourth']): ?> last<?php endif; ?>">
             <?php print render($page['footer_column_first']); ?>
           </div> <!-- /#footer-column-first -->
         <?php endif; ?>
 
         <?php if ($page['footer_column_second']): ?>
-          <div id="footer-column-second" class="column <?php if (!$page['footer_column_first']): ?> first<?php endif; ?><?php if (!$page['footer_column_third'] && !$page['footer_column_fourth']): ?> last<?php endif; ?>">
+          <div id="footer-column-second"
+               class="column <?php if (!$page['footer_column_first']): ?> first<?php endif; ?><?php if (!$page['footer_column_third'] && !$page['footer_column_fourth']): ?> last<?php endif; ?>">
             <?php print render($page['footer_column_second']); ?>
           </div> <!-- /#footer-column-second -->
         <?php endif; ?>
 
         <?php if ($page['footer_column_third']): ?>
-          <div id="footer-column-third" class="column <?php if (!$page['footer_column_first'] && !$page['footer_column_second']): ?> first<?php endif; ?><?php if (!$page['footer_column_fourth']): ?> last<?php endif; ?>">
+          <div id="footer-column-third"
+               class="column <?php if (!$page['footer_column_first'] && !$page['footer_column_second']): ?> first<?php endif; ?><?php if (!$page['footer_column_fourth']): ?> last<?php endif; ?>">
             <?php print render($page['footer_column_third']); ?>
           </div> <!-- /#footer-column-third -->
         <?php endif; ?>
 
         <?php if ($page['footer_column_fourth']): ?>
-          <div id="footer-column-fourth" class="column last <?php if (!$page['footer_column_first'] && !$page['footer_column_second'] && !$page['footer_column_third']): ?> first<?php endif; ?>">
+          <div id="footer-column-fourth"
+               class="column last <?php if (!$page['footer_column_first'] && !$page['footer_column_second'] && !$page['footer_column_third']): ?> first<?php endif; ?>">
             <?php print render($page['footer_column_fourth']); ?>
           </div> <!-- /#footer-column-fourth -->
         <?php endif; ?>
@@ -226,7 +238,9 @@
     <div id="closure">
 
       <div id="info" style="display: none">
-        <span id="copyright"><?php print theme_get_setting('copyright_information'); ?></span>Theme by <a href="http://www.kiwi-themes.com">Kiwi Drupal Themes</a>, based on <a href="http://tarskitheme.com/about/">Tarski</a> project.
+        <span id="copyright"><?php print theme_get_setting('copyright_information'); ?></span>Theme by <a
+          href="http://www.kiwi-themes.com">Kiwi Drupal Themes</a>, based on <a href="http://tarskitheme.com/about/">Tarski</a>
+        project.
       </div>
 
       <?php if ($page['footer_menu']): ?>
@@ -235,9 +249,11 @@
         </div> <!-- /#footer-menu -->
       <?php endif; ?>
 
-    </div> <!-- /#closure -->
+    </div>
+    <!-- /#closure -->
 
-    </div> <!-- /#footer -->
-  </div> <!-- /#footer-wrapper -->
+  </div>
+  <!-- /#footer -->
+</div> <!-- /#footer-wrapper -->
 
 
