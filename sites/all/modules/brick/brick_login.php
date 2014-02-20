@@ -32,7 +32,7 @@ function brick_create_guest_account($emailAddr, $name) {
   $newUser->status = TRUE;
   $newUser->field_user_fullname[LANGUAGE_NONE][0]['value'] = $name;
   $newUser->name = $emailAddr;
-  $newUser->pass = 'OneBrick';
+  $newUser->pass = '';
   $newUser->mail = $emailAddr;
   $newUser->status = 1;
   $newUser->timezone = "America/New_York";
@@ -98,8 +98,13 @@ function brick_create_account($form, $form_state) {
     else {
       // check to see if this is a user with no password (old user)
       $account = load_user($mail);
-      if ($account->pass) {
-        throw new Exception("User already exists");
+
+      if (brick_is_full_user($account)) {
+        sem_release($semaphore);
+        ob_end_clean();
+        drupal_set_message("The email '$mail' is already in use");
+        $conn->rollback($transName);
+        return $form;
       }
     }
 
@@ -114,15 +119,11 @@ function brick_create_account($form, $form_state) {
     $update['pass'] = $pass;
     $update['roles'] = array(DRUPAL_AUTHENTICATED_RID => TRUE);
     $update['status'] = 0;
+    $update['is_new'] = 0;
     $update['timezone'] = "America/Los_Angeles";
     $update['field_user_chapter']['und'][0]['nid'] = $chapter;
 
     $createdUser = user_save($account, $update);
-
-    // if the user themselves added an account, we switch their user variable here
-    if (!$isAdmin) {
-      $user = $createdUser;
-    }
 
     if (!empty($createdUser->uid)) {
       db_update('field_data_field_user_chapter')
@@ -155,6 +156,12 @@ function brick_create_account($form, $form_state) {
     }
 
     sem_release($semaphore);
+
+    // if the user themselves added an account, we switch their user variable here
+    if (!$isAdmin) {
+      $user = $createdUser;
+    }
+
   } catch (Exception $ex) {
     sem_release($semaphore);
     ob_end_clean();
