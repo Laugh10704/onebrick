@@ -127,7 +127,7 @@ td.title {
 
 <div id="Main Event Info" style="padding-top: 10px;padding-bottom: 10px">
   <?php
-  print ("<H3>Event Descrption: </H3>");
+  print ("<H3>Event Description: </H3>");
   print($node->body['und'][0]['value']);
 
   if($node->field_tasks) {
