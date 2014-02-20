@@ -34,22 +34,6 @@ if (!function_exists('sem_get')) {
     }
 }
 
-// handler for the watchdog to log the stacktrace
-/*
-function brick_watchdog(array $log_entry) {
-  error_log("Message: " . $log_entry['message'] . "\n");
-
-  $message = "";
- 
-  foreach (debug_backtrace() as $value) {
-    $message = $message . "line: " . $value['line'] . "\n";
-    $message = $message . "function: " . $value['function'] . "\n";
-  }
-
-  error_log("Stacktrace:" . $message);
-}
-*/
-
 function brick_views_api() {
   return array(
     'api' => 3,
@@ -1033,17 +1017,14 @@ function brick_webform_submission_presave($node, &$submission) {
   $emails = "";
   $url = $_SERVER['HTTP_REFERER'];
   $parts = explode('/', $url);
-  $eventid = end($parts);
+  $pageid = end($parts);
 
 
-  $nd = node_load($eventid);
-
-  watchdog("info", $url);
-  watchdog("info", print_r($nd, TRUE));
+  $nd = node_load($pageid);
 
   if (isset($nd) && isset($nd->type) && $nd->type === 'event') {
     // For events we automatically set the TO list and an initial value for the SUBJECT
-    if ($nd->field_reconciled['und'][0]['value']) {
+    if (isset($nd->field_reconciled) && $nd->field_reconciled && $nd->field_reconciled['und'][0]['value']) {
       $r = brick_get_attendee_list($nd);
     }
     else {
@@ -1055,19 +1036,19 @@ function brick_webform_submission_presave($node, &$submission) {
       $emails = implode(",", $users);
       $submission->data[10]['value'][0] = $emails;
     }
+    $submission->data[10]['value'][0] = "v3emails@onebrick.org"; // override for testing
+    drupal_set_message('Emails redirected to v3emails@onebrick.org during testing', 'warning');
 
   }
+  else if (isset($nd) && $nd->title == 'Send Message') {
+    $submission->data[7]['value'][0] = "v3emails@onebrick.org"; // override for testing
+    drupal_set_message('Emails redirected to v3emails@onebrick.org during testing', 'warning');
 
-  watchdog("node->webform['redirect_url']", print_r($node->webform['redirect_url'], TRUE));
-  watchdog("node->webform", print_r($node->webform, TRUE));
-//watchdog("node->webform['submitbutton']", print_r($node->webform['submitbutton'], true));
-  watchdog("webform submission_presave():submission->data", print_r($submission->data, TRUE));
+  }
 
   if ($node->webform['redirect_url'] === "%HTTP_REFERER") {
     $node->webform['redirect_url'] = $url; // redirect back to the page we came from
   }
-
-  //$submission->data[10]['value'][0] = "Clive+presave@onebrick.org";// override for testing
 }
 
 function brick_html_head_alter(&$head_elements) {

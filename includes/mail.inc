@@ -94,7 +94,7 @@ define('MAIL_LINE_ENDINGS', isset($_SERVER['WINDIR']) || strpos($_SERVER['SERVER
  * @param $to
  *   The e-mail address or addresses where the message will be sent to. The
  *   formatting of this string will be validated with the
- *   @link http://php.net/manual/filter.filters.validate.php PHP e-mail validation filter. @endlink
+ * @link http://php.net/manual/filter.filters.validate.php PHP e-mail validation filter. @endlink
  *   Some examples are:
  *   - user@example.com
  *   - user@example.com, anotheruser@example.com
@@ -124,24 +124,24 @@ function drupal_mail($module, $key, $to, $language, $params = array(), $from = N
 
   // Bundle up the variables into a structured array for altering.
   $message = array(
-    'id'       => $module . '_' . $key,
-    'module'   => $module,
-    'key'      => $key,
-    'to'       => $to,
-    'from'     => isset($from) ? $from : $default_from,
+    'id' => $module . '_' . $key,
+    'module' => $module,
+    'key' => $key,
+    'to' => $to,
+    'from' => isset($from) ? $from : $default_from,
     'language' => $language,
-    'params'   => $params,
-    'send'     => TRUE,
-    'subject'  => '',
-    'body'     => array()
+    'params' => $params,
+    'send' => TRUE,
+    'subject' => '',
+    'body' => array()
   );
 
   // Build the default headers
   $headers = array(
-    'MIME-Version'              => '1.0',
-    'Content-Type'              => 'text/plain; charset=UTF-8; format=flowed; delsp=yes',
+    'MIME-Version' => '1.0',
+    'Content-Type' => 'text/plain; charset=UTF-8; format=flowed; delsp=yes',
     'Content-Transfer-Encoding' => '8Bit',
-    'X-Mailer'                  => 'Drupal'
+    'X-Mailer' => 'Drupal'
   );
   if ($default_from) {
     // To prevent e-mail from looking like spam, the addresses in the Sender and
@@ -170,11 +170,6 @@ function drupal_mail($module, $key, $to, $language, $params = array(), $from = N
   // Format the message body.
   $message = $system->format($message);
 
-  // Temporarily disable sending emails until we go live
-  drupal_set_message(t("e-mail to " . $message['to'] . " suppressed during testing."), 'warning');
-  $message['result'] = NULL;
-  $send = FALSE;
-
   // Optionally send e-mail.
   if ($send) {
     // The original caller requested sending. Sending was canceled by one or
@@ -188,7 +183,10 @@ function drupal_mail($module, $key, $to, $language, $params = array(), $from = N
       $message['result'] = $system->mail($message);
       // Log errors.
       if (!$message['result']) {
-        watchdog('mail', 'Error sending e-mail (from %from to %to).', array('%from' => $message['from'], '%to' => $message['to']), WATCHDOG_ERROR);
+        watchdog('mail', 'Error sending e-mail (from %from to %to).', array(
+          '%from' => $message['from'],
+          '%to' => $message['to']
+        ), WATCHDOG_ERROR);
         drupal_set_message(t('Unable to send e-mail. Contact the site administrator if the problem persists.'), 'error');
       }
     }
@@ -261,7 +259,7 @@ function drupal_mail($module, $key, $to, $language, $params = array(), $from = N
  * @return MailSystemInterface
  */
 function drupal_mail_system($module, $key) {
-  $instances = &drupal_static(__FUNCTION__, array());
+  $instances = & drupal_static(__FUNCTION__, array());
 
   $id = $module . '_' . $key;
 
@@ -285,7 +283,10 @@ function drupal_mail_system($module, $key) {
       $instances[$class] = new $class();
     }
     else {
-      throw new Exception(t('Class %class does not implement interface %interface', array('%class' => $class, '%interface' => 'MailSystemInterface')));
+      throw new Exception(t('Class %class does not implement interface %interface', array(
+        '%class' => $class,
+        '%interface' => 'MailSystemInterface'
+      )));
     }
   }
   return $instances[$class];
@@ -304,7 +305,7 @@ interface MailSystemInterface {
    * @return
    *   The formatted $message.
    */
-   public function format(array $message);
+  public function format(array $message);
 
   /**
    * Send a message composed by drupal_mail().
@@ -315,7 +316,7 @@ interface MailSystemInterface {
    *     'user_password_reset'.
    *   - to: The mail address or addresses where the message will be sent to.
    *     The formatting of this string will be validated with the
-   *     @link http://php.net/manual/filter.filters.validate.php PHP e-mail validation filter. @endlink
+   * @link http://php.net/manual/filter.filters.validate.php PHP e-mail validation filter. @endlink
    *     Some examples are:
    *     - user@example.com
    *     - user@example.com, anotheruser@example.com
@@ -333,7 +334,7 @@ interface MailSystemInterface {
    * @return
    *   TRUE if the mail was successfully accepted for delivery, otherwise FALSE.
    */
-   public function mail(array $message);
+  public function mail(array $message);
 }
 
 /**
@@ -408,7 +409,29 @@ function drupal_html_to_text($string, $allowed_tags = NULL) {
   // Cache list of supported tags.
   static $supported_tags;
   if (empty($supported_tags)) {
-    $supported_tags = array('a', 'em', 'i', 'strong', 'b', 'br', 'p', 'blockquote', 'ul', 'ol', 'li', 'dl', 'dt', 'dd', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'hr');
+    $supported_tags = array(
+      'a',
+      'em',
+      'i',
+      'strong',
+      'b',
+      'br',
+      'p',
+      'blockquote',
+      'ul',
+      'ol',
+      'li',
+      'dl',
+      'dt',
+      'dd',
+      'h1',
+      'h2',
+      'h3',
+      'h4',
+      'h5',
+      'h6',
+      'hr'
+    );
   }
 
   // Make sure only supported tags are kept.
@@ -489,7 +512,7 @@ function drupal_html_to_text($string, $allowed_tags = NULL) {
             $output = rtrim($output, "> \n") . "\"\n";
             $chunk = ''; // Ensure blank new-line.
           }
-          // Fall-through
+        // Fall-through
         case '/li':
         case '/dd':
           array_pop($indent);
