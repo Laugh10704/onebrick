@@ -794,6 +794,22 @@ function brick_manager_access($user = NULL) {
   return user_has_role('Coordinator', $user) || user_has_role('Manager', $user);
 }
 
+// Allow access if node is a particular type and user and a particular role.
+function brick_access_type_role($nid, $type, $roles) {
+  global $user;
+
+  $node = node_load($nid);
+  if ($type != $node->type) {
+    return FALSE;
+  }
+
+  foreach ($roles as $role) {
+    if (user_has_role($role, $user)) {
+      return TRUE;
+    }
+  }
+}
+
 function user_has_role($role, $user = NULL) {
   if ($user == NULL) {
     global $user;
