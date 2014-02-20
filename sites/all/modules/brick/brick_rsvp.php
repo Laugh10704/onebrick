@@ -499,7 +499,7 @@ function brick_rsvp_ajax($form, $form_state) {
       form_set_error('email', "You have already RSVPd for this event");
     }
     else if (!check_user_verified($emailUser)) {
-      form_set_error('email', "You'll need to verify your account before you can RSVP");
+      form_set_error('email', "You'll need to verify your email before you can continue to RSVP");
     }
     else if (check_if_user_needs_login($emailUser)) {
       if ($form_state['values']['password']) {
@@ -513,9 +513,10 @@ function brick_rsvp_ajax($form, $form_state) {
       }
     }
   }
-
-  if (!$name) {
-    form_set_error('name', 'Please provide a name');
+  else {
+    if (!$name) {
+      form_set_error('name', 'Please provide a name');
+    }
   }
 
   if (form_get_errors()) {

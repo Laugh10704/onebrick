@@ -240,7 +240,7 @@ function brick_create_account_form($form, $form_state, $uid = NULL, $username = 
     //}
     //else {
     $form['create']['message'] = array(
-        '#markup' => "<div class='messages status'><b>Welcome Back!</b> Please provide a password to continue logging in with</div>"
+        '#markup' => "<div class='messages status'><b>Welcome Back!</b> Please provide a password to login with from now on</div>"
       );
     //}
   }
