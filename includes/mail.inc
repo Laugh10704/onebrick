@@ -170,6 +170,11 @@ function drupal_mail($module, $key, $to, $language, $params = array(), $from = N
   // Format the message body.
   $message = $system->format($message);
 
+  // Temporarily disable sending emails until we go live
+  drupal_set_message(t("e-mail to " . $message['to'] . " suppressed during testing."), 'warning');
+  $message['result'] = NULL;
+  $send = FALSE;
+
   // Optionally send e-mail.
   if ($send) {
     // The original caller requested sending. Sending was canceled by one or
