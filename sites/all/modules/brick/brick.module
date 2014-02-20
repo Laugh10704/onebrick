@@ -433,10 +433,12 @@ function brick_user_presave(&$edit, $account, $category) {
     $newRoleNames = role_ids_to_group_names($edit['field_user_chapter']['und'][0]['nid'], $newRoles);
   }
 
+  $mapGroupsDiff = TRUE;
 
   if (array_key_exists('mail', $edit)) {
     if (!property_exists($account, "mail")) {
       brick_map_user_to_google_groups($edit['mail'], NULL, $newRoleNames);
+      $mapGroupsDiff = FALSE;
     }
 
     // if the email changed, we remove ALL groups for the old email and add ALL groups for the new one
@@ -447,10 +449,12 @@ function brick_user_presave(&$edit, $account, $category) {
         // email changed, switch groups
         brick_map_user_to_google_groups($account->mail, $existingRoleNames, NULL);
         brick_map_user_to_google_groups($edit['mail'], NULL, $newRoleNames);
+        $mapGroupsDiff = FALSE;
       }
     }
   }
-  else {
+
+  if ($mapGroupsDiff) {
     // use the above data to calculate which names were added and which were removed
     $removedRoleNames = array_diff($existingRoleNames, $newRoleNames);
     $addedRoleNames = array_diff($newRoleNames, $existingRoleNames);
