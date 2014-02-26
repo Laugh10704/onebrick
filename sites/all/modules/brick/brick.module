@@ -968,10 +968,8 @@ function brick_field_formatter_info() {
   );
 }
 
-
 function brick_boot() {
   if (empty($_SESSION['HEADER'])) {
-    //watchdog("BOOT", $_SESSION);
     brick_set_chapter_globals(101); // The first time someone visits the site we set them to the SF chapter.
   }
 }

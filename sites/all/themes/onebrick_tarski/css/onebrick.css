@@ -80,6 +80,26 @@ h1, h2, h3 {
   max-height: 150px;
 }
 
+#header-wrapper #header {
+    background: url('/sites/default/files/banner_bg.png') #43AFE4;
+    position: relative;
+}
+
+#header-wrapper #bgImageLeft {
+    min-width: 830px;
+    max-width: 830px;
+    min-height: 120px;
+    max-height: 150px;
+    position: absolute;
+    top: 0;
+}
+
+#header-wrapper #bgImageRight {
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+
 /* css for the 'login' area in the banner */
 
 #loginArea .loginSpacer {
@@ -88,7 +108,7 @@ h1, h2, h3 {
 
 #loginArea {
     float:right;
-    background: url('/sites/default/files/banner_bg.png') #43AFE4;
+    /*background: url('/sites/default/files/banner_bg.png') #43AFE4;*/
     height: 100px;
     text-align:  right;
     padding-right:  20px;
@@ -351,7 +371,7 @@ div.gallery-processed {
 /* 1st level */
 /* modify to match onebrick.org -jk */
 #header-menu {
-  width: 600 px;
+  width: 600px;
   background-color: #ea8324;
   margin-top: 2px;
 }
