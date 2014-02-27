@@ -2,12 +2,12 @@
 require("include.php");
 require("open_v3.php");
 
-$file ="data/staff.csv"; 
+$file = "data/staff.csv";
 
 $now = time();
 
 $q = "
-	LOAD DATA LOCAL INFILE '".$file."' REPLACE INTO TABLE users_roles
+	LOAD DATA LOCAL INFILE '" . $file . "' REPLACE INTO TABLE users_roles
 	FIELDS TERMINATED BY ',' ESCAPED BY '*' 
 			(@uid, @rid)
 		SET 
@@ -17,23 +17,23 @@ $q = "
 db_query($q) or die(db_error());
 
 ## Make them guest_users too.
-$q = "
-	LOAD DATA LOCAL INFILE '".$file."' REPLACE INTO TABLE users_roles
-	FIELDS TERMINATED BY ',' ESCAPED BY '*' 
-			(@uid, @rid)
-		SET 
-			uid = @uid,
-			rid = 11
-";
-db_query($q) or die(db_error());
+#$q = "
+#	LOAD DATA LOCAL INFILE '".$file."' REPLACE INTO TABLE users_roles
+#	FIELDS TERMINATED BY ',' ESCAPED BY '*' 
+#			(@uid, @rid)
+#		SET 
+#			uid = @uid,
+#			rid = 11
+#";
+# db_query($q) or die(db_error());
 
 $two_types = array('data', 'revision');
 foreach ($two_types as $t) {
 
-	db_query($q) or die(db_error());
-	//All users are private volunteers until THEY set they visibility as public
-	$q = "
-	LOAD DATA LOCAL INFILE '".$file."' REPLACE INTO TABLE field_".$t."_field_public
+  db_query($q) or die(db_error());
+  //All users are private volunteers until THEY set they visibility as public
+  $q = "
+	LOAD DATA LOCAL INFILE '" . $file . "' REPLACE INTO TABLE field_" . $t . "_field_public
 	FIELDS TERMINATED BY ',' ESCAPED BY '*' 
 			(@uid, @rid)
 		SET 
@@ -44,6 +44,6 @@ foreach ($two_types as $t) {
 			language = 'und',
 			field_public_value=1
 	";
-	db_query($q) or die(db_error());
+  db_query($q) or die(db_error());
 }
 
