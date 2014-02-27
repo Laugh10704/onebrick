@@ -41,9 +41,13 @@ function brick_upload_photo_form($form, &$form_state, $nid = null) {
 
   $form += (array)$result;
 
-  $form['submit'] = array(
+  $form['submitarea'] = array(
+    '#type' => "container",
+  );
+
+  $form['submitarea']['submit'] = array(
     '#type' => "submit",
-    '#value' => t('Save')
+    '#value' => t('Save Changes to Photos')
   );
 
   $form['nid'] = array(
