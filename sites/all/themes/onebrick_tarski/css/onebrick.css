@@ -267,6 +267,10 @@ table img {
    font-size: 13px;
 }
 
+.page-event-gallery .views-view-grid {
+    width: 0;
+}
+
 /* hide the ugly green arrows. Keep the other stuff */
 .galleryformatter-greenarrows .gallery-thumbs .arrow, .galleryformatter-greenarrows .gallery-thumbs .wrapper, .galleryformatter-greenarrows .gallery-thumbs li.active a, .galleryformatter-greenarrows .gallery-thumbs li a:hover, .galleryformatter-greenarrows .view-full {
    background: none !important;
