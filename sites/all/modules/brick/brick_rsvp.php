@@ -555,7 +555,7 @@ function brick_rsvp_ajax($form, $form_state) {
   //trigger_action('brick_rsvp', $event_node);
   //send_rsvp_emails($event_node, $name, $note);
 
-  drupal_set_message(t('Thanks! You have succesfully RSVP\'d for this event.'), 'status');
+  drupal_set_message(t('Thanks! You have succesfully RSVP\'d for this event. We\'ll see you there!'), 'status');
 
   $commands = brick_build_refresh_page_command();
 

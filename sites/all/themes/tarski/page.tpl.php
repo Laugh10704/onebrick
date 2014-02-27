@@ -68,7 +68,7 @@
 ?>
 
 <style type="text/css">
-  #header-wrapper #header {
+  #header-wrapper #bgImageLeft {
     background: url("<?php print brick_chapter_header(); ?>") no-repeat 0 0;
   }
 </style>
@@ -105,32 +105,42 @@
         }
       </script>
 
-      <div id='loginArea'>
-        <div class="loginSpacer"></div>
-        <?php
-        if (user_is_logged_in()) {
-          global $user;
+      <!-- aligned to left side -->
+      <div id="bgImageLeft">
 
-          $loadedUser = user_load($user->uid);
-          $fullname = $loadedUser->field_user_fullname['und'][0]['safe_value'];
-          $names = explode(" ", $fullname);
-
-          echo "<div class='welcomeMessage'>Welcome " . "<a href='/user'>" . $names[0] . "!</a></div>";
-          echo "<a id='logoutLink' href=\"/user/logout?destination=<front>\">Log out</a>";
-        }
-        else {
-          ?>
-          <div>
-            <a id="loginLink" onclick="resetPopupForm('#initialForm', 'formWrapper')">Login</a>
-          </div>
-          <a id="signupLink" onclick="resetPopupForm('#initialSignupForm', 'formWrapper')">Sign Up</a>
-          <script language='javascript'>
-            jQuery('a:contains("My One Brick")').css('display', 'none');
-          </script>
-        <?php
-        }
-        ?>
       </div>
+
+      <!-- aligned to rightSide side -->
+      <div id="bgImageRight">
+        <div id='loginArea'>
+          <div class="loginSpacer"></div>
+          <?php
+          if (user_is_logged_in()) {
+            global $user;
+
+            $loadedUser = user_load($user->uid);
+            $fullname = $loadedUser->field_user_fullname['und'][0]['safe_value'];
+            $names = explode(" ", $fullname);
+            $chapterId = $_SESSION['CHAPTER'];
+
+            echo "<div class='welcomeMessage'>Welcome " . "<a href='/user'>" . $names[0] . "!</a></div>";
+            echo "<a id='logoutLink' href=\"/user/logout?destination=/chapters/$chapterId\">Log out</a>";
+          }
+          else {
+            ?>
+            <div>
+              <a id="loginLink" onclick="resetPopupForm('#initialForm', 'formWrapper')">Login</a>
+            </div>
+            <a id="signupLink" onclick="resetPopupForm('#initialSignupForm', 'formWrapper')">Sign Up</a>
+            <script language='javascript'>
+              jQuery('a:contains("My One Brick")').css('display', 'none');
+            </script>
+          <?php
+          }
+          ?>
+        </div>
+      </div>
+
       <div style="display:none">
         <div id="initialForm">
           <?php $form = drupal_get_form('brick_login_form');

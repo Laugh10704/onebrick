@@ -124,7 +124,7 @@ function brick_menu_local_tasks_alter(&$data, $router_item, $root_path) {
     $type = $node->type;
     if ($type == 'event') {
       $tabs = $data['tabs'][0]['output'];
-      // Add a tab linking to roster page
+      // Add a tab linking to roster and photo page
       $newtab = array(
         array(
           '#theme' => 'menu_local_task',
@@ -134,6 +134,18 @@ function brick_menu_local_tasks_alter(&$data, $router_item, $root_path) {
             'localized_options' => array(
               'attributes' => array(
                 'title' => t('Edit the Roster for this event')
+              ),
+            ),
+          ),
+        ),
+        array(
+          '#theme' => 'menu_local_task',
+          '#link' => array(
+            'title' => t('Edit Photos'),
+            'href' => 'photos/' . $nid,
+            'localized_options' => array(
+              'attributes' => array(
+                'title' => t('Edit the Photos for this event')
               ),
             ),
           ),
@@ -433,10 +445,12 @@ function brick_user_presave(&$edit, $account, $category) {
     $newRoleNames = role_ids_to_group_names($edit['field_user_chapter']['und'][0]['nid'], $newRoles);
   }
 
+  $mapGroupsDiff = TRUE;
 
   if (array_key_exists('mail', $edit)) {
     if (!property_exists($account, "mail")) {
       brick_map_user_to_google_groups($edit['mail'], NULL, $newRoleNames);
+      $mapGroupsDiff = FALSE;
     }
 
     // if the email changed, we remove ALL groups for the old email and add ALL groups for the new one
@@ -447,10 +461,12 @@ function brick_user_presave(&$edit, $account, $category) {
         // email changed, switch groups
         brick_map_user_to_google_groups($account->mail, $existingRoleNames, NULL);
         brick_map_user_to_google_groups($edit['mail'], NULL, $newRoleNames);
+        $mapGroupsDiff = FALSE;
       }
     }
   }
-  else {
+
+  if ($mapGroupsDiff) {
     // use the above data to calculate which names were added and which were removed
     $removedRoleNames = array_diff($existingRoleNames, $newRoleNames);
     $addedRoleNames = array_diff($newRoleNames, $existingRoleNames);
@@ -496,22 +512,21 @@ function brick_entity_presave($entity, $type) {
     $x = 0;
     $coordinators = array();
 
-    $managerCount = count($entity->field_manager['und']);
+    if (array_key_exists('und', $entity->field_manager) && array_key_exists('und', $entity->field_coordinator)) {
+      $managerCount = count($entity->field_manager['und']);
 
-    for ($x = 0; $x < $managerCount; $x++) {
-      $managers[] = $entity->field_manager['und'][$x]['uid'];
+      for ($x = 0; $x < $managerCount; $x++) {
+        $managers[] = $entity->field_manager['und'][$x]['uid'];
+      }
+
+      $coordinatorCount = count($entity->field_coordinator['und']);
+
+      for ($x = 0; $x < $coordinatorCount; $x++) {
+        $coordinators[] = $entity->field_coordinator['und'][$x]['uid'];
+      }
+
+      brick_remap_manager_coordinator_rsvps($entity, $managers, $coordinators);
     }
-
-    $coordinatorCount = count($entity->field_coordinator['und']);
-
-    for ($x = 0; $x < $coordinatorCount; $x++) {
-      $coordinators[] = $entity->field_coordinator['und'][$x]['uid'];
-    }
-
-    brick_remap_manager_coordinator_rsvps($entity, $managers, $coordinators);
-
-    watchdog("info", print_r($managers, TRUE));
-    watchdog("info", print_r($coordinators, TRUE));
   }
 }
 
@@ -793,6 +808,22 @@ function brick_manager_access($user = NULL) {
   return user_has_role('Coordinator', $user) || user_has_role('Manager', $user);
 }
 
+// Allow access if node is a particular type and user and a particular role.
+function brick_access_type_role($nid, $type, $roles) {
+  global $user;
+
+  $node = node_load($nid);
+  if ($type != $node->type) {
+    return FALSE;
+  }
+
+  foreach ($roles as $role) {
+    if (user_has_role($role, $user)) {
+      return TRUE;
+    }
+  }
+}
+
 function user_has_role($role, $user = NULL) {
   if ($user == NULL) {
     global $user;
@@ -951,10 +982,8 @@ function brick_field_formatter_info() {
   );
 }
 
-
 function brick_boot() {
   if (empty($_SESSION['HEADER'])) {
-    //watchdog("BOOT", $_SESSION);
     brick_set_chapter_globals(101); // The first time someone visits the site we set them to the SF chapter.
   }
 }

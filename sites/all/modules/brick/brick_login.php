@@ -62,7 +62,7 @@ function brick_create_account($form, $form_state) {
   $uid = $form_state['values']['uid'];
   $pass = $form_state['values']['pw'];
   $fullname = $form_state['values']['fullname'];
-  $chapter = $form_state['values']['chapters'];
+  $chapter = intval($form_state['values']['chapters']);
   $newsletter = $form_state['values']['newsletter'];
   $mail = $form_state['values']['username'];
   // an admin is creating this user
@@ -119,7 +119,6 @@ function brick_create_account($form, $form_state) {
     $update['pass'] = $pass;
     $update['roles'] = array(DRUPAL_AUTHENTICATED_RID => TRUE);
     $update['status'] = 0;
-    $update['is_new'] = 0;
     $update['timezone'] = "America/Los_Angeles";
     $update['field_user_chapter']['und'][0]['nid'] = $chapter;
 

@@ -80,6 +80,26 @@ h1, h2, h3 {
   max-height: 150px;
 }
 
+#header-wrapper #header {
+    background: url('/sites/default/files/banner_bg.png') #43AFE4;
+    position: relative;
+}
+
+#header-wrapper #bgImageLeft {
+    min-width: 830px;
+    max-width: 830px;
+    min-height: 120px;
+    max-height: 150px;
+    position: absolute;
+    top: 0;
+}
+
+#header-wrapper #bgImageRight {
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+
 /* css for the 'login' area in the banner */
 
 #loginArea .loginSpacer {
@@ -88,7 +108,7 @@ h1, h2, h3 {
 
 #loginArea {
     float:right;
-    background: url('/sites/default/files/banner_bg.png') #43AFE4;
+    /*background: url('/sites/default/files/banner_bg.png') #43AFE4;*/
     height: 100px;
     text-align:  right;
     padding-right:  20px;
@@ -247,6 +267,10 @@ table img {
    font-size: 13px;
 }
 
+.page-event-gallery .views-view-grid td {
+    float: left;
+}
+
 /* hide the ugly green arrows. Keep the other stuff */
 .galleryformatter-greenarrows .gallery-thumbs .arrow, .galleryformatter-greenarrows .gallery-thumbs .wrapper, .galleryformatter-greenarrows .gallery-thumbs li.active a, .galleryformatter-greenarrows .gallery-thumbs li a:hover, .galleryformatter-greenarrows .view-full {
    background: none !important;
@@ -351,7 +375,7 @@ div.gallery-processed {
 /* 1st level */
 /* modify to match onebrick.org -jk */
 #header-menu {
-  width: 600 px;
+  width: 600px;
   background-color: #ea8324;
   margin-top: 2px;
 }
@@ -696,6 +720,14 @@ font-size: large;
 
 #brick-rsvp-form textarea {
     height: 100px !important;
+}
+
+#brick-upload-photo-form .field-type-image, .field-name-body img {
+    float: none;
+}
+
+#brick-upload-photo-form .tabledrag-handle {
+    float: left;
 }
 
 .loginHeader {

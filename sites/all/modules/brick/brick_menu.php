@@ -83,7 +83,8 @@ function brick_menu() {
       'title' => 'Promote',
       'page callback' => 'brick_promote',
       'page arguments' => array(1),
-      'access callback' => 'brick_manager_access',
+      'access callback' => 'brick_access_type_role',
+      'access arguments' => array(1, 'event', array('Manager', 'Coordinator')),
       'weight' => 20,
       'type' => MENU_LOCAL_TASK
   );
@@ -92,7 +93,8 @@ function brick_menu() {
       'title' => 'Roster',
       'page callback' => 'brick_gen_roster',
       'page arguments' => array(1),
-      'access callback' => 'brick_manager_access',
+      'access callback' => 'brick_access_type_role',
+      'access arguments' => array(1, 'event', array('Manager', 'Coordinator')),
       'weight' => 20,
       'type' => MENU_LOCAL_TASK
   );
