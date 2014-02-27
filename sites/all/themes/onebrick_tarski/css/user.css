@@ -40,9 +40,7 @@ padding:5px;border:1px solid #ccc;height:auto; width: 410px;
 }
 
 
-.field-name-field-user-phone,
 .field-name-field-user-public-rsvp,
-.field-name-field-user-fullname,
 .password-strength
 {
 	display:none;
