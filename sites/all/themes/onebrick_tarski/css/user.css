@@ -24,10 +24,8 @@ top : 90px;
 	font-weight: bold;
 }
 
-.page-user h3,
-.page-user dl,
-.page-user dt,
-.page-user dd {
+# Removes header that says "History"
+.page-user h3 {
 	display:none;
 }
 
