@@ -385,6 +385,7 @@ function brick_optin_add($uid, $eid, $role, $preference, $createdWhenAssigned = 
 	node_save($node);
 }
 
+// returns true if the availability was successfully changed, false if no change occurred.
 function brick_optin_set_availability($date, $count, $uid = null) {
 	global $user;
 
@@ -405,8 +406,12 @@ function brick_optin_set_availability($date, $count, $uid = null) {
 	if ($res->rowCount() > 0) {
 		$nid = $res->fetchColumn();
 		$node = node_load($nid);
-		$node->field_availability_count['und'][0]['value'] = $count;
-		node_save($node);
+        if ($node->field_availability_count['und'][0]['value'] != $count) {
+          $node->field_availability_count['und'][0]['value'] = $count;
+          node_save($node);
+          return true;
+        }
+        return false;
 	} else {
 		$node = new StdClass();
 		$node->type = 'availability';
@@ -419,6 +424,7 @@ function brick_optin_set_availability($date, $count, $uid = null) {
 
 		$node = node_submit($node);
 		node_save($node);
+        return true;
 	}
 }
 
