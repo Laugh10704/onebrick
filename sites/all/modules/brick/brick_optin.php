@@ -336,7 +336,7 @@ function brick_optin_set_preference($uid, $eid, $role, $preference) {
 function brick_optin_remove($uid, $eid, $role) {
 	$res = brick_optin_get_existing($uid, $eid, $role);
 	if ($res->rowCount() > 0) {
-		node_delete($res->fetchCol());
+		node_delete($res->fetchColumn());
 	}
 }
 

@@ -291,11 +291,11 @@ class brick_field_handler_optin extends views_handler_field {
     $avail = $form_state['values'][$this->options['id']]['avail'];
 
     if (brick_optin_set_availability($parsedDate, $avail, $uid)) {
-      drupal_set_message(t('Availability updated'));
+      drupal_set_message(t('Availability updated to @num event(s)', array('@num' => $avail)));
     }
 
     if ($updates > 0) {
-      drupal_set_message(t('Updated @num optin settings.', array('@num' => $updates)));
+      drupal_set_message(t('Updated @num optin setting(s).', array('@num' => $updates)));
     }
   }
 }
