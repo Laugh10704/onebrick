@@ -26,17 +26,21 @@ function brick_colorbox_form_access() {
 
 function brick_create_guest_account($emailAddr, $name) {
   $roles = user_roles();
+  brick_create_account_impl($emailAddr, $name, array(array_search('guest_user', $roles) => 'guest_user'));
+}
 
+function brick_create_account_impl($emailAddr, $name, $roles) {
   $newUser = new StdClass();
   $newUser->is_new = TRUE;
   $newUser->status = TRUE;
   $newUser->field_user_fullname[LANGUAGE_NONE][0]['value'] = $name;
+  $newUser->signature = $name;
   $newUser->name = $emailAddr;
   $newUser->pass = '';
   $newUser->mail = $emailAddr;
   $newUser->status = 1;
   $newUser->timezone = "America/New_York";
-  $newUser->roles = array(array_search('guest_user', $roles) => 'guest_user');
+  $newUser->roles = $roles;
   $newUser->init = $emailAddr;
   user_save($newUser);
 

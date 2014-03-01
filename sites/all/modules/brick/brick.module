@@ -4,6 +4,7 @@
 include 'brick_event.php';
 include 'brick_login.php';
 include 'brick_rsvp.php';
+include 'brick_org.php';
 include 'brick_optin.php';
 include 'brick_menu.php';
 include 'brick_utils.php';
