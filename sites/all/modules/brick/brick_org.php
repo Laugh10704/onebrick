@@ -84,9 +84,19 @@ function brick_add_organization_contact_form_submit($form, &$form_state) {
   $uid = $form_state['values']['field_org_contact_person']['und'][0]['uid'];
 
   if (!$uid) {
+    $mail = $form_state['values']['email'];
+    $user = load_user($mail);
     $roles = user_roles();
-    $user = brick_create_account_impl($form_state['values']['email'], $form_state['values']['name'],
-      array(array_search('organization_contact', $roles) => 'organization_contact'));
+    $role_array = array(array_search('organization_contact', $roles) => 'organization_contact');
+
+    if ($user) {
+      // make sure the user has the organizational contact role
+      $user->roles = array_merge($user->roles, $role_array);
+      user_save($user);
+    }
+    else {
+      $user = brick_create_account_impl($mail, $form_state['values']['name'], $role_array);
+    }
     $uid = $user->uid;
   }
   else {
