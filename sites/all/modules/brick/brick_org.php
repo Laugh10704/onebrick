@@ -61,8 +61,7 @@ function brick_add_organization_contact_form_validate($form, $form_state) {
   if (!form_get_errors()) {
     $existing = $form_state['values']['field_org_contact_person']['und'][0]['uid'];
     $name = $form_state['values']['name'];
-    $email = $form_state['values']['phone'];
-    $phone = $form_state['values']['phone'];
+    $email = $form_state['values']['email'];
     if (!$existing) {
       if (!$name) {
         form_set_error('name', "Missing contact name");
