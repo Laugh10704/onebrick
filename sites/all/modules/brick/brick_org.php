@@ -87,7 +87,7 @@ function brick_add_organization_contact_form_submit($form, &$form_state) {
     $mail = $form_state['values']['email'];
     $user = load_user($mail);
     $roles = user_roles();
-    $role_array = array(array_search('organization_contact', $roles) => 'organization_contact');
+    $role_array = array(array_search('Organization Contact', $roles) => 'Organization Contact');
 
     if ($user) {
       // make sure the user has the organizational contact role
