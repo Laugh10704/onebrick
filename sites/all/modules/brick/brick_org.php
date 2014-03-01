@@ -73,7 +73,22 @@ function brick_add_organization_contact_form_validate($form, $form_state) {
         form_set_error('email', "Missing contact email");
       }
     }
+
+    if (org_contact_exists(intval($form_state['values']['nid']), $form_state['values']['email'])) {
+      form_set_error('email', t("The contact '@contact' already exists for this organization", array("@contact" => $form_state['values']['email'])));
+    }
   }
+}
+
+function org_contact_exists($orgid, $email) {
+  $res = db_query('SELECT usr.uid
+    FROM field_data_field_org_contact_organization
+    JOIN field_data_field_org_contact_person using (entity_id)
+    JOIN users usr on usr.uid = field_data_field_org_contact_person.field_org_contact_person_uid
+    WHERE usr.name = :email AND field_org_contact_organization_nid = :orgid',
+    array(':email' => $email, ':orgid' => $orgid));
+
+  return $res->rowCount() > 0;
 }
 
 function brick_add_organization_contact_form_submit($form, &$form_state) {
@@ -120,7 +135,7 @@ function brick_add_organization_contact_form_submit($form, &$form_state) {
   $node = node_submit($node);
   node_save($node);
 
-  drupal_set_message("Contact Added");
+  drupal_set_message(t("@name added as a contact", array("@name" => $form_state['values']['name'])));
 
   return $form;
 }
