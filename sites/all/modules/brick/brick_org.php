@@ -87,14 +87,14 @@ function brick_add_organization_contact_form_submit($form, &$form_state) {
     $mail = $form_state['values']['email'];
     $user = load_user($mail);
     $roles = user_roles();
-    $role_array = array(array_search('Organization Contact', $roles) => 'Organization Contact');
 
     if ($user) {
       // make sure the user has the organizational contact role
-      $user->roles = array_merge($user->roles, $role_array);
-      user_save($user);
+      user_multiple_role_edit(array($user->uid), 'add_role', array_search('Organization Contact', $roles));
     }
     else {
+      $role_array = array(array_search('Organization Contact', $roles) => 'Organization Contact');
+
       $user = brick_create_account_impl($mail, $form_state['values']['name'], $role_array);
     }
     $uid = $user->uid;
@@ -107,6 +107,8 @@ function brick_add_organization_contact_form_submit($form, &$form_state) {
     $user->field_user_phone[LANGUAGE_NONE][0]['value'] = $form_state['values']['phone'];
     user_save($user);
   }
+
+  // make sure the contact doesn't already exist
 
   $node = new StdClass();
   $node->type = 'organization_contact';
