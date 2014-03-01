@@ -368,6 +368,10 @@ div.gallery-processed {
     cursor: pointer;
 }
 
+.pane-organization-contacts {
+    margin-bottom: 50px;
+}
+
 #brick-add-organization-contact-form  {
     background-color: #EEEEEE;
     border: solid gray 1px;
