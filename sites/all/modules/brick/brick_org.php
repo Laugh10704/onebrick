@@ -43,7 +43,7 @@ function brick_add_organization_contact_form($form, &$form_state, $nid) {
 
   $form['group1']['title'] = array(
     '#type' => "textfield",
-    '#title' => t('User\'s organization title:'),
+    '#title' => t('Contact\'s organization title:'),
     '#required' => TRUE
   );
 
