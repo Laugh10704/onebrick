@@ -68,7 +68,9 @@ function onebrick_tarski_html_head_alter(&$head_elements) {
 function onebrick_tarski_username_alter(&$name, $account) {
   // Display the user's name instead of email address
   $user = user_load($account->uid);
-  $name = brick_format_name($user->field_user_fullname['und'][0]['safe_value']);
+  if (isset($user->field_user_fullname['und'])) {
+    $name = brick_format_name($user->field_user_fullname['und'][0]['safe_value']);
+  }
 }
 
 function tarski_menu_tree($variables) {
