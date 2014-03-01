@@ -368,6 +368,39 @@ div.gallery-processed {
     cursor: pointer;
 }
 
+#brick-add-organization-contact-form  {
+    background-color: #EEEEEE;
+    border: solid gray 1px;
+    height: 220px;
+    width: 650px;
+}
+
+#brick-add-organization-contact-form input {
+    width: 250px;
+}
+
+#brick-add-organization-contact-form #edit-txt {
+    text-align: center;
+}
+
+#brick-add-organization-contact-form .form-item-title {
+}
+
+#brick-add-organization-contact-form #edit-submit {
+    margin-top: 50px;
+}
+
+
+#brick-add-organization-contact-form #edit-group0 {
+    float:left;
+    margin-left: 40px;
+}
+
+#brick-add-organization-contact-form #edit-group1 {
+    float:right;
+    margin-right: 50px;
+}
+
 /**
  * Header menu
  */

@@ -3,48 +3,51 @@
 function brick_add_organization_contact_form($form, &$form_state, $nid) {
   $form['#parents']=array();
 
+  $form['group0'] = array(
+    '#type' => "container"
+  );
+
   $field = field_info_field("field_org_contact_person");
   $instance = field_info_instance('node', "field_org_contact_person", "organization_contact");
   $result = field_default_form('node', null, $field, $instance, LANGUAGE_NONE, array(), $form, $form_state);
   $result['field_org_contact_person']['und'][0]['uid']['#title'] = "Search for existing contact:";
 
-  $form += (array)$result;
+  $form['group0'] += (array)$result;
 
-  $form['txt'] = array(
+  $form['group0']['txt'] = array(
     '#type' => "item",
     '#markup' => '<b>OR</b>',
   );
 
-  $form['name'] = array(
+  $form['group0']['name'] = array(
     '#type' => "textfield",
     '#title' => t('Contact\'s Name:'),
     '#required' => FALSE
   );
 
-  $form['email'] = array(
+  $form['group0']['email'] = array(
     '#type' => "textfield",
     '#title' => t('Contact\'s Email:'),
     '#required' => FALSE
   );
 
-  $form['sep'] = array(
-    '#type' => "item",
-    '#markup' => '<hr/>',
-  );
+  $form['group1'] = array(
+     '#type' => "container"
+   );
 
-  $form['phone'] = array(
+  $form['group1']['phone'] = array(
     '#type' => "textfield",
     '#title' => t('Contact\'s Phone (Not Required):'),
     '#required' => FALSE
   );
 
-  $form['title'] = array(
+  $form['group1']['title'] = array(
     '#type' => "textfield",
     '#title' => t('User\'s organization title:'),
     '#required' => TRUE
   );
 
-  $form['submit'] = array(
+  $form['group1']['submit'] = array(
     '#type' => "submit",
     '#value' => t('Add New Contact'),
   );
