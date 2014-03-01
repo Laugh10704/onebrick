@@ -57,6 +57,14 @@ function onebrick_tarski_css_alter(&$css) {
   unset($css['misc/vertical-tabs-rtl.css']);
 }
 
+function onebrick_tarski_html_head_alter(&$head_elements) {
+  // Remove metadata
+  unset($head_elements['system_meta_generator']);
+  
+  // Remove metadata that exposes user's email address.
+  unset($head_elements['rdf_user_username']);  
+}
+
 function tarski_menu_tree($variables) {
   return '<ul class="menu">' . $variables['tree'] . '</ul><div class="divForClear"></div>';
 }
