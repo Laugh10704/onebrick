@@ -1,9 +1,7 @@
 <?php
 
-function brick_add_organization_contact_form($form, &$form_state) {
+function brick_add_organization_contact_form($form, &$form_state, $nid) {
   $form['#parents']=array();
-
-  $nid = 5884;
 
   $field = field_info_field("field_org_contact_person");
   $instance = field_info_instance('node', "field_org_contact_person", "organization_contact");
