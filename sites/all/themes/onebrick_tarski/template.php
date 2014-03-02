@@ -57,6 +57,22 @@ function onebrick_tarski_css_alter(&$css) {
   unset($css['misc/vertical-tabs-rtl.css']);
 }
 
+function onebrick_tarski_html_head_alter(&$head_elements) {
+  // Remove metadata
+  unset($head_elements['system_meta_generator']);
+  
+  // Remove metadata that exposes user's email address.
+  unset($head_elements['rdf_user_username']);  
+}
+
+function onebrick_tarski_username_alter(&$name, $account) {
+  // Display the user's name instead of email address
+  $user = user_load($account->uid);
+  if (isset($user->field_user_fullname['und'])) {
+    $name = brick_format_name($user->field_user_fullname['und'][0]['safe_value']);
+  }
+}
+
 function tarski_menu_tree($variables) {
   return '<ul class="menu">' . $variables['tree'] . '</ul><div class="divForClear"></div>';
 }
