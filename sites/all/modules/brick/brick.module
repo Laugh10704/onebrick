@@ -990,42 +990,46 @@ function brick_boot() {
 }
 
 function brick_form_alter(&$form, &$form_state, $form_id) {
-  if ($form_id == 'views_form_calendar_calendar') {
-    // add a submit button to the top of the form
-    $form["submit-top"] = $form['actions']['submit'];
-    $form["submit-top"]['#weight'] = -500;
-    $form["submit-top"]['#value'] = t('Save Optins');
-  }
+  switch ($form_id) {
+    case 'views_form_calendar_calendar':
+      // add a submit button to the top of the form
+      $form["submit-top"] = $form['actions']['submit'];
+      $form["submit-top"]['#weight'] = -500;
+      $form["submit-top"]['#value'] = t('Save Optins');
+      break;
+    case 'event_node_form':
+      $form['field_event_chapter']['und'][0]['nid']['#default_value'] = brick_current_chapter();
 
-  if ($form_id == 'event_node_form') {
-    $form['field_event_chapter']['und'][0]['nid']['#default_value'] = brick_current_chapter();
+      if (@$_REQUEST['copy_id']) {
+        $cn = node_load($_REQUEST['copy_id']);
 
-    if (@$_REQUEST['copy_id']) {
-      $cn = node_load($_REQUEST['copy_id']);
-
-      // copy over the node values into the "default" values of create form
-      $form['title']['#default_value'] = @$cn->title;
-      $form['body']['und'][0]['#default_value'] = @$cn->body['und'][0]['value'];
-      $form['body']['und'][0]['summary']['#default_value'] = @$cn->body['und'][0]['summary'];
-      $form['field_event_max_rsvp_capacity']['und'][0]['value']['#default_value'] = @$cn->field_event_max_rsvp_capacity['und'][0]['value'];
-      $form['field_event_requested']['und'][0]['value']['#default_value'] = @$cn->field_event_requested['und'][0]['value'];
-      $form['field_event_organization']['und'][0]['nid']['#default_value'] = @$cn->field_event_organization['und'][0]['nid'];
-      $form['field_event_site']['und'][0]['nid']['#default_value'] = @$cn->field_event_site['und'][0]['nid'];
-      $form['field_manager']['und'][0]['uid']['#default_value'] = @$cn->field_manager['und'][0]['uid'];
-      $form['field_coordinator']['und'][0]['uid']['#default_value'] = @$cn->field_coordinator['und'][0]['uid'];
-      $form['field_event_type']['und'][0]['#default_value'] = @$cn->field_event_type['und'][0]['value'];
-      $form['field_where_meet']['und'][0]['value']['#default_value'] = @$cn->field_where_meet['und'][0]['value'];
-      $form['field_should_know']['und'][0]['value']['#default_value'] = @$cn->field_should_know['und'][0]['value'];
-      $form['field_tasks']['und'][0]['value']['#default_value'] = @$cn->field_tasks['und'][0]['value'];
-    }
-  }
-  if ($form_id == 'user_profile_form') {
-  }
-  // remove the save button if you dont have permission to submit this form
-  if ($form_id == 'views_form_people_attending_block') {
-    if (!brick_staff_access()) {
-      $form['actions']['submit'] = NULL;
-    }
+        // copy over the node values into the "default" values of create form
+        $form['title']['#default_value'] = @$cn->title;
+        $form['body']['und'][0]['#default_value'] = @$cn->body['und'][0]['value'];
+        $form['body']['und'][0]['summary']['#default_value'] = @$cn->body['und'][0]['summary'];
+        $form['field_event_max_rsvp_capacity']['und'][0]['value']['#default_value'] = @$cn->field_event_max_rsvp_capacity['und'][0]['value'];
+        $form['field_event_requested']['und'][0]['value']['#default_value'] = @$cn->field_event_requested['und'][0]['value'];
+        $form['field_event_organization']['und'][0]['nid']['#default_value'] = @$cn->field_event_organization['und'][0]['nid'];
+        $form['field_event_site']['und'][0]['nid']['#default_value'] = @$cn->field_event_site['und'][0]['nid'];
+        $form['field_manager']['und'][0]['uid']['#default_value'] = @$cn->field_manager['und'][0]['uid'];
+        $form['field_coordinator']['und'][0]['uid']['#default_value'] = @$cn->field_coordinator['und'][0]['uid'];
+        $form['field_event_type']['und'][0]['#default_value'] = @$cn->field_event_type['und'][0]['value'];
+        $form['field_where_meet']['und'][0]['value']['#default_value'] = @$cn->field_where_meet['und'][0]['value'];
+        $form['field_should_know']['und'][0]['value']['#default_value'] = @$cn->field_should_know['und'][0]['value'];
+        $form['field_tasks']['und'][0]['value']['#default_value'] = @$cn->field_tasks['und'][0]['value'];
+      }
+      break;
+    case 'user_profile_form':
+      break;
+    case 'views_form_people_attending_block':
+      if (!brick_staff_access()) {
+        // remove the save button if you dont have permission to submit this form
+        $form['actions']['submit'] = NULL;
+      }
+      break;
+    case 'views_form_attending_volunteers_list_default':
+      $form['actions']['submit']['#value'] = 'Reconcile Event';
+      break;
   }
 }
 
