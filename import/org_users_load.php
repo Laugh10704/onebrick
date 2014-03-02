@@ -7,7 +7,7 @@ print ("2\n");
 /* Load the User */
 $file = 'data/org_users.csv';
 $q = "
-	LOAD DATA LOCAL INFILE '".$file."' REPLACE INTO TABLE users
+	LOAD DATA LOCAL INFILE '" . $file . "' REPLACE INTO TABLE users
 	FIELDS TERMINATED BY ',' ESCAPED BY '*' OPTIONALLY ENCLOSED BY '%' 
 			(@uid, @name, @jobtitle, @mail, @phone, @orgid, @timezone, @chapter, @created, @modified)
 		SET 
@@ -24,10 +24,10 @@ $q = "
 db_query($q) or die(db_error());
 
 $two_types = array('data', 'revision');
-	foreach ($two_types as $t) {
+foreach ($two_types as $t) {
 
-	$q = "
-		LOAD DATA LOCAL INFILE '".$file."' REPLACE INTO TABLE field_".$t."_field_user_chapter
+  $q = "
+		LOAD DATA LOCAL INFILE '" . $file . "' REPLACE INTO TABLE field_" . $t . "_field_user_chapter
 		FIELDS  TERMINATED BY ',' ESCAPED BY '*' OPTIONALLY ENCLOSED BY '%'
 			(@uid, @name, @jobtitle, @mail, @phone, @orgid, @timezone, @chapter, @created, @modified)
 		SET
@@ -38,10 +38,10 @@ $two_types = array('data', 'revision');
 			language = 'und',
 			field_user_chapter_nid=@chapter + $chapid_offset 
 	";
-	db_query($q) or die(db_error());
+  db_query($q) or die(db_error());
 
-	$q = "
-		LOAD DATA LOCAL INFILE '".$file."' REPLACE INTO TABLE field_".$t."_field_user_phone
+  $q = "
+		LOAD DATA LOCAL INFILE '" . $file . "' REPLACE INTO TABLE field_" . $t . "_field_user_phone
 		FIELDS  TERMINATED BY ',' ESCAPED BY '*' OPTIONALLY ENCLOSED BY '%'
 			(@uid, @name, @jobtitle, @mail, @phone, @orgid, @timezone, @chapter, @created, @modified)
 		SET
@@ -52,10 +52,10 @@ $two_types = array('data', 'revision');
 			language = 'und',
 			field_user_phone_value=@phone
 	";
-	db_query($q) or die(db_error());
+  db_query($q) or die(db_error());
 
-	$q = "
-		LOAD DATA LOCAL INFILE '".$file."' REPLACE INTO TABLE field_".$t."_field_user_phone
+  $q = "
+		LOAD DATA LOCAL INFILE '" . $file . "' REPLACE INTO TABLE field_" . $t . "_field_user_phone
 		FIELDS  TERMINATED BY ',' ESCAPED BY '*' OPTIONALLY ENCLOSED BY '%'
 			(@uid, @name, @jobtitle, @mail, @phone, @orgid, @timezone, @chapter, @created, @modified)
 		SET
@@ -66,11 +66,11 @@ $two_types = array('data', 'revision');
 			language = 'und',
 			field_user_phone_value=@phone
 	";
-	db_query($q) or die(db_error());
+  db_query($q) or die(db_error());
 
-	// create people as unsubscribed
-	$q = "
-		LOAD DATA LOCAL INFILE '".$file."' REPLACE INTO TABLE field_".$t."_field_user_subscribed
+  // create people as unsubscribed
+  $q = "
+		LOAD DATA LOCAL INFILE '" . $file . "' REPLACE INTO TABLE field_" . $t . "_field_user_subscribed
 		FIELDS  TERMINATED BY ',' ESCAPED BY '*' OPTIONALLY ENCLOSED BY '%'
 			(@uid, @name, @jobtitle, @mail, @phone, @orgid, @timezone, @chapter, @created, @modified)
 		SET
@@ -81,13 +81,13 @@ $two_types = array('data', 'revision');
 			language = 'und',
 			field_user_subscribed_value=0
 	";
-	//db_query($q) or die(db_error()); 
+  //db_query($q) or die(db_error());
 }
 
 // Create the Org Contact Records
 
 $q = "
-		LOAD DATA LOCAL INFILE '".$file."' REPLACE INTO TABLE node
+		LOAD DATA LOCAL INFILE '" . $file . "' REPLACE INTO TABLE node
 		FIELDS  TERMINATED BY ',' ESCAPED BY '*' OPTIONALLY ENCLOSED BY '%'
 			(@uid, @name, @jobtitle, @mail, @phone, @orgid, @timezone, @chapter, @created, @modified)
 		SET
@@ -106,7 +106,7 @@ db_query($q) or die(db_error());
 
 
 $q = "
-		LOAD DATA LOCAL INFILE '".$file."' REPLACE INTO TABLE node_access
+		LOAD DATA LOCAL INFILE '" . $file . "' REPLACE INTO TABLE node_access
 		FIELDS  TERMINATED BY ',' ESCAPED BY '*' OPTIONALLY ENCLOSED BY '%'
 			(@uid, @name, @jobtitle, @mail, @phone, @orgid, @timezone, @chapter, @created, @modified)
 		SET
@@ -115,12 +115,12 @@ $q = "
 			realm = 'all',
 			grant_view = 1,
 			grant_update = 0,
-			grant_delete = 0,
+			grant_delete = 0
 ";
 db_query($q) or die(db_error());
 
 $q = "
-		LOAD DATA LOCAL INFILE '".$file."' REPLACE INTO TABLE node_revision
+		LOAD DATA LOCAL INFILE '" . $file . "' REPLACE INTO TABLE node_revision
 		FIELDS  TERMINATED BY ',' ESCAPED BY '*' OPTIONALLY ENCLOSED BY '%'
 			(@uid, @name, @jobtitle, @mail, @phone, @orgid, @timezone, @chapter, @created, @modified)
 		SET
@@ -136,22 +136,22 @@ db_query($q) or die(db_error());
 
 
 $q = "
-	LOAD DATA LOCAL INFILE '".$file."' REPLACE INTO TABLE node_comment_statistics
-	FIELDS TERMINATED BY ',' ESCAPED BY '*' OPTIONALLY ENCLOSED BY '%' 
-			(@uid, @name, @jobtitle, @mail, @phone, @orgid, @timezone, @chapter, @created, @modified)
-		SET 
-			nid = @uid+$orgcontact_offset,
-			cid = 0,
-			last_comment_timestamp=@created,
-			last_comment_uid = 1,
-			comment_count = 0
+		LOAD DATA LOCAL INFILE '" . $file . "' REPLACE INTO TABLE node_comment_statistics
+		FIELDS TERMINATED BY ',' ESCAPED BY '*' OPTIONALLY ENCLOSED BY '%' 
+				(@uid, @name, @jobtitle, @mail, @phone, @orgid, @timezone, @chapter, @created, @modified)
+			SET 
+				nid = @uid+$orgcontact_offset,
+				cid = 0,
+				last_comment_timestamp=@created,
+				last_comment_uid = 1,
+				comment_count = 0
 ";
 db_query($q) or die(db_error());
 
 $two_types = array('data', 'revision');
-	foreach ($two_types as $t) {
-				$q = "
-		LOAD DATA LOCAL INFILE '".$file."' REPLACE INTO TABLE field_".$t."_field_org_contact_organization
+foreach ($two_types as $t) {
+  $q = "
+		LOAD DATA LOCAL INFILE '" . $file . "' REPLACE INTO TABLE field_" . $t . "_field_org_contact_organization
 		FIELDS  TERMINATED BY ',' ESCAPED BY '*' OPTIONALLY ENCLOSED BY '%'
 			(@uid, @name, @jobtitle, @mail, @phone, @orgid, @timezone, @chapter, @created, @modified)
 		SET 
@@ -163,10 +163,10 @@ $two_types = array('data', 'revision');
 			field_org_contact_organization_nid=@orgid+$orgid_offset
 	";
 
-	db_query($q) or die(db_error());
+  db_query($q) or die(db_error());
 
-				$q = "
-		LOAD DATA LOCAL INFILE '".$file."' REPLACE INTO TABLE field_".$t."_field_org_contact_person
+  $q = "
+		LOAD DATA LOCAL INFILE '" . $file . "' REPLACE INTO TABLE field_" . $t . "_field_org_contact_person
 		FIELDS  TERMINATED BY ',' ESCAPED BY '*' OPTIONALLY ENCLOSED BY '%'
 			(@uid, @name, @jobtitle, @mail, @phone, @orgid, @timezone, @chapter, @created, @modified)
 		SET 
@@ -177,9 +177,10 @@ $two_types = array('data', 'revision');
 			language = 'und',
 			field_org_contact_person_uid=@uid+$orgcontact_offset
 	";
+  db_query($q) or die(db_error());
 
-	$q = "
-		LOAD DATA LOCAL INFILE '".$file."' REPLACE INTO TABLE field_".$t."_field_user_fullname
+  $q = "
+		LOAD DATA LOCAL INFILE '" . $file . "' REPLACE INTO TABLE field_" . $t . "_field_user_fullname
 		FIELDS  TERMINATED BY ',' ESCAPED BY '*' OPTIONALLY ENCLOSED BY '%'
 			(@uid, @name, @jobtitle, @mail, @phone, @orgid, @timezone, @chapter, @created, @modified)
 		SET 
@@ -190,8 +191,6 @@ $two_types = array('data', 'revision');
 			language = 'und',
 			field_user_fullname_value=@name
 	";
-	db_query($q) or die(db_error());
-
-	db_query($q) or die(db_error());
+  db_query($q) or die(db_error());
 }
 
