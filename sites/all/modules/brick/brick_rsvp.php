@@ -286,7 +286,7 @@ function brick_dounrsvp() {
   send_rsvp_emails($event_node, $user_node->signature, $user_node->mail, "unRSVP note", TRUE);
 
 
-  ` `  drupal_set_message(t('You have been removed from this event.'), 'status');
+  drupal_set_message(t('You have been removed from this event.'), 'status');
 
   // go back to the same page
   drupal_goto($_SERVER['HTTP_REFERER']);
