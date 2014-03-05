@@ -189,28 +189,26 @@ function brick_mail_alter(&$message) {
   $users = NULL;
   global $user;
 
-  if ($message['to'] == 'obstaff@onebrick.org') {
-    $users = brick_get_staff_mailing_list(brick_current_chapter());
-  }
-  else {
-    if ($message['to'] == 'mailing_list@onebrick.org') {
+  $message['send'] = FALSE; // disable sending the message for now - Clive
+  drupal_set_message('Emails disabled. Message To:' . $message['to'] . ' From: ' . $message['from'] . ' suppressed.', 'warning');
+  drupal_set_message('Body: ' . $message['body'][0], 'warning');
+
+  switch ($message['to']) {
+    case 'obstaff@onebrick.org':
+      $users = brick_get_staff_mailing_list(brick_current_chapter());
+      break;
+    case 'mailing_list@onebrick.org':
       $users = brick_get_mailing_list(brick_current_chapter());
-    }
-    else {
-      if ($message['to'] == 'events@onebrick.org') {
-        $users = brick_get_events_mailing_list(brick_current_chapter());
-      }
-      else {
-        if ($message['to'] == 'recruiting@onebrick.org') {
-          $users = brick_get_recruiting_mailing_list(brick_current_chapter());
-        }
-        else {
-          if ($message['to'] == 'currentuser@onebrick.org') {
-            $message['to'] = $user->mail;
-          }
-        }
-      }
-    }
+      break;
+    case 'events@onebrick.org':
+      $users = brick_get_events_mailing_list(brick_current_chapter());
+      break;
+    case 'recruiting@onebrick.org':
+      $users = brick_get_recruiting_mailing_list(brick_current_chapter());
+      break;
+    case 'currentuser@onebrick.org':
+      $message['to'] = $user->mail;
+      break;
   }
 
   if ($users) {
@@ -323,37 +321,42 @@ function round_to_power_of_10($n, $d) {
   return $n - $n % pow(10, $d);
 }
 
+function brick_events_email() {
+  $cmap = variable_get('brick_chapter_map');
+  $chapter = $cmap[$_SESSION['CHAPTER']];
+  return ($chapter['field_chapter_events_email_value'] . "@onebrick.org");
+}
+
+function brick_recruiting_email() {
+  $cmap = variable_get('brick_chapter_map');
+  $chapter = $cmap[$_SESSION['CHAPTER']];
+  return ($chapter['field_chapter_recruiting_email_value'] . "@onebrick.org");
+}
+
 function brick_set_globals() {
 
   // count number of volunteer events
   $num_volunteer_events = number_format(round_to_power_of_10(brick_count_volunteer_events(), 3));
   variable_set('brick_num_volunteer_events', $num_volunteer_events);
 
-
   // count number of staff
   $num_staff = number_format(round_to_power_of_10(brick_count_staff(), 2));
   variable_set('brick_num_staff', $num_staff);
 
-
   // create recruiting email array
-  $q = "SELECT entity_id,field_chapter_recruiting_email_value
-	FROM field_data_field_chapter_recruiting_email";
+  $q = "SELECT entity_id, field_chapter_recruiting_email_value FROM field_data_field_chapter_recruiting_email";
   $emails = db_query($q);
   while ($row = $emails->fetchAssoc()) {
     $recruiting_emails[$row['entity_id']] = $row['field_chapter_recruiting_email_value'];
   }
   variable_set('brick_recruiting_emails', $recruiting_emails);
 
-
   // create events team email array
-  $q = "SELECT entity_id,field_chapter_events_email_value
-	FROM field_data_field_chapter_events_email";
+  $q = "SELECT entity_id,field_chapter_events_email_value FROM field_data_field_chapter_events_email";
   $emails = db_query($q);
   while ($row = $emails->fetchAssoc()) {
     $events_emails[$row['entity_id']] = $row['field_chapter_events_email_value'];
   }
-  variable_set('brick_events_emails', $events_emails);
-
 
   // Generate a comma seperated list of chapters.
   $cd = brick_load_chapters();
@@ -568,8 +571,6 @@ function brick_switch_chapter($nid = 0) {
     brick_set_chapter_globals($nid);
   }
 
-  // return to the same page that switched the chapter
-  //drupal_goto($_SERVER["HTTP_REFERER"]);
   drupal_goto(); // Goto to the home page for the new chapter
 }
 
@@ -627,24 +628,19 @@ function brick_set_chapter_globals($chapter_nid) {
 
   watchdog("SWITCH", $_SESSION['HEADER']);
 
-  // Update the user's timezone
-  $q = "SELECT field_timezone_value
-	  FROM field_data_field_timezone
-	  WHERE entity_id = $chapter_nid";
-  $TZ = db_query($q)->fetchField();
+  //Set the session timezone to be the same as the chapter
+  $q = "SELECT field_timezone_value FROM field_data_field_timezone  WHERE entity_id = $chapter_nid";
+  $_SESSION['TIMEZONE'] = db_query($q)->fetchField();
 
+  // Set the user's timezone to be the same as the chapter
   global $user;
 
   if ($user && $user->uid) {
     $loaded = user_load($user->uid);
-    $loaded->timezone = $TZ;
-    user_save($loaded, array('timezone' => $TZ));
+    $loaded->timezone = $_SESSION['TIMEZONE'];
+    user_save($loaded, array('timezone' => $_SESSION['TIMEZONE']));
   }
-  $_SESSION['TIMEZONE'] = $TZ;
 
-  //if (function_exists('drupal_goto')) {
-  // drupal_goto("");
-  //}
 }
 
 /* 
@@ -873,7 +869,7 @@ function brick_get_management_list($node) {
   $result = array();
 
   while ($rsvp = $rsvp_list->fetchAssoc()) {
-    if ($rsvp['role'] == "Manager" || $rsvp['role'] = "Coordinator") {
+    if ($rsvp['role'] == "Manager" || $rsvp['role'] == "Coordinator") {
       $result[] = $rsvp['uid'];
     }
   }
@@ -939,12 +935,7 @@ function brick_format_managment_list($node, $addlink) {
 
   if ($result == "") {
     $result = "Events Team: ";
-
-    $q = "SELECT email_events FROM CHAPTER_DETAILS WHERE chapter_id = " . $_SESSION['CHAPTER'];
-
-    $r = db_query($q)->fetchAssoc();
-
-    $result .= brick_safe_mailto($r['email_events'] . "@onebrick.org", $node->title);
+    $result .= brick_safe_mailto(brick_events_email(), $node->title);
   }
 
   return ($result);

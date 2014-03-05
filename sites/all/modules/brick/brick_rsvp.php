@@ -281,7 +281,12 @@ function brick_dounrsvp() {
 
   brick_delete_rsvp($rsvpId);
 
-  drupal_set_message(t('You have been removed from this event.'), 'status');
+  $event_node = node_load($nid);
+  $user_node = user_load($uid);
+  send_rsvp_emails($event_node, $user_node->signature, $user_node->mail, "unRSVP note", TRUE);
+
+
+  ` `  drupal_set_message(t('You have been removed from this event.'), 'status');
 
   // go back to the same page
   drupal_goto($_SERVER['HTTP_REFERER']);
@@ -308,13 +313,13 @@ function brick_get_rsvp_id($eid, $uid) {
 }
 
 function brick_get_rsvp_query($nid, $uid) {
-  return db_query("SELECT field_data_field_rsvp_event.entity_id FROM field_data_field_rsvp_person
+  return (db_query("SELECT field_data_field_rsvp_event.entity_id FROM field_data_field_rsvp_person
   LEFT JOIN field_data_field_rsvp_event ON field_data_field_rsvp_person.entity_id
      = field_data_field_rsvp_event.entity_id
   INNER JOIN node on node.nid = field_data_field_rsvp_event.entity_id
   WHERE field_data_field_rsvp_person.field_rsvp_person_uid = $uid
   AND field_data_field_rsvp_event.field_rsvp_event_nid = $nid
-  AND node.status = 1");
+  AND node.status = 1"));
 }
 
 function brick_is_full_user($user) {
@@ -553,9 +558,8 @@ function brick_rsvp_ajax($form, $form_state) {
 
   brick_add_rsvp($eid, $loginUser->uid, $note, $public);
   //trigger_action('brick_rsvp', $event_node);
-  //send_rsvp_emails($event_node, $name, $note);
 
-  drupal_set_message(t('Thanks! You have succesfully RSVP\'d for this event. We\'ll see you there!'), 'status');
+  drupal_set_message(t('You have successfully RSVP\'d for this event. We\'ll see you there!'), 'status');
 
   $commands = brick_build_refresh_page_command();
 
@@ -566,21 +570,33 @@ function brick_rsvp_ajax($form, $form_state) {
 /*
  * Send emails to the managers notifying them of an rsvp for this event
  */
-function send_rsvp_emails($node, $rsvpname, $note) {
-  $managers = brick_get_management_list($node);
+function send_rsvp_emails($node, $rsvpname, $rsvpemail, $note, $unrsvp = FALSE) {
+  $managers = brick_get_management_list($node); // This should only go to the EM (not the EC)
 
+  $email_list = array();
   foreach ($managers as $mgrId) {
     $mgr = user_load($mgrId);
+    $email_list[] = $mgr->mail;
+  }
 
-    $email = $mgr->mail;
+  // If there are no managers send an email to the events team instead.
+  if (!$email_list) {
+    $email_list[] = brick_events_email();
+  }
 
-    if ($email) {
-      $params['event'] = $node;
-      $params['rsvpname'] = $rsvpname;
-      $params['manager'] = $mgr;
-      $params['note'] = $note;
+  foreach ($email_list as $email) {
+    $params['event'] = $node;
+    $params['note'] = $note;
+    $params['rsvpname'] = $rsvpname;
+    $params['rsvpemail'] = $rsvpemail;
 
-      drupal_mail('brick', 'rsvp', "laughy@gmail.com", language_default(), $params, "mailer@onebrick.org");
+    if ($unrsvp) {
+      drupal_mail('brick', 'unrsvp', $email, language_default(), $params, $rsvpemail);
+
+    }
+    else {
+      drupal_mail('brick', 'rsvp', $email, language_default(), $params, $rsvpemail);
+
     }
   }
 }
@@ -589,12 +605,21 @@ function brick_mail($key, &$message, $params) {
   switch ($key) {
     case 'rsvp':
       $variables['@event'] = $params['event']->title;
-      $variables['@name'] = $params['manager']->field_user_fullname[LANGUAGE_NONE][0]['value'];
+      $variables['@date'] = brick_event_from_to($params['event']);
       $variables['@rsvpname'] = $params['rsvpname'];
       $variables['@note'] = $params['note'];
 
-      $message['subject'] = strtr("@rsvpname has RSVPd for the event @event", $variables);
-      $message['body'][] = strtr("Hello @name,\n\n@rsvpname has RSVPd for the event @event.\n\nCustom note:\n@note", $variables);
+      $message['subject'] = strtr("Event RSVP: @event", $variables);
+      $message['body'][] = strtr("@rsvpname has RSVPed to the following event:\n @event\n@date.\n---\nNote from volunteer:\n@note", $variables);
+      break;
+    case 'unrsvp':
+      $variables['@event'] = $params['event']->title;
+      $variables['@date'] = brick_event_from_to($params['event']);
+      $variables['@rsvpname'] = $params['rsvpname'];
+      $variables['@note'] = $params['note'];
+
+      $message['subject'] = strtr("Event unRSVP: @event", $variables);
+      $message['body'][] = strtr("@rsvpname has unRSVPed from the following event:\n @event\n@date", $variables);
       break;
   }
 
