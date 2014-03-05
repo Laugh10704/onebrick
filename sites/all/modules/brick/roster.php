@@ -39,8 +39,12 @@ function generate_page_top($pdf, $node, $event_contact, $page) {
 
   $pdf->Cell(485);
   $pdf->SetFont('Arial', 'B',8);
-  $ts_from = strtotime($node->field_event_date['und'][0]['value']);
-  $ts_to = strtotime($node->field_event_date['und'][0]['value2']); 
+  
+  $from_tz = $node->field_event_date['und'][0]['timezone_db'];
+  $to_tz = $node->field_event_date['und'][0]['timezone'];
+  date_default_timezone_set($to_tz);
+  $ts_from = brick_optin_fix_date($node->field_event_date['und'][0]['value'], $from_tz, $to_tz);
+  $ts_to = brick_optin_fix_date($node->field_event_date['und'][0]['value2'], $from_tz, $to_tz);  
   $pdf->Cell(200,12,date('M j, Y, g:i A', $ts_from).' - '.date('g:i A', $ts_to),0,1,'R',0);
 
   $contact_name = trim($event_contact['field_user_fullname_value']);
