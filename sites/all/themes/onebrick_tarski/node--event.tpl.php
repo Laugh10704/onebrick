@@ -36,8 +36,8 @@ td.title {
     <td><B>
 		<?php
 			print strip_tags($node->title);
-			if (brick_event_is_cancelled($node)) {
-				print " (CANCELLED)";
+        if (brick_event_is_cancelled($node->nid)) {
+          print " (CANCELLED)";
 			}
 		?>
 	</B>
@@ -49,8 +49,8 @@ td.title {
     <td class='title'>Location:</td>
     <td>
  	<?php
-	if ($address = brick_site_address($node)) {
-		print("$address <a title=\"Google Map\" ");
+    if ($address = brick_site_address($node->nid)) {
+      print("$address <a title=\"Google Map\" ");
 	  print ("href=\"http://maps.google.com/maps?q=");
 	  print("$address\" target=\"_blank\">");
 	  print("<img width=\"20\" src=\"/sites/default/files/images/google_maps.png\" /></a>");
@@ -61,13 +61,13 @@ td.title {
   <tr>
     <td class='title'>Date:</td>
     <td>
-        <?php echo brick_event_from_to($node); ?>
-	<a title="Add to Calendar" href="/ical/<?php echo $node->nid; ?>/event.ics"><img width="20" src="/sites/default/files/images/Download_Event.png" /></a>
+      <?php echo brick_event_from_to($node->nid); ?>
+      <a title="Add to Calendar" href="/ical/<?php echo $node->nid; ?>/event.ics"><img width="20" src="/sites/default/files/images/Download_Event.png" /></a>
 
     </td> <tr>
-    <td class='title'>Staff:</td> 
-    <td> <?php print(brick_format_managment_list($node, TRUE)); ?></td>
-  </tr>
+    <td class='title'>Staff:</td>
+  <td> <?php print(brick_format_managment_list($node->nid, TRUE)); ?></td>
+</tr>
   </tr>
     <td class='title'>RSVP:</td>
     <td>
@@ -75,25 +75,25 @@ td.title {
        <?php
         global $user;
 
-	if (brick_event_is_cancelled($node)) {
-	  print "This event has been cancelled";
+       if (brick_event_is_cancelled($node->nid)) {
+         print "This event has been cancelled";
 	}
 	else if(strtotime($node->field_event_date['und'][0]['value']) < time()) {
 	  print("This event has already occurred");
         }
-        else if (user_is_logged_in() && brick_get_rsvp_status($node, $user)) {
-	  print("<form method='post' action='/a/unrsvp'>");
+    else if (user_is_logged_in() && brick_get_rsvp_status($node->nid, $user->uid)) {
+      print("<form method='post' action='/a/unrsvp'>");
 	  print("<input type='submit' class='form-submit' value='Un-RSVP'>");
 	  printf("<input type='hidden' name='nid' value='%s'>", $node->nid);
 	  printf("<input type='hidden' name='uid' value='%s'>", $user->uid);
 	  print("</form>");
 	}
-        else if (($open_date = brick_event_open_date($node)) > time() ) {
-          print("This event will open on ");
+    else if (($open_date = brick_event_open_date($node->nid)) > time()) {
+      print("This event will open on ");
           print(date("M jS", $open_date));
         }
-        else if (brick_event_full($node)) {
-                print("This event is FULL. Space often opens up a few days before the event, please check back.");
+    else if (brick_event_full($node->nid)) {
+      print("This event is FULL. Space often opens up a few days before the event, please check back.");
         }
         else {
              ctools_include('ajax');

@@ -1,45 +1,50 @@
 <?php
 
-function brick_event_is_cancelled($node) {
-  return $node->field_event_status['und'][0]['value'] == 'Cancelled';
+function brick_event_status($eid) {
+  $event_node = node_load($eid);
+  return $event_node->field_event_status['und'][0]['value'];
 }
 
-
-function brick_event_status($nid) {
-  $node = node_load($nid);
-  return $node->field_event_status['und'][0]['value'];
+function brick_event_is_cancelled($eid) {
+  return brick_event_status($eid) == 'Cancelled';
 }
 
-function brick_event_status_class($nid) {
-	$str = '';
-	$status = brick_get_event_assigned_status($nid);
-	if ($status == 'Cancelled') {
-		$str = 'event-cancelled';
-	} else if (brick_can_optin()) {
-		if ($status == 'Unassigned')
-			$str = 'event-opted-in';
-		else if ($status == 'Manager' || $status == 'Coordinator') {
-			$str = 'event-assigned';
-		}
-	}
-
-	return $str;
-}
-
-function brick_upload_photo_form($form, &$form_state, $nid = null) {
-  $form['#parents']=array();
-
-  if (!$nid) {
-    $nid = intval($form_state['values']['field_event_photos']);
+function brick_event_status_class($eid) {
+  $str = '';
+  $status = brick_get_event_assigned_status($eid);
+  if ($status == 'Cancelled') {
+    $str = 'event-cancelled';
+  }
+  else {
+    if (brick_can_optin()) {
+      if ($status == 'Unassigned') {
+        $str = 'event-opted-in';
+      }
+      else {
+        if ($status == 'Manager' || $status == 'Coordinator') {
+          $str = 'event-assigned';
+        }
+      }
+    }
   }
 
-  $node = node_load($nid);
+  return $str;
+}
+
+function brick_upload_photo_form($form, &$form_state, $eid = NULL) {
+  $form['#parents'] = array();
+
+  if (!$eid) {
+    $eid = intval($form_state['values']['field_event_photos']);
+  }
+
+  $event_node = node_load($eid);
   $field = field_info_field("field_event_photos");
   $instance = field_info_instance('node', "field_event_photos", "event");
-  $items = array_key_exists('und', $node->{"field_event_photos"}) ? $node->{"field_event_photos"}["und"] : array();
-  $result = field_default_form('node', $node, $field, $instance, LANGUAGE_NONE, $items, $form, $form_state);
+  $items = array_key_exists('und', $event_node->{"field_event_photos"}) ? $event_node->{"field_event_photos"}["und"] : array();
+  $result = field_default_form('node', $event_node, $field, $instance, LANGUAGE_NONE, $items, $form, $form_state);
 
-  $form += (array)$result;
+  $form += (array) $result;
 
   $form['submitarea'] = array(
     '#type' => "container",
@@ -52,28 +57,26 @@ function brick_upload_photo_form($form, &$form_state, $nid = null) {
 
   $form['nid'] = array(
     '#type' => "hidden",
-    '#value' => $nid
+    '#value' => $eid
   );
 
   return $form;
 }
 
 function brick_upload_photo_form_submit($form, &$form_state) {
-  $nid = intval($form_state['values']['nid']);
+  $eid = intval($form_state['values']['nid']);
+  $event_node = node_load($eid);
 
-  // get node object
-  $node = node_load($nid);
-
-  $node->{'field_event_photos'} = $form_state['values']['field_event_photos'];
+  $event_node->{'field_event_photos'} = $form_state['values']['field_event_photos'];
 
   // have to convert the width and height to nulls instead of blanks to prevent save error
-  foreach ($node->{'field_event_photos'}['und'] as &$photo) {
+  foreach ($event_node->{'field_event_photos'}['und'] as &$photo) {
     if (array_key_exists('width', $photo) && !$photo['width']) {
-      $photo['width'] = null;
-      $photo['height'] = null;
+      $photo['width'] = NULL;
+      $photo['height'] = NULL;
     }
   }
-  node_save($node);
+  node_save($event_node);
 
   drupal_set_message('Photos saved!');
 }

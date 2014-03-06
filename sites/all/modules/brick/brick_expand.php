@@ -8,17 +8,18 @@ function brick_chapter_details($chapter_id) {
 	return(db_query("SELECT * FROM CHAPTER_DETAILS where chapter_id = ".$chapter_id.";"));
 }
 
-function brick_site_address($node) {
-	$address = "";
-  if(isset($node->field_event_site)) {
-    $site = node_load($node->field_event_site['und']['0']['nid']);
+function brick_site_address($eid) {
+  $event_node = node_load($eid);
+  $address = "";
+  if (isset($event_node->field_event_site)) {
+    $site = node_load($event_node->field_event_site['und']['0']['nid']);
     if(isset($site->location))
       $address = location_address2singleline($site->location);
 	}
  return($address);
 }
 
-function brick_event_from_to($event) {
+function brick_event_from_to($eid) {
 // The string value is represented in one timezone (probably UTC),
 // and we need to convert it to the target timezone instead.
 	if (!function_exists('get_date')) {
@@ -28,12 +29,13 @@ function brick_event_from_to($event) {
 			return $obj;
 		}
 	}
-	$from_tz = $event->field_event_date['und'][0]['timezone_db'];
-	$to_tz = $event->field_event_date['und'][0]['timezone'];
-	$ts_from = get_date($event->field_event_date['und'][0]['value'], $from_tz, $to_tz);
-	$ts_to = get_date($event->field_event_date['und'][0]['value2'], $from_tz, $to_tz); 
+  $event_node = node_load($eid);
+  $from_tz = $event_node->field_event_date['und'][0]['timezone_db'];
+  $to_tz = $event_node->field_event_date['und'][0]['timezone'];
+  $ts_from = get_date($event_node->field_event_date['und'][0]['value'], $from_tz, $to_tz);
+  $ts_to = get_date($event_node->field_event_date['und'][0]['value2'], $from_tz, $to_tz);
 
-	// Put end date if the starting date does not match the end date, otherwise just
+  // Put end date if the starting date does not match the end date, otherwise just
 	// list start date and times.
 	$from_date = $ts_from->format('M jS Y');
 	$to_date = $ts_to->format('M jS Y');

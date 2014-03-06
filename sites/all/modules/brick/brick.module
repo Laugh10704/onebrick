@@ -67,12 +67,14 @@ function brick_get_adjusted_timestamp($value) {
   return $obj->getTimestamp();
 }
 
-function brick_event_start($node) {
-  return brick_get_adjusted_timestamp($node->field_event_date['und'][0]);
+function brick_event_start($eid) {
+  $event_node = node_load($eid);
+  return brick_get_adjusted_timestamp($event_node->field_event_date['und'][0]);
 }
 
-function brick_event_open_date($node) {
-  $date = @$node->field_rsvp_date['und'][0]['value'];
+function brick_event_open_date($eid) {
+  $event_node = node_load($eid);
+  $date = @$event_node->field_rsvp_date['und'][0]['value'];
 
   if ($date) {
     return strtotime($date);
@@ -81,9 +83,9 @@ function brick_event_open_date($node) {
   return $date;
 }
 
-function brick_validate_event($node) {
-  $event_start = brick_event_start($node);
-  $rsvp_date = brick_event_open_date($node);
+function brick_validate_event($eid) {
+  $event_start = brick_event_start($eid);
+  $rsvp_date = brick_event_open_date($eid);
 
   if (!empty($event_start) && !empty($rsvp_date) &&
     $event_start < $rsvp_date
@@ -92,9 +94,10 @@ function brick_validate_event($node) {
   }
 }
 
-function brick_node_validate($node, $form, &$form_state) {
-  if ($node->type == "event") {
-    brick_validate_event($node);
+function brick_node_validate($eid, $form, &$form_state) {
+  $event_node = node_load($eid);
+  if ($event_node->type == "event") {
+    brick_validate_event($eid);
   }
 }
 
@@ -186,8 +189,6 @@ function brick_hashcode($key)
 
 // redirect messages intended for a onebrick group to all users within that group
 function brick_mail_alter(&$message) {
-  $users = NULL;
-  global $user;
 
   $message['send'] = FALSE; // disable sending the message for now - Clive
   drupal_set_message('Emails disabled. Message To:' . $message['to'] . ' From: ' . $message['from'] . ' suppressed.', 'warning');
@@ -195,25 +196,21 @@ function brick_mail_alter(&$message) {
 
   switch ($message['to']) {
     case 'obstaff@onebrick.org':
-      $users = brick_get_staff_mailing_list(brick_current_chapter());
+      $message['to'] = brick_get_staff_mailing_list(brick_current_chapter());
       break;
     case 'mailing_list@onebrick.org':
-      $users = brick_get_mailing_list(brick_current_chapter());
+      $message['to'] = brick_get_mailing_list(brick_current_chapter());
       break;
     case 'events@onebrick.org':
-      $users = brick_get_events_mailing_list(brick_current_chapter());
+      $message['to'] = brick_get_events_mailing_list(brick_current_chapter());
       break;
     case 'recruiting@onebrick.org':
-      $users = brick_get_recruiting_mailing_list(brick_current_chapter());
+      $message['to'] = brick_get_recruiting_mailing_list(brick_current_chapter());
       break;
     case 'currentuser@onebrick.org':
+      global $user;
       $message['to'] = $user->mail;
       break;
-  }
-
-  if ($users) {
-    $bccList = implode(",", $users);
-    $message['headers'] += array('Bcc' => $bccList);
   }
 }
 
@@ -864,8 +861,8 @@ function brick_safe_mailto($email, $subject) {
   return ($result);
 }
 
-function brick_get_management_list($node) {
-  $rsvp_list = brick_get_rsvp_list($node);
+function brick_get_management_list($eid) {
+  $rsvp_list = brick_get_rsvp_list($eid);
   $result = array();
 
   while ($rsvp = $rsvp_list->fetchAssoc()) {
@@ -891,10 +888,11 @@ function brick_format_name($name) {
  * $node is an event note.
  *
  */
-function brick_format_managment_list($node, $addlink) {
+function brick_format_managment_list($eid, $addlink) {
+  $event_node = node_load($eid);
 
   $result = "";
-  $rsvp_list = brick_get_rsvp_list($node);
+  $rsvp_list = brick_get_rsvp_list($eid);
   $first_manager = TRUE;
   while ($rsvp = $rsvp_list->fetchAssoc()) {
     if ($rsvp['role'] == "Manager") {
@@ -907,12 +905,12 @@ function brick_format_managment_list($node, $addlink) {
       }
       $result .= brick_format_name($rsvp['fullname']) . " ";
       if ($addlink) {
-        $result .= brick_safe_mailto($rsvp['mail'], $node->title);
+        $result .= brick_safe_mailto($rsvp['mail'], $event_node->title);
       }
     }
   }
 
-  $rsvp_list = brick_get_rsvp_list($node);
+  $rsvp_list = brick_get_rsvp_list($eid);
   $first_coordinator = TRUE;
   while ($rsvp = $rsvp_list->fetchAssoc()) {
     if ($rsvp['role'] == "Coordinator") {
@@ -928,14 +926,14 @@ function brick_format_managment_list($node, $addlink) {
       }
       $result .= brick_format_name($rsvp['fullname']) . " ";
       if ($addlink) {
-        $result .= brick_safe_mailto($rsvp['mail'], $node->title);
+        $result .= brick_safe_mailto($rsvp['mail'], $event_node->title);
       }
     }
   }
 
   if ($result == "") {
     $result = "Events Team: ";
-    $result .= brick_safe_mailto(brick_events_email(), $node->title);
+    $result .= brick_safe_mailto(brick_events_email(), $event_node->title);
   }
 
   return ($result);
@@ -1054,10 +1052,10 @@ function brick_webform_submission_presave($node, &$submission) {
   if (isset($nd) && isset($nd->type) && $nd->type === 'event') {
     // For events we automatically set the TO list and an initial value for the SUBJECT
     if (isset($nd->field_reconciled) && $nd->field_reconciled && $nd->field_reconciled['und'][0]['value']) {
-      $r = brick_get_attendee_list($nd);
+      $r = brick_get_attendee_list($nd->nid);
     }
     else {
-      $r = brick_get_rsvp_list($nd);
+      $r = brick_get_rsvp_list($nd->nid);
     }
     $users = $r->fetchCol(2);
 

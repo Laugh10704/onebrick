@@ -1,36 +1,7 @@
 <?php
 // $Id: brick_rsvp.php,v 1.37 2013/12/18 03:08:56 jordan Exp $
 
-/**
- * @file
- *
- * A module that contains utility functions used across the One Brick website.
- */
-
-function brick_get_event_role($eventid, $userid) {
-  $q = "SELECT DISTINCT
-    field_revision_field_rsvp_role.field_rsvp_role_value
-  FROM field_revision_field_rsvp_event
-    left join field_revision_field_rsvp_person
-      on field_revision_field_rsvp_event.entity_id=field_revision_field_rsvp_person.entity_id
-    left join field_revision_field_rsvp_role
-      on field_revision_field_rsvp_event.entity_id=field_revision_field_rsvp_role.entity_id
-    left join users
-      on field_revision_field_rsvp_person.field_rsvp_person_uid=users.uid
-        join node
-      on node.nid = field_revision_field_rsvp_event.entity_id
-  WHERE node.status = 1 and 
-	 field_rsvp_event_nid = 30319 and
-	 field_revision_field_rsvp_person.field_rsvp_person_uid = 1";
-
-  return (db_query($q)->fetchField());
-}
-
-function brick_get_rsvp_list($node) {
-  return brick_get_rsvp_list_id($node->nid);
-}
-
-function brick_get_rsvp_list_id($nid) {
+function brick_get_rsvp_list($eid) {
   $q = "
   SELECT DISTINCT
     field_revision_field_rsvp_person.field_rsvp_person_uid as uid,
@@ -49,12 +20,11 @@ function brick_get_rsvp_list_id($nid) {
       on field_revision_field_rsvp_person.field_rsvp_person_uid=field_revision_field_user_fullname.entity_id
     join node
       on node.nid = field_revision_field_rsvp_event.entity_id
-  WHERE node.status = 1 AND field_rsvp_event_nid = " . $nid;
-
+  WHERE node.status = 1 AND field_rsvp_event_nid = " . $eid;
   return (db_query($q));
 }
 
-function brick_get_attendee_list($node) {
+function brick_get_attendee_list($eid) {
   $q = "
   SELECT DISTINCT
     field_revision_field_rsvp_person.field_rsvp_person_uid as uid,
@@ -75,13 +45,13 @@ function brick_get_attendee_list($node) {
       on node.nid = field_revision_field_rsvp_event.entity_id
 		left join field_revision_field_rsvp_attended on field_revision_field_rsvp_attended.entity_id = field_revision_field_rsvp_event.entity_id
 		where field_rsvp_attended_value = 1 and
-  		node.status = 1 AND field_rsvp_event_nid = " . $node->nid;
+  		node.status = 1 AND field_rsvp_event_nid = " . $eid;
 
   return (db_query($q));
 }
 
-function brick_remap_manager_coordinator_rsvps($event, $managers, $coordinators) {
-  $currentRSVPs = brick_get_rsvp_list($event)->fetchAll();
+function brick_remap_manager_coordinator_rsvps($eid, $managers, $coordinators) {
+  $currentRSVPs = brick_get_rsvp_list($eid)->fetchAll();
 
   $idToRSVPId = array();
 
@@ -107,11 +77,11 @@ function brick_remap_manager_coordinator_rsvps($event, $managers, $coordinators)
     $idToRSVPId[$rsvp->uid] = $rsvp->entity_id;
   }
 
-  remap_manager_data($event->nid, $managers, $currentManagers, $currentVolunteers, 'Manager', $idToRSVPId);
-  remap_manager_data($event->nid, $coordinators, $currentCoordinators, $currentVolunteers, 'Coordinator', $idToRSVPId);
+  remap_manager_data($eid, $managers, $currentManagers, $currentVolunteers, 'Manager', $idToRSVPId);
+  remap_manager_data($eid, $coordinators, $currentCoordinators, $currentVolunteers, 'Coordinator', $idToRSVPId);
 }
 
-function remap_manager_data($evid, $newList, $oldList, $volunteers, $userType, $idToRSVPId) {
+function remap_manager_data($eid, $newList, $oldList, $volunteers, $userType, $idToRSVPId) {
   $toAdd = $oldList == NULL ? $newList : array_diff($newList, $oldList);
   $toRemove = $oldList == NULL ? array() : array_diff($oldList, $newList);
 
@@ -128,14 +98,15 @@ function remap_manager_data($evid, $newList, $oldList, $volunteers, $userType, $
       brick_delete_rsvp($rsvpId);
     }
 
-    brick_add_rsvp($evid, $addMe, '', 1, $userType, $assigned);
+    brick_add_rsvp($eid, $addMe, '', 1, $userType, $assigned);
+
 
     // is there an existing opt-in? if not, we create one with "assigned on created" set to true
-    $optinRes = brick_optin_get_existing($addMe, $evid, $userType);
+    $optinRes = brick_optin_get_existing($addMe, $eid, $userType);
 
     if ($optinRes->rowCount() == 0) {
       // opt-in created wtih asc set to true
-      brick_optin_add($toAdd, $evid, $userType, brick_optin_pref_val_to_string(1), 'TRUE');
+      brick_optin_add($toAdd, $eid, $userType, brick_optin_pref_val_to_string(1), 'TRUE');
     }
   }
 
@@ -145,10 +116,10 @@ function remap_manager_data($evid, $newList, $oldList, $volunteers, $userType, $
 
     brick_delete_rsvp($rsvpId);
 
-    brick_add_rsvp($evid, $removeMe, '', 1, 'Volunteer', 'FALSE');
+    brick_add_rsvp($eid, $removeMe, '', 1, 'Volunteer', 'FALSE');
 
     // remove the opt-in if the 'assigned when created' is set to true (the user didn't manually create the opt-in)
-    $optinRes = brick_optin_get_existing($removeMe, $evid, $userType);
+    $optinRes = brick_optin_get_existing($removeMe, $eid, $userType);
     $optinId = $optinRes->fetchColumn();
 
     $optNd = node_load($optinId);
@@ -161,40 +132,33 @@ function remap_manager_data($evid, $newList, $oldList, $volunteers, $userType, $
   }
 }
 
-function brick_rsvp_count($nid) {
+function brick_rsvp_count($eid) {
   $q = "SELECT count(field_data_field_rsvp_event.entity_id) FROM field_data_field_rsvp_person
 	  LEFT JOIN field_data_field_rsvp_event ON field_data_field_rsvp_person.entity_id = field_data_field_rsvp_event.entity_id
 		INNER JOIN node on node.nid = field_data_field_rsvp_event.entity_id
-		WHERE node.status and field_data_field_rsvp_event.field_rsvp_event_nid = " . $nid;
+		WHERE node.status and field_data_field_rsvp_event.field_rsvp_event_nid = " . $eid;
   return (db_query($q)->fetchField());
 }
 
-function brick_attended_count($nid) {
+function brick_attended_count($eid) {
   $q = "
 		SELECT count(*) FROM `field_revision_field_rsvp_attended`
 		LEFT JOIN field_data_field_rsvp_event ON field_revision_field_rsvp_attended.entity_id = field_data_field_rsvp_event.entity_id
 		where field_rsvp_attended_value = 1 and
-		field_data_field_rsvp_event.field_rsvp_event_nid = " . $nid;
+		field_data_field_rsvp_event.field_rsvp_event_nid = " . $eid;
   return (db_query($q)->fetchField());
 }
 
-function brick_event_full($node) {
-  $c = brick_rsvp_count($node->nid);
-
-  /* debug 
-		printf("Requested: %s, RSVP Capacity: %s, RSVPed: %s",
-    $node->field_event_requested['und'][0]['value'],
-    $node->field_event_max_rsvp_capacity['und'][0]['value'],
-    $c);*/
-
-  return ($c >= $node->field_event_max_rsvp_capacity['und'][0]['value']);
+function brick_event_full($eid) {
+  $c = brick_rsvp_count($eid);
+  $event_node = node_load($eid);
+  return ($c >= $event_node->field_event_max_rsvp_capacity['und'][0]['value']);
 }
 
 function brick_manager_add_rsvp_ajax($eid, $uid) {
   brick_add_rsvp($eid, $uid, '', 0);
 
   $commands = array();
-
   $commands[] = ajax_command_replace('.row-user-' . $uid . ' .add-user-link', 'User Added!');
 
   return array('#type' => 'ajax', '#commands' => $commands);
@@ -270,10 +234,10 @@ function brick_rsvp_set_attended($rsvp_id, $attended) {
 }
 
 function brick_dounrsvp() {
-  $nid = $_POST["nid"];
+  $eid = $_POST["nid"];
   $uid = $_POST["uid"];
 
-  $r = brick_get_rsvp_query($nid, $uid);
+  $r = brick_get_rsvp_query($eid, $uid);
 
   $rsvpId = $r->fetchField();
 
@@ -281,12 +245,11 @@ function brick_dounrsvp() {
 
   brick_delete_rsvp($rsvpId);
 
-  $event_node = node_load($nid);
   $user_node = user_load($uid);
-  send_rsvp_emails($event_node, $user_node->signature, $user_node->mail, "unRSVP note", TRUE);
+  send_rsvp_emails($eid, $user_node->signature, $user_node->mail, "unRSVP note", TRUE);
 
 
-  drupal_set_message(t('You have been removed from this event.'), 'status');
+  drupal_set_message(t('You have been removed from this event. Thank you for letting us know.'), 'status');
 
   // go back to the same page
   drupal_goto($_SERVER['HTTP_REFERER']);
@@ -296,8 +259,8 @@ function brick_delete_rsvp($rsvpId) {
   node_delete($rsvpId);
 }
 
-function brick_get_rsvp_status($n, $u) {
-  return brick_get_rsvp_id($n->nid, $u->uid) > 0;
+function brick_get_rsvp_status($eid, $uid) {
+  return brick_get_rsvp_id($eid, $uid) > 0;
 }
 
 function brick_get_rsvp_id($eid, $uid) {
@@ -312,18 +275,19 @@ function brick_get_rsvp_id($eid, $uid) {
   return 0;
 }
 
-function brick_get_rsvp_query($nid, $uid) {
-  return (db_query("SELECT field_data_field_rsvp_event.entity_id FROM field_data_field_rsvp_person
-  LEFT JOIN field_data_field_rsvp_event ON field_data_field_rsvp_person.entity_id
-     = field_data_field_rsvp_event.entity_id
-  INNER JOIN node on node.nid = field_data_field_rsvp_event.entity_id
-  WHERE field_data_field_rsvp_person.field_rsvp_person_uid = $uid
-  AND field_data_field_rsvp_event.field_rsvp_event_nid = $nid
-  AND node.status = 1"));
+function brick_get_rsvp_query($eid, $uid) {
+  $q = "SELECT field_data_field_rsvp_event.entity_id FROM field_data_field_rsvp_person
+        LEFT JOIN field_data_field_rsvp_event ON field_data_field_rsvp_person.entity_id
+          = field_data_field_rsvp_event.entity_id
+        INNER JOIN node on node.nid = field_data_field_rsvp_event.entity_id
+        WHERE field_data_field_rsvp_person.field_rsvp_person_uid = " . $uid . "
+        AND field_data_field_rsvp_event.field_rsvp_event_nid = " . $eid . "
+        AND node.status = 1";
+  return (db_query($q));
 }
 
 function brick_is_full_user($user) {
-  // uid = 0 is anonymouse user
+  // uid = 0 is anonymous user
   return !empty($user) && $user->uid != 0 && !in_array('guest_user', array_values($user->roles));
 }
 
@@ -472,9 +436,7 @@ function brick_rsvp_ajax($form, $form_state) {
   $public = $form_state['values']['public'];
   $emailUser = NULL;
 
-  $event_node = node_load($eid);
-
-  if (brick_event_full($event_node)) {
+  if (brick_event_full($eid)) {
     // Someone else grabbed the last RSVP slot between the time the user
     // loaded this page and the time they hit the RSVP button.
     // -- You snooze, you loose!
@@ -500,7 +462,7 @@ function brick_rsvp_ajax($form, $form_state) {
 
   // validation for the user here
   if ($emailUser) {
-    if (brick_get_rsvp_status($event_node, $emailUser)) {
+    if (brick_get_rsvp_status($eid, $emailUser->uid)) {
       form_set_error('email', "You have already RSVPd for this event");
     }
     else if (!check_user_verified($emailUser)) {
@@ -556,7 +518,9 @@ function brick_rsvp_ajax($form, $form_state) {
     user_login_finalize();
   }
 
-  brick_add_rsvp($eid, $loginUser->uid, $note, $public);
+  brick_add_rsvp($eid, $user->uid, $note, $public);
+  send_rsvp_emails($eid, $user->signature, $user->mail, $note);
+
   //trigger_action('brick_rsvp', $event_node);
 
   drupal_set_message(t('You have successfully RSVP\'d for this event. We\'ll see you there!'), 'status');
@@ -570,8 +534,8 @@ function brick_rsvp_ajax($form, $form_state) {
 /*
  * Send emails to the managers notifying them of an rsvp for this event
  */
-function send_rsvp_emails($node, $rsvpname, $rsvpemail, $note, $unrsvp = FALSE) {
-  $managers = brick_get_management_list($node); // This should only go to the EM (not the EC)
+function send_rsvp_emails($eid, $rsvpname, $rsvpemail, $note, $unrsvp = FALSE) {
+  $managers = brick_get_management_list($eid); // This should only go to the EM (not the EC)
 
   $email_list = array();
   foreach ($managers as $mgrId) {
@@ -585,7 +549,7 @@ function send_rsvp_emails($node, $rsvpname, $rsvpemail, $note, $unrsvp = FALSE) 
   }
 
   foreach ($email_list as $email) {
-    $params['event'] = $node;
+    $params['eid'] = $eid;
     $params['note'] = $note;
     $params['rsvpname'] = $rsvpname;
     $params['rsvpemail'] = $rsvpemail;
@@ -604,30 +568,33 @@ function send_rsvp_emails($node, $rsvpname, $rsvpemail, $note, $unrsvp = FALSE) 
 function brick_mail($key, &$message, $params) {
   switch ($key) {
     case 'rsvp':
-      $variables['@event'] = $params['event']->title;
-      $variables['@date'] = brick_event_from_to($params['event']);
+      $eid = $params['eid'];
+      $event_node = node_load($eid);
+      $variables['@title'] = $event_node->title;
+      $variables['@date'] = brick_event_from_to($eid);
       $variables['@rsvpname'] = $params['rsvpname'];
       $variables['@note'] = $params['note'];
 
-      $message['subject'] = strtr("Event RSVP: @event", $variables);
-      $message['body'][] = strtr("@rsvpname has RSVPed to the following event:\n @event\n@date.\n---\nNote from volunteer:\n@note", $variables);
+      $message['subject'] = strtr("Event RSVP: @title", $variables);
+      $message['body'][] = strtr("@rsvpname has RSVPed to the following event:\n @title\n@date.\n---\nNote from volunteer:\n@note", $variables);
       break;
     case 'unrsvp':
-      $variables['@event'] = $params['event']->title;
-      $variables['@date'] = brick_event_from_to($params['event']);
+      $eid = $params['eid'];
+      $event_node = node_load($eid);
+      $variables['@title'] = $event_node->title;
+      $variables['@date'] = brick_event_from_to($eid);
       $variables['@rsvpname'] = $params['rsvpname'];
       $variables['@note'] = $params['note'];
 
-      $message['subject'] = strtr("Event unRSVP: @event", $variables);
-      $message['body'][] = strtr("@rsvpname has unRSVPed from the following event:\n @event\n@date", $variables);
+      $message['subject'] = strtr("Event unRSVP: @title", $variables);
+      $message['body'][] = strtr("@rsvpname has unRSVPed from the following event:\n @title\n@date", $variables);
       break;
   }
 
 }
 
 // Return the number of people who have RSVPed but are not PUBLIC people
-//
-function brick_private_rsvps($eventid) {
+function brick_private_rsvps($eid) {
   $q = "SELECT count(field_data_field_rsvp_person.field_rsvp_person_uid) FROM node
 
 	LEFT JOIN field_data_field_rsvp_person ON node.nid = field_data_field_rsvp_person.entity_id AND (field_data_field_rsvp_person.entity_type = 'node' AND field_data_field_rsvp_person.deleted = '0' AND field_data_field_rsvp_person.delta = '0')
@@ -636,7 +603,7 @@ function brick_private_rsvps($eventid) {
 
 	LEFT JOIN  field_data_field_public ON field_data_field_rsvp_person.field_rsvp_person_uid = field_data_field_public.entity_id AND (field_data_field_public.entity_type = 'user' AND field_data_field_public.deleted = '0')
 
-	WHERE (( (field_data_field_rsvp_event.field_rsvp_event_nid = '" . $eventid . "' ) )AND(( (node.status = '1') AND (node.type IN  ('rsvp')) AND (field_data_field_public.field_public_value IN  ('0')) )))
+	WHERE (( (field_data_field_rsvp_event.field_rsvp_event_nid = '" . $eid . "' ) )AND(( (node.status = '1') AND (node.type IN  ('rsvp')) AND (field_data_field_public.field_public_value IN  ('0')) )))
 
 	LIMIT 1000 OFFSET 0";
 
