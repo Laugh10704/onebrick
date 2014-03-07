@@ -151,7 +151,7 @@ function get_roster($node) {
   }
 
   $org = $node->field_event_organization['und'][0]['nid'];
-  $q = "SELECT users.mail, users.signature, field_user_phone_value
+  $q = "SELECT mail, signature, field_user_phone_value
 		FROM field_data_field_org_contact_organization, field_data_field_user_phone, users
 		WHERE field_org_contact_organization_nid = $org
 		AND users.uid = field_data_field_org_contact_organization.entity_id
