@@ -7,7 +7,7 @@ function brick_get_rsvp_list($eid) {
     field_revision_field_rsvp_person.field_rsvp_person_uid as uid,
     field_revision_field_rsvp_role.field_rsvp_role_value as role,
     users.mail,
-    field_revision_field_user_fullname.field_user_fullname_value as fullname,
+    users.signature as fullname,
     field_revision_field_rsvp_event.entity_id as entity_id
   FROM field_revision_field_rsvp_event
     left join field_revision_field_rsvp_person
@@ -16,8 +16,6 @@ function brick_get_rsvp_list($eid) {
       on field_revision_field_rsvp_event.entity_id=field_revision_field_rsvp_role.entity_id
     left join users
       on field_revision_field_rsvp_person.field_rsvp_person_uid=users.uid
-    left join field_revision_field_user_fullname 
-      on field_revision_field_rsvp_person.field_rsvp_person_uid=field_revision_field_user_fullname.entity_id
     join node
       on node.nid = field_revision_field_rsvp_event.entity_id
   WHERE node.status = 1 AND field_rsvp_event_nid = " . $eid;
@@ -30,7 +28,7 @@ function brick_get_attendee_list($eid) {
     field_revision_field_rsvp_person.field_rsvp_person_uid as uid,
     field_revision_field_rsvp_role.field_rsvp_role_value as role,
     users.mail,
-    field_revision_field_user_fullname.field_user_fullname_value as fullname,
+    users.signature as fullname,
     field_revision_field_rsvp_event.entity_id as entity_id
   FROM field_revision_field_rsvp_event
     left join field_revision_field_rsvp_person
@@ -39,8 +37,6 @@ function brick_get_attendee_list($eid) {
       on field_revision_field_rsvp_event.entity_id=field_revision_field_rsvp_role.entity_id
     left join users
       on field_revision_field_rsvp_person.field_rsvp_person_uid=users.uid
-    left join field_revision_field_user_fullname 
-      on field_revision_field_rsvp_person.field_rsvp_person_uid=field_revision_field_user_fullname.entity_id
     join node
       on node.nid = field_revision_field_rsvp_event.entity_id
 		left join field_revision_field_rsvp_attended on field_revision_field_rsvp_attended.entity_id = field_revision_field_rsvp_event.entity_id
@@ -465,18 +461,22 @@ function brick_rsvp_ajax($form, $form_state) {
     if (brick_get_rsvp_status($eid, $emailUser->uid)) {
       form_set_error('email', "You have already RSVPd for this event");
     }
-    else if (!check_user_verified($emailUser)) {
-      form_set_error('email', "You'll need to verify your email before you can continue to RSVP");
-    }
-    else if (check_if_user_needs_login($emailUser)) {
-      if ($form_state['values']['password']) {
-        require_once DRUPAL_ROOT . '/' . variable_get('password_inc', 'includes/password.inc');
-        if (!user_check_password($form_state['values']['password'], $emailUser)) {
-          form_set_error('password', "Invalid password");
-        }
+    else {
+      if (!check_user_verified($emailUser)) {
+        form_set_error('email', "You'll need to verify your email before you can continue to RSVP");
       }
       else {
-        form_set_error('password', "<b>Looks like you have an account with us!</b> Please provide your password to continue RSVPing");
+        if (check_if_user_needs_login($emailUser)) {
+          if ($form_state['values']['password']) {
+            require_once DRUPAL_ROOT . '/' . variable_get('password_inc', 'includes/password.inc');
+            if (!user_check_password($form_state['values']['password'], $emailUser)) {
+              form_set_error('password', "Invalid password");
+            }
+          }
+          else {
+            form_set_error('password', "<b>Looks like you have an account with us!</b> Please provide your password to continue RSVPing");
+          }
+        }
       }
     }
   }

@@ -26,14 +26,13 @@ function brick_colorbox_form_access() {
 
 function brick_create_guest_account($emailAddr, $name) {
   $roles = user_roles();
-  brick_create_account_impl($emailAddr, $name, array(array_search('guest_user', $roles) => 'guest_user'));
+  return brick_create_account_impl($emailAddr, $name, array(array_search('guest_user', $roles) => 'guest_user'));
 }
 
 function brick_create_account_impl($emailAddr, $name, $roles) {
   $newUser = new StdClass();
   $newUser->is_new = TRUE;
   $newUser->status = TRUE;
-  $newUser->field_user_fullname[LANGUAGE_NONE][0]['value'] = $name;
   $newUser->signature = $name;
   $newUser->name = $emailAddr;
   $newUser->pass = '';
@@ -119,7 +118,6 @@ function brick_create_account($form, $form_state) {
       $update['init'] = $mail;
     }
 
-    $update['field_user_fullname'][LANGUAGE_NONE][0]['value'] = $fullname;
     $update['pass'] = $pass;
     $update['roles'] = array(DRUPAL_AUTHENTICATED_RID => TRUE);
     $update['status'] = 0;
@@ -187,7 +185,8 @@ function brick_create_account($form, $form_state) {
 }
 
 function brick_user_insert(&$edit, $account, $category) {
-  update_user_name($edit['field_user_fullname'][LANGUAGE_NONE][0]['value'], $account->uid);
+  //we've removed the field so I don't think we need this anymore - Clive
+  //update_user_name($edit['field_user_fullname'][LANGUAGE_NONE][0]['value'], $account->uid);
 }
 
 function update_user_name($name, $uid) {
@@ -243,8 +242,8 @@ function brick_create_account_form($form, $form_state, $uid = NULL, $username = 
     //}
     //else {
     $form['create']['message'] = array(
-        '#markup' => "<div class='messages status'><b>Welcome Back!</b> Please provide a password to login with from now on</div>"
-      );
+      '#markup' => "<div class='messages status'><b>Welcome Back!</b> Please provide a password to login with from now on</div>"
+    );
     //}
   }
 

@@ -21,18 +21,20 @@ define("_GOOGLE_APPS_PW_", "1_brick!");
 define("_OB_EMAIL_", "onebrick.org");
 
 if (!function_exists('sem_get')) {
-    function sem_get($key, $max_acquire = 1, $perm = 0666, $auto_release = 1) {
-	return (TRUE);
-        return fopen(__FILE__ . '.sem.' . $key, 'w+');
-    }
-    function sem_acquire($sem_id) {
-	return (TRUE);
-        return flock($sem_id, LOCK_EX);
-    }
-    function sem_release($sem_id) {
-	return (TRUE);
-        return flock($sem_id, LOCK_UN);
-    }
+  function sem_get($key, $max_acquire = 1, $perm = 0666, $auto_release = 1) {
+    return (TRUE);
+    return fopen(__FILE__ . '.sem.' . $key, 'w+');
+  }
+
+  function sem_acquire($sem_id) {
+    return (TRUE);
+    return flock($sem_id, LOCK_EX);
+  }
+
+  function sem_release($sem_id) {
+    return (TRUE);
+    return flock($sem_id, LOCK_UN);
+  }
 }
 
 function brick_views_api() {
@@ -169,15 +171,14 @@ function brick_menu_local_tasks_alter(&$data, $router_item, $root_path) {
 function brick_get_user_name($user) {
   $fullname = "";
 
-  if ($user && !empty($user->field_user_fullname)) {
-    $fullname = $user->field_user_fullname[LANGUAGE_NONE][0]['value'];
+  if ($user && !empty($user->signature)) {
+    $fullname = $user->signature;
   }
 
   return $fullname;
 }
 
-function brick_hashcode($key)
-{
+function brick_hashcode($key) {
   $hashCode = 0;
 
   for ($i = 0; $i < strlen($key); $i++) {
@@ -474,11 +475,6 @@ function brick_user_presave(&$edit, $account, $category) {
 
     // actually do the mapping in Google groups.
     brick_map_user_to_google_groups($account->mail, $removedRoleNames, $addedRoleNames);
-  }
-
-  // the user's signature is their full name so we have this in the users table (for node reference)
-  if (array_key_exists("field_user_fullname", $edit)) {
-    $edit['signature'] = $edit['field_user_fullname']['und'][0]['value'];
   }
 }
 
@@ -1063,14 +1059,11 @@ function brick_webform_submission_presave($node, &$submission) {
       $emails = implode(",", $users);
       $submission->data[10]['value'][0] = $emails;
     }
-    $submission->data[10]['value'][0] = "v3emails@onebrick.org"; // override for testing
-    drupal_set_message('Emails redirected to v3emails@onebrick.org during testing', 'warning');
-
   }
-  else if (isset($nd) && $nd->title == 'Send Message') {
-    $submission->data[7]['value'][0] = "v3emails@onebrick.org"; // override for testing
-    drupal_set_message('Emails redirected to v3emails@onebrick.org during testing', 'warning');
+  else {
+    if (isset($nd) && $nd->title == 'Send Message') {
 
+    }
   }
 
   if ($node->webform['redirect_url'] === "%HTTP_REFERER") {

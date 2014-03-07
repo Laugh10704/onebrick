@@ -60,16 +60,16 @@ function onebrick_tarski_css_alter(&$css) {
 function onebrick_tarski_html_head_alter(&$head_elements) {
   // Remove metadata
   unset($head_elements['system_meta_generator']);
-  
+
   // Remove metadata that exposes user's email address.
-  unset($head_elements['rdf_user_username']);  
+  unset($head_elements['rdf_user_username']);
 }
 
 function onebrick_tarski_username_alter(&$name, $account) {
   // Display the user's name instead of email address
   $user = user_load($account->uid);
-  if (isset($user->field_user_fullname['und'])) {
-    $name = brick_format_name($user->field_user_fullname['und'][0]['safe_value']);
+  if (isset($user->signature)) {
+    $name = brick_format_name($user->signature);
   }
 }
 
@@ -86,15 +86,23 @@ function tarski_preprocess_html(&$variables) {
   drupal_add_css($data = path_to_theme() . '/reset.css', $options['type'] = 'file', $options['weight'] = CSS_SYSTEM - 1);
 
   // Add conditional stylesheet for IEs
-  drupal_add_css(path_to_theme() . '/ie8.css', array('group' => CSS_THEME, 'browsers' => array('IE' => 'lte IE 8', '!IE' => FALSE), 'preprocess' => FALSE));
-  drupal_add_css(path_to_theme() . '/ie7.css', array('group' => CSS_THEME, 'browsers' => array('IE' => 'lte IE 7', '!IE' => FALSE), 'preprocess' => FALSE)); 
+  drupal_add_css(path_to_theme() . '/ie8.css', array(
+    'group' => CSS_THEME,
+    'browsers' => array('IE' => 'lte IE 8', '!IE' => FALSE),
+    'preprocess' => FALSE
+  ));
+  drupal_add_css(path_to_theme() . '/ie7.css', array(
+    'group' => CSS_THEME,
+    'browsers' => array('IE' => 'lte IE 7', '!IE' => FALSE),
+    'preprocess' => FALSE
+  ));
 }
 
 /**
  * Implements template_preprocess_page().
  */
 function tarski_preprocess_page(&$variables) {
-   // Add variables with weight value for each main column
+  // Add variables with weight value for each main column
   $variables['weight']['content'] = 0;
   $variables['weight']['sidebar-first'] = 'disabled';
   $variables['weight']['sidebar-second'] = 'disabled';
@@ -112,7 +120,7 @@ function tarski_preprocess_page(&$variables) {
       $columns++;
     }
   }
-  $variables['main_columns_number'] = $columns;  
+  $variables['main_columns_number'] = $columns;
 
   // Add $footer_columns_number variable to page.tpl.php file
   $columns = 0;
@@ -138,7 +146,7 @@ function tarski_preprocess_page(&$variables) {
     $layout_max_width = theme_get_setting('layout_3_max_width');
   }
   $dynamic_styles = "html { font-size: $base_font_size; } #header, #header-menu, #main, #footer { width: 100%; min-width: $layout_min_width; max-width: $layout_max_width;}";
-  drupal_add_css($data = $dynamic_styles, $options['type'] = 'inline', $options['preprocess'] = TRUE );
+  drupal_add_css($data = $dynamic_styles, $options['type'] = 'inline', $options['preprocess'] = TRUE);
 }
 
 /**
@@ -195,7 +203,7 @@ function tarski_node_recent_block($variables) {
   }
   if (user_access('access content overview')) {
     $items[] = theme('more_link', array('url' => url('admin/content'), 'title' => t('more ›')));
-  }  
+  }
   return theme('item_list', array('items' => $items));
 }
 
@@ -217,10 +225,18 @@ function tarski_node_recent_content($variables) {
 function tarski_tablesort_indicator($variables) {
   // Use custom arrow images
   if ($variables['style'] == "asc") {
-    return theme('image', array('path' => path_to_theme() . '/images/arrow-up-white.png', 'alt' => t('sort ascending'), 'title' => t('sort ascending')));
+    return theme('image', array(
+      'path' => path_to_theme() . '/images/arrow-up-white.png',
+      'alt' => t('sort ascending'),
+      'title' => t('sort ascending')
+    ));
   }
   else {
-    return theme('image', array('path' => path_to_theme() . '/images/arrow-down-white.png', 'alt' => t('sort descending'), 'title' => t('sort descending')));
+    return theme('image', array(
+      'path' => path_to_theme() . '/images/arrow-down-white.png',
+      'alt' => t('sort descending'),
+      'title' => t('sort descending')
+    ));
   }
 }
 
@@ -229,7 +245,10 @@ function tarski_tablesort_indicator($variables) {
  */
 function tarski_more_link($variables) {
   // Append arrow
-  return '<div class="more-link">' . t('<a href="@link" title="@title">more ›</a>', array('@link' => check_url($variables['url']), '@title' => $variables['title'])) . '</div>';
+  return '<div class="more-link">' . t('<a href="@link" title="@title">more ›</a>', array(
+    '@link' => check_url($variables['url']),
+    '@title' => $variables['title']
+  )) . '</div>';
 }
 
 /**
@@ -242,8 +261,18 @@ function tarski_pager($variables) {
   $parameters = $variables['parameters'];
   $pager_width = theme_get_setting('trim_pager');
   global $pager_page_array, $pager_total;
-  $li_previous = theme('pager_previous', array('text' => (isset($tags[1]) ? $tags[1] : t('‹ previous')), 'element' => $element, 'interval' => 1, 'parameters' => $parameters));
-  $li_next = theme('pager_next', array('text' => (isset($tags[3]) ? $tags[3] : t('next ›')), 'element' => $element, 'interval' => 1, 'parameters' => $parameters));
+  $li_previous = theme('pager_previous', array(
+    'text' => (isset($tags[1]) ? $tags[1] : t('‹ previous')),
+    'element' => $element,
+    'interval' => 1,
+    'parameters' => $parameters
+  ));
+  $li_next = theme('pager_next', array(
+    'text' => (isset($tags[3]) ? $tags[3] : t('next ›')),
+    'element' => $element,
+    'interval' => 1,
+    'parameters' => $parameters
+  ));
   $total_number_of_pages = $pager_total[$element];
   $current_page_number = $pager_page_array[$element] + 1;
 
@@ -264,17 +293,33 @@ function tarski_pager($variables) {
     }
     for ($i = 1; $i <= $total_number_of_pages; $i++) {
       if ($i < $current_page_number) {
-        $items[] = array('class' => array('pager-item'), 'data' => theme('pager_previous', array('text' => $i, 'element' => $element, 'interval' => ($current_page_number - $i), 'parameters' => $parameters)) );
+        $items[] = array(
+          'class' => array('pager-item'),
+          'data' => theme('pager_previous', array(
+            'text' => $i,
+            'element' => $element,
+            'interval' => ($current_page_number - $i),
+            'parameters' => $parameters
+          ))
+        );
       }
       if ($i == $current_page_number) {
         $items[] = array('class' => array('pager-current'), 'data' => $i);
       }
       if ($i > $current_page_number) {
-        $items[] = array('class' => array('pager-item'), 'data' => theme('pager_next', array('text' => $i, 'element' => $element, 'interval' => ($i - $current_page_number), 'parameters' => $parameters)) );
+        $items[] = array(
+          'class' => array('pager-item'),
+          'data' => theme('pager_next', array(
+            'text' => $i,
+            'element' => $element,
+            'interval' => ($i - $current_page_number),
+            'parameters' => $parameters
+          ))
+        );
       }
     }
     if ($li_next) {
-      $items[] = array('class' => array('pager-next'), 'data' => $li_next );
+      $items[] = array('class' => array('pager-next'), 'data' => $li_next);
     }
   }
 
@@ -288,95 +333,181 @@ function tarski_pager($variables) {
       }
       for ($i = 1; $i <= $pager_width; $i++) {
         if ($i < $current_page_number) {
-          $items[] = array('class' => array('pager-item'), 'data' => theme('pager_previous', array('text' => $i, 'element' => $element, 'interval' => ($current_page_number - $i), 'parameters' => $parameters)) );
+          $items[] = array(
+            'class' => array('pager-item'),
+            'data' => theme('pager_previous', array(
+              'text' => $i,
+              'element' => $element,
+              'interval' => ($current_page_number - $i),
+              'parameters' => $parameters
+            ))
+          );
         }
         if ($i == $current_page_number) {
           $items[] = array('class' => array('pager-item pager-current'), 'data' => $i);
         }
         if ($i > $current_page_number) {
-          $items[] = array('class' => array('pager-item'), 'data' => theme('pager_next', array('text' => $i, 'element' => $element, 'interval' => ($i - $current_page_number), 'parameters' => $parameters)) );
+          $items[] = array(
+            'class' => array('pager-item'),
+            'data' => theme('pager_next', array(
+              'text' => $i,
+              'element' => $element,
+              'interval' => ($i - $current_page_number),
+              'parameters' => $parameters
+            ))
+          );
         }
       }
       $items[] = array(
         'class' => array('pager-ellipsis'),
         'data' => '…',
       );
-      $items[] = array('class' => array('pager-item'), 'data' => theme('pager_last', array('text' => $total_number_of_pages, 'element' => $element, 'interval' => 1, 'parameters' => $parameters)) );
-      $items[] = array('class' => array('pager-next'), 'data' => $li_next );
+      $items[] = array(
+        'class' => array('pager-item'),
+        'data' => theme('pager_last', array(
+          'text' => $total_number_of_pages,
+          'element' => $element,
+          'interval' => 1,
+          'parameters' => $parameters
+        ))
+      );
+      $items[] = array('class' => array('pager-next'), 'data' => $li_next);
     }
 
     /* Genarate pager with elpisis on both sides. */
-    if($current_page_number >= $pager_width && $current_page_number <= $total_number_of_pages - $pager_width + 1) {
+    if ($current_page_number >= $pager_width && $current_page_number <= $total_number_of_pages - $pager_width + 1) {
       if ($li_previous) {
         $items[] = array('class' => array('pager-previous'), 'data' => $li_previous,);
       }
-      $items[] = array('class' => array('pager-item'), 'data' => theme('pager_first', array('text' => "1", 'element' => $element, 'interval' => 1, 'parameters' => $parameters)) );
+      $items[] = array(
+        'class' => array('pager-item'),
+        'data' => theme('pager_first', array(
+          'text' => "1",
+          'element' => $element,
+          'interval' => 1,
+          'parameters' => $parameters
+        ))
+      );
       $items[] = array(
         'class' => array('pager-ellipsis'),
         'data' => '…',
       );
-      function isEven($num){
-        return ($num%2) ? TRUE : FALSE;
+      function isEven($num) {
+        return ($num % 2) ? TRUE : FALSE;
       }
+
       if (isEven($pager_width) == TRUE) {
-        $a = floor($pager_width/2);
+        $a = floor($pager_width / 2);
       }
       if (isEven($pager_width) == FALSE) {
-        $a = floor($pager_width/2) - 1;
+        $a = floor($pager_width / 2) - 1;
       }
-      for ($i = $current_page_number - $a; $i <= $current_page_number + floor($pager_width/2); $i++) {
+      for ($i = $current_page_number - $a; $i <= $current_page_number + floor($pager_width / 2); $i++) {
         if ($i < $current_page_number) {
-          $items[] = array('class' => array('pager-item'), 'data' => theme('pager_previous', array('text' => $i, 'element' => $element, 'interval' => ($current_page_number - $i), 'parameters' => $parameters)) );
+          $items[] = array(
+            'class' => array('pager-item'),
+            'data' => theme('pager_previous', array(
+              'text' => $i,
+              'element' => $element,
+              'interval' => ($current_page_number - $i),
+              'parameters' => $parameters
+            ))
+          );
         }
         if ($i == $current_page_number) {
           $items[] = array('class' => array('pager-current'), 'data' => $i);
         }
         if ($i > $current_page_number) {
-          $items[] = array('class' => array('pager-item'), 'data' => theme('pager_next', array('text' => $i, 'element' => $element, 'interval' => ($i - $current_page_number), 'parameters' => $parameters)) );
+          $items[] = array(
+            'class' => array('pager-item'),
+            'data' => theme('pager_next', array(
+              'text' => $i,
+              'element' => $element,
+              'interval' => ($i - $current_page_number),
+              'parameters' => $parameters
+            ))
+          );
         }
       }
       $items[] = array(
         'class' => array('pager-ellipsis'),
         'data' => '…',
       );
-      $items[] = array('class' => array('pager-item'), 'data' => theme('pager_last', array('text' => $total_number_of_pages, 'element' => $element, 'interval' => 1, 'parameters' => $parameters)) );
-      $items[] = array('class' => array('pager-next'), 'data' => $li_next );
+      $items[] = array(
+        'class' => array('pager-item'),
+        'data' => theme('pager_last', array(
+          'text' => $total_number_of_pages,
+          'element' => $element,
+          'interval' => 1,
+          'parameters' => $parameters
+        ))
+      );
+      $items[] = array('class' => array('pager-next'), 'data' => $li_next);
     }
 
     /* Genarate pager with elpisis on left side. */
-    if($current_page_number >= $pager_width && $current_page_number > $total_number_of_pages - $pager_width + 1) {
+    if ($current_page_number >= $pager_width && $current_page_number > $total_number_of_pages - $pager_width + 1) {
       if ($li_previous) {
         $items[] = array('class' => array('pager-previous'), 'data' => $li_previous,);
       }
-      $items[] = array('class' => array('pager-item'), 'data' => theme('pager_first', array('text' => "1", 'element' => $element, 'interval' => 1, 'parameters' => $parameters)) );
+      $items[] = array(
+        'class' => array('pager-item'),
+        'data' => theme('pager_first', array(
+          'text' => "1",
+          'element' => $element,
+          'interval' => 1,
+          'parameters' => $parameters
+        ))
+      );
       $items[] = array(
         'class' => array('pager-ellipsis'),
         'data' => '…',
       );
       for ($i = $total_number_of_pages - $pager_width + 1; $i <= $total_number_of_pages; $i++) {
         if ($i < $current_page_number) {
-          $items[] = array('class' => array('pager-item'), 'data' => theme('pager_previous', array('text' => $i, 'element' => $element, 'interval' => ($current_page_number - $i), 'parameters' => $parameters)) );
+          $items[] = array(
+            'class' => array('pager-item'),
+            'data' => theme('pager_previous', array(
+              'text' => $i,
+              'element' => $element,
+              'interval' => ($current_page_number - $i),
+              'parameters' => $parameters
+            ))
+          );
         }
         if ($i == $current_page_number) {
           $items[] = array('class' => array('pager-current'), 'data' => $i);
         }
         if ($i > $current_page_number) {
-          $items[] = array('class' => array('pager-item'), 'data' => theme('pager_next', array('text' => $i, 'element' => $element, 'interval' => ($i - $current_page_number), 'parameters' => $parameters)) );
+          $items[] = array(
+            'class' => array('pager-item'),
+            'data' => theme('pager_next', array(
+              'text' => $i,
+              'element' => $element,
+              'interval' => ($i - $current_page_number),
+              'parameters' => $parameters
+            ))
+          );
         }
       }
-      $items[] = array('class' => array('pager-next'), 'data' => $li_next );
+      $items[] = array('class' => array('pager-next'), 'data' => $li_next);
     }
   }
 
   /* Print generated pager */
-  return '<h2 class="element-invisible">' . t('Pages') . '</h2>' . theme('item_list', array('items' => $items, 'title' => NULL, 'type' => 'ul', 'attributes' => array('class' => array('pager'))));
+  return '<h2 class="element-invisible">' . t('Pages') . '</h2>' . theme('item_list', array(
+    'items' => $items,
+    'title' => NULL,
+    'type' => 'ul',
+    'attributes' => array('class' => array('pager'))
+  ));
 }
 
 /**
-* Implemention of hook theme.
-*
-* Register custom them functions.
-*/
+ * Implemention of hook theme.
+ *
+ * Register custom them functions.
+ */
 
 
 /*

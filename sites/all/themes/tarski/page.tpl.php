@@ -119,7 +119,7 @@
             global $user;
 
             $loadedUser = user_load($user->uid);
-            $fullname = $loadedUser->field_user_fullname['und'][0]['safe_value'];
+            $fullname = $loadedUser->signature;
             $names = explode(" ", $fullname);
             $chapterId = $_SESSION['CHAPTER'];
 

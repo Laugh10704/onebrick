@@ -17,6 +17,7 @@ $q = "
 			init = @mail,
 			timezone = @timezone,
 			status = 1,
+			signature = @name,
 			signature_format = 'filtered_html',
 			created = @modified,
 			language = 'und'
@@ -176,20 +177,6 @@ foreach ($two_types as $t) {
 			revision_id = @uid+$orgcontact_offset,
 			language = 'und',
 			field_org_contact_person_uid=@uid+$orgcontact_offset
-	";
-  db_query($q) or die(db_error());
-
-  $q = "
-		LOAD DATA LOCAL INFILE '" . $file . "' REPLACE INTO TABLE field_" . $t . "_field_user_fullname
-		FIELDS  TERMINATED BY ',' ESCAPED BY '*' OPTIONALLY ENCLOSED BY '%'
-			(@uid, @name, @jobtitle, @mail, @phone, @orgid, @timezone, @chapter, @created, @modified)
-		SET 
-			entity_type = 'user',
-			bundle = 'user',
-			entity_id = @uid+$orgcontact_offset,
-			revision_id = @uid+$orgcontact_offset,
-			language = 'und',
-			field_user_fullname_value=@name
 	";
   db_query($q) or die(db_error());
 }
