@@ -1003,6 +1003,9 @@ function brick_form_alter(&$form, &$form_state, $form_id) {
         $form['field_should_know']['und'][0]['value']['#default_value'] = @$cn->field_should_know['und'][0]['value'];
         $form['field_tasks']['und'][0]['value']['#default_value'] = @$cn->field_tasks['und'][0]['value'];
       }
+      
+      // Remove preview button
+      $form['actions']['preview'] = NULL;
       break;
     case 'user_profile_form':
       break;
