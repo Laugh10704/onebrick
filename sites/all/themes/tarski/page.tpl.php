@@ -88,9 +88,9 @@
             $detect = mobile_detect_get_object();
             $is_mobile = $detect->isMobile();
             if ($is_mobile) {
-                echo "jQuery('#loginLink').colorbox({inline: true, href: '#currentPopupForm', transition: 'none', width: window.innerWidth, fixed: true, top:'0', left: '0', title: 'Login', opacity: '0.50', reposition: false});";
-                echo "jQuery('#signupLink').colorbox({inline: true, href: '#currentPopupForm', transition: 'none', width: window.innerWidth, title: 'Sign Up', opacity: '0.50', reposition: false});";
-                echo "jQuery('#newUserLink').colorbox({inline: true, href: '#currentPopupForm', transition: 'elastic', width: window.innerWidth, title: 'Sign Up', opacity: '0.50', reposition: false});";
+                echo "jQuery('#loginLink').colorbox({inline: true, href: '#currentPopupForm', transition: 'none', width: '350', fixed: true, top:'0', left: '0', title: 'Login', opacity: '0.50', reposition: false});";
+                echo "jQuery('#signupLink').colorbox({inline: true, href: '#currentPopupForm', transition: 'none', width: '350', title: 'Sign Up', opacity: '0.50', reposition: false});";
+                echo "jQuery('#newUserLink').colorbox({inline: true, href: '#currentPopupForm', transition: 'elastic', width: '350', title: 'Sign Up', opacity: '0.50', reposition: false});";
             }
             else {
                 echo "jQuery('#loginLink').colorbox({inline: true, href: '#currentPopupForm', transition: 'none', width: '350', title: 'Login', opacity: '0.50', reposition: false});";
