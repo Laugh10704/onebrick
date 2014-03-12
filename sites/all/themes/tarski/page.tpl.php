@@ -85,10 +85,8 @@
           var addVolunteerMenuItem = jQuery("li .expanded .leaf a[title=\"Add a new volunteer\"]");
 
           <?php
-            require_once 'sites/all/libraries/mobile-detect/Mobile_Detect.php';
-
-            $detect = mobile_detect_get_object();
-            $is_mobile = $detect->isMobile();
+            //$detect = mobile_detect_get_object();
+            $is_mobile = false;//$detect->isMobile();
             if ($is_mobile) {
                  echo "jQuery('#loginLink').colorbox({inline: true, href: '#currentPopupForm', transition: 'none', width: '400', fixed: true, left: 0, top: 0, title: 'Login', opacity: '0.50', reposition: false});";
                 echo "jQuery('#signupLink').colorbox({inline: true, href: '#currentPopupForm', transition: 'none', width: '400', fixed: true, left: 0, top: 0, title: 'Sign Up', opacity: '0.50', reposition: false});";
