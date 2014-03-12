@@ -82,8 +82,6 @@
           setupPopupForm("#initialForm");
           setupPopupForm("#initialSignupForm");
 
-          var width = "350";
-
           <?php
             require_once 'sites/all/libraries/mobile-detect/Mobile_Detect.php';
 
