@@ -42,7 +42,6 @@ var popupInternalFormDivId = "internalPopupFormId";
     s.parentNode.insertBefore(e, s);
 })();
 
-
 function janrainWidgetOnload() {
     // gets called after the user logs in with janrain
     janrain.events.onProviderLoginToken.addHandler(function(tokenResponse) {

@@ -8,7 +8,7 @@ if (preg_match('/^\/ical\//', $_SERVER['REQUEST_URI'])) {
   jQuery(document).ready(function(){
       var promoteButton = jQuery("ul.tabs").find("a:contains('Promote')");
       if (promoteButton) {
-         promoteButton.colorbox({inline:true, href:"#promoteArea", title:"Promote", transition:"none", width:"600"});
+        brick_colorbox(promoteButton, {inline:true, href:"#promoteArea", title:"Promote", transition:"none", width:"600"});
       }
   });
 
@@ -104,9 +104,8 @@ td.title {
         ?>
         <script language='javascript'>
             jQuery(document).ready(function(){
-		setupPopupForm("#initialRSVPForm");
-
-                jQuery('#rsvpButton').colorbox({inline:true, href:'#currentPopupForm', transition:'none', width:'400', title: 'RSVP for this event', opacity: '0.50'});
+		        setupPopupForm("#initialRSVPForm");
+                brick_colorbox(jQuery('#rsvpButton'), {inline:true, href:'#currentPopupForm', transition:'none', width:'400', title: 'RSVP for this event', opacity: '0.50'});
             })
         </script>
         
