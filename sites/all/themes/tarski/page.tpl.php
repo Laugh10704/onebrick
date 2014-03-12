@@ -101,7 +101,7 @@
           jQuery("#header-menu .content li.expanded > a").attr("href", "#");
           // now make their menus visible when you click on them
           jQuery("#header-menu .content li.expanded").click(function() {
-            jQuery(this).toggleClass("hover");
+            //jQuery(this).children("ul").toggleClass("hover");
           });
         });
 
