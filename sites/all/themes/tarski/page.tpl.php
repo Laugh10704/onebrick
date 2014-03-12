@@ -78,16 +78,34 @@
     <div id="header">
 
       <script language="javascript">
+
+        function brick_colorbox(elem, options)  {
+          <?php
+              // code to handle mobile colorbox
+              $detect = mobile_detect_get_object();
+              $is_mobile = $detect->isMobile();
+              if ($is_mobile) {
+                  // why?
+                  echo "options.width = parseInt(options.width) + 50;";
+                  echo "options.fixed = true;";
+                  echo "options.top = 0;";
+                  echo "options.left = 0;";
+              }
+          ?>
+          elem.colorbox(options);
+        }
+
         jQuery(document).ready(function () {
           setupPopupForm("#initialForm");
           setupPopupForm("#initialSignupForm");
 
-          jQuery('#loginLink').colorbox({inline: true, href: "#currentPopupForm", transition: "none", width: "350", title: "Login", opacity: "0.50", reposition: false});
-          jQuery('#signupLink').colorbox({inline: true, href: "#currentPopupForm", transition: "none", width: "350", title: "Sign Up", opacity: "0.50", reposition: false});
-          jQuery('#newUserLink').colorbox({inline: true, href: "#currentPopupForm", transition: "elastic", width: "350", title: "Sign Up", opacity: "0.50", reposition: false});
-
           var addVolunteerMenuItem = jQuery("li .expanded .leaf a[title=\"Add a new volunteer\"]");
-          addVolunteerMenuItem.colorbox({inline: true, href: "#currentPopupForm", transition: "none", width: "350", title: "Add Volunteer", opacity: "0.50", reposition: false});
+
+          brick_colorbox(jQuery("#loginLink"), {inline: true, href: '#currentPopupForm', transition: 'none', width: '350', title: 'Login', opacity: '0.50', reposition: false});
+          brick_colorbox(jQuery("#signupLink"), {inline: true, href: '#currentPopupForm', transition: 'none', width: '350', title: 'Sign Up', opacity: '0.50', reposition: false});
+          brick_colorbox(jQuery("#newUserLink"), {inline: true, href: '#currentPopupForm', transition: 'none', width: '350', title: 'Add Volunteer', opacity: '0.50', reposition: false});
+          brick_colorbox(addVolunteerMenuItem, {inline: true, href: '#currentPopupForm', transition: 'none', width: '350', title: 'Add Volunteer', opacity: '0.50', reposition: false});
+
           addVolunteerMenuItem.click(function () {
             resetPopupForm('#initialSignupForm', 'formWrapper');
             // mark that this is an admin adding a volunteer - not the person themselves
@@ -97,12 +115,8 @@
           // Also make the banner a link
           jQuery('#header').wrap('<a href="/" />');
 
-          // disable parent links by making them go nowhere
+          // disable parent links by making them go nowhere. This allows sub-menus to work on mobile as well
           jQuery("#header-menu .content li.expanded > a").attr("href", "#");
-          // now make their menus visible when you click on them
-          jQuery("#header-menu .content li.expanded").click(function() {
-            //jQuery(this).children("ul").toggleClass("hover");
-          });
         });
 
         function toSignupForm() {
