@@ -188,7 +188,7 @@ if (isset($node->field_event_site) && $node->field_event_site) {
   if (isset($site->field_site_please_note) && $site->field_site_please_note) {
     $please_note = $site->field_site_please_note['und']['0']['value'];
     if (!empty($please_note)) {
-?>
+      ?>
   <tr>
   <td class='title'>Location Note:</td>
   <td>  <?php print($please_note); ?>
