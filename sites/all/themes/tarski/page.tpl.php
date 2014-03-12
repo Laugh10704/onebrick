@@ -82,27 +82,27 @@
           setupPopupForm("#initialForm");
           setupPopupForm("#initialSignupForm");
 
+          var addVolunteerMenuItem = jQuery("li .expanded .leaf a[title=\"Add a new volunteer\"]");
+
           <?php
             require_once 'sites/all/libraries/mobile-detect/Mobile_Detect.php';
 
             $detect = mobile_detect_get_object();
             $is_mobile = $detect->isMobile();
             if ($is_mobile) {
-                echo "jQuery('#loginLink').colorbox({inline: true, href: '#currentPopupForm', transition: 'none', width: '350', fixed: true, top:'0', left: '0', title: 'Login', opacity: '0.50', reposition: false});";
-                echo "jQuery('#signupLink').colorbox({inline: true, href: '#currentPopupForm', transition: 'none', width: '350', title: 'Sign Up', opacity: '0.50', reposition: false});";
-                echo "jQuery('#newUserLink').colorbox({inline: true, href: '#currentPopupForm', transition: 'elastic', width: '350', title: 'Sign Up', opacity: '0.50', reposition: false});";
+                echo "jQuery('#loginLink').colorbox({inline: true, href: '#currentPopupForm', transition: 'none', width: '350', fixed: true, title: 'Login', opacity: '0.50', reposition: false});";
+                echo "jQuery('#signupLink').colorbox({inline: true, href: '#currentPopupForm', transition: 'none', width: '350', fixed: true, title: 'Sign Up', opacity: '0.50', reposition: false});";
+                echo "jQuery('#newUserLink').colorbox({inline: true, href: '#currentPopupForm', transition: 'elastic', width: '350', fixed: true, title: 'Sign Up', opacity: '0.50', reposition: false});";
+                echo "addVolunteerMenuItem.colorbox({inline: true, href: '#currentPopupForm', transition: 'none', width: '350', fixed: true, title: 'Add Volunteer', opacity: '0.50', reposition: false});";
             }
             else {
                 echo "jQuery('#loginLink').colorbox({inline: true, href: '#currentPopupForm', transition: 'none', width: '350', title: 'Login', opacity: '0.50', reposition: false});";
                 echo "jQuery('#signupLink').colorbox({inline: true, href: '#currentPopupForm', transition: 'none', width: '350', title: 'Sign Up', opacity: '0.50', reposition: false});";
                 echo "jQuery('#newUserLink').colorbox({inline: true, href: '#currentPopupForm', transition: 'elastic', width: '350', title: 'Sign Up', opacity: '0.50', reposition: false});";
+                echo "addVolunteerMenuItem.colorbox({inline: true, href: '#currentPopupForm', transition: 'none', width: '350', title: 'Add Volunteer', opacity: '0.50', reposition: false});";
             }
           ?>
 
-
-
-          var addVolunteerMenuItem = jQuery("li .expanded .leaf a[title=\"Add a new volunteer\"]");
-          addVolunteerMenuItem.colorbox({inline: true, href: "#currentPopupForm", transition: "none", width: width, title: "Add Volunteer", opacity: "0.50", reposition: false});
           addVolunteerMenuItem.click(function () {
             resetPopupForm('#initialSignupForm', 'formWrapper');
             // mark that this is an admin adding a volunteer - not the person themselves
