@@ -165,11 +165,11 @@ td.title {
 <table valign="middle" id="Organization Details"; width="97%" border="0" cellpadding="0" cellspacing="0">
 
 <?php
-if(isset($node->field_event_organization)) {
+if (isset($field_event_organization) && $field_event_organization) {
   $organization = node_load($node->field_event_organization['und']['0']['nid']);
 
   $text = "";
-  if(isset($organization->body)) {
+  if (isset($organization->body) && $organization->body) {
     $text = $organization->body['und'][0]['value'];
   }
   if (!empty($text)) {
@@ -184,9 +184,9 @@ if(isset($node->field_event_organization)) {
 ?>
 
 <?php // "Location Note"
-  if(isset($node->field_event_site)) {
-    $site = node_load($node->field_event_site['und']['0']['nid']);
-    if(isset($site->field_site_please_note)) {
+if (isset($field_event_site) && $field_event_site) {
+  $site = $field_event_site[0];
+  if(isset($site->field_site_please_note)) {
       $please_note = $site->field_site_please_note['und'][0]['value'];
       if (!empty($please_note)) {
 ?>

@@ -96,10 +96,9 @@ function brick_validate_event($eid) {
   }
 }
 
-function brick_node_validate($eid, $form, &$form_state) {
-  $event_node = node_load($eid);
+function brick_node_validate($event_node, $form, &$form_state) {
   if ($event_node->type == "event") {
-    brick_validate_event($eid);
+    brick_validate_event($event_node->nid);
   }
 }
 
