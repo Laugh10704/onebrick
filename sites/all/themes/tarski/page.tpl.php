@@ -83,8 +83,10 @@
           <?php
               // code to handle mobile colorbox
               $detect = mobile_detect_get_object();
-              $is_mobile = true;//$detect->isMobile();
+              $is_mobile = $detect->isMobile();
               if ($is_mobile) {
+                  // why?
+                  echo "options.width = parseInt(options.width) + 50;";
                   echo "options.fixed = true;";
                   echo "options.top = 0;";
                   echo "options.left = 0;";
