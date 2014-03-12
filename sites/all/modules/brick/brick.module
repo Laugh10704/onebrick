@@ -521,7 +521,7 @@ function brick_entity_presave($entity, $type) {
         $coordinators[] = $entity->field_coordinator['und'][$x]['uid'];
       }
 
-      brick_remap_manager_coordinator_rsvps($entity, $managers, $coordinators);
+      brick_remap_manager_coordinator_rsvps($entity->nid, $managers, $coordinators);
     }
   }
 }
