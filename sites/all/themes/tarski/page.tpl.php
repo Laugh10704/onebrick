@@ -82,12 +82,29 @@
           setupPopupForm("#initialForm");
           setupPopupForm("#initialSignupForm");
 
-          jQuery('#loginLink').colorbox({inline: true, href: "#currentPopupForm", transition: "none", width: "350", title: "Login", opacity: "0.50", reposition: false});
-          jQuery('#signupLink').colorbox({inline: true, href: "#currentPopupForm", transition: "none", width: "350", title: "Sign Up", opacity: "0.50", reposition: false});
-          jQuery('#newUserLink').colorbox({inline: true, href: "#currentPopupForm", transition: "elastic", width: "350", title: "Sign Up", opacity: "0.50", reposition: false});
+          var width = "350";
+
+          <?php
+            require_once 'sites/all/libraries/mobile-detect/Mobile_Detect.php';
+
+            $detect = mobile_detect_get_object();
+            $is_mobile = $detect->isMobile();
+            if ($is_mobile) {
+                echo "jQuery('#loginLink').colorbox({inline: true, href: '#currentPopupForm', transition: 'none', width: window.innerWidth, fixed: true, top:'0', left: '0', title: 'Login', opacity: '0.50', reposition: false});";
+                echo "jQuery('#signupLink').colorbox({inline: true, href: '#currentPopupForm', transition: 'none', width: window.innerWidth, title: 'Sign Up', opacity: '0.50', reposition: false});";
+                echo "jQuery('#newUserLink').colorbox({inline: true, href: '#currentPopupForm', transition: 'elastic', width: window.innerWidth, title: 'Sign Up', opacity: '0.50', reposition: false});";
+            }
+            else {
+                echo "jQuery('#loginLink').colorbox({inline: true, href: '#currentPopupForm', transition: 'none', width: '350', title: 'Login', opacity: '0.50', reposition: false});";
+                echo "jQuery('#signupLink').colorbox({inline: true, href: '#currentPopupForm', transition: 'none', width: '350', title: 'Sign Up', opacity: '0.50', reposition: false});";
+                echo "jQuery('#newUserLink').colorbox({inline: true, href: '#currentPopupForm', transition: 'elastic', width: '350', title: 'Sign Up', opacity: '0.50', reposition: false});";
+            }
+          ?>
+
+
 
           var addVolunteerMenuItem = jQuery("li .expanded .leaf a[title=\"Add a new volunteer\"]");
-          addVolunteerMenuItem.colorbox({inline: true, href: "#currentPopupForm", transition: "none", width: "350", title: "Add Volunteer", opacity: "0.50", reposition: false});
+          addVolunteerMenuItem.colorbox({inline: true, href: "#currentPopupForm", transition: "none", width: width, title: "Add Volunteer", opacity: "0.50", reposition: false});
           addVolunteerMenuItem.click(function () {
             resetPopupForm('#initialSignupForm', 'formWrapper');
             // mark that this is an admin adding a volunteer - not the person themselves
@@ -97,12 +114,8 @@
           // Also make the banner a link
           jQuery('#header').wrap('<a href="/" />');
 
-          // disable parent links by making them go nowhere
+          // disable parent links by making them go nowhere. This allows sub-menus to work on mobile as well
           jQuery("#header-menu .content li.expanded > a").attr("href", "#");
-          // now make their menus visible when you click on them
-          jQuery("#header-menu .content li.expanded").click(function() {
-            //jQuery(this).children("ul").toggleClass("hover");
-          });
         });
 
         function toSignupForm() {
