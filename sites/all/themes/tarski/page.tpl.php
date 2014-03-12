@@ -96,7 +96,14 @@
 
           // Also make the banner a link
           jQuery('#header').wrap('<a href="/" />');
-        })
+
+          // disable parent links by making them go nowhere
+          jQuery("#header-menu .content li.expanded > a").attr("href", "#");
+          // now make their menus visible when you click on them
+          jQuery("#header-menu .content li.expanded").click(function() {
+            //jQuery(this).children("ul").toggleClass("hover");
+          });
+        });
 
         function toSignupForm() {
           resetPopupForm('#initialSignupForm', 'formWrapper');
