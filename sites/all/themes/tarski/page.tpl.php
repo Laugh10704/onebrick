@@ -88,12 +88,12 @@
             require_once 'sites/all/libraries/mobile-detect/Mobile_Detect.php';
 
             $detect = mobile_detect_get_object();
-            $is_mobile = true;//$detect->isMobile();
+            $is_mobile = $detect->isMobile();
             if ($is_mobile) {
-                 echo "jQuery('#loginLink').colorbox({inline: true, href: '#currentPopupForm', transition: 'none', width: '350', fixed: true, left: 0, top: 0, title: 'Login', opacity: '0.50', reposition: false});";
-                echo "jQuery('#signupLink').colorbox({inline: true, href: '#currentPopupForm', transition: 'none', width: '350', fixed: true, left: 0, top: 0, title: 'Sign Up', opacity: '0.50', reposition: false});";
-               echo "jQuery('#newUserLink').colorbox({inline: true, href: '#currentPopupForm', transition: 'elastic', width: '350', fixed: true, left: 0, top: 0, title: 'Sign Up', opacity: '0.50', reposition: false});";
-                echo "addVolunteerMenuItem.colorbox({inline: true, href: '#currentPopupForm', transition: 'none', width: '350', fixed: true, left: 0, top: 0, title: 'Add Volunteer', opacity: '0.50', reposition: false});";
+                 echo "jQuery('#loginLink').colorbox({inline: true, href: '#currentPopupForm', transition: 'none', width: '400', fixed: true, left: 0, top: 0, title: 'Login', opacity: '0.50', reposition: false});";
+                echo "jQuery('#signupLink').colorbox({inline: true, href: '#currentPopupForm', transition: 'none', width: '400', fixed: true, left: 0, top: 0, title: 'Sign Up', opacity: '0.50', reposition: false});";
+               echo "jQuery('#newUserLink').colorbox({inline: true, href: '#currentPopupForm', transition: 'elastic', width: '400', fixed: true, left: 0, top: 0, title: 'Sign Up', opacity: '0.50', reposition: false});";
+                echo "addVolunteerMenuItem.colorbox({inline: true, href: '#currentPopupForm', transition: 'none', width: '400', fixed: true, left: 0, top: 0, title: 'Add Volunteer', opacity: '0.50', reposition: false});";
             }
             else {
                 echo "jQuery('#loginLink').colorbox({inline: true, href: '#currentPopupForm', transition: 'none', width: '350', title: 'Login', opacity: '0.50', reposition: false});";
