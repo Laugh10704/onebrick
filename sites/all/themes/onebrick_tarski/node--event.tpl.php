@@ -166,7 +166,7 @@ td.title {
 
 <?php
 if (isset($field_event_organization) && $field_event_organization) {
-  $organization = $field_event_organization[0]['node'];
+  $organization = node_load($field_event_organization['und']['0']['nid']);
 
   $text = "";
   if (isset($organization->body) && $organization->body) {

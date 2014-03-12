@@ -478,9 +478,19 @@ function brick_user_presave(&$edit, $account, $category) {
 }
 
 function brick_entity_insert($entity, $type) {
-  if (property_exists($entity, "type") && $entity->type == "event") {
+  if ($type == 'user') {
+    $id = $entity->uid;
+  }
+  else {
+    $id = $entity->nid;
+  }
+
+  if ($type == 'user' ||
+    (property_exists($entity, "type") &&
+      in_array($entity->type, array("event", "organization", "site", "organization_contact")))
+  ) {
     db_insert('node_access')->fields(array(
-      'nid' => $entity->nid,
+      'nid' => $id,
       'gid' => 0,
       'realm' => 'all',
       'grant_view' => 1,
