@@ -82,8 +82,8 @@
         function brick_colorbox(elem, options)  {
           <?php
               // code to handle mobile colorbox
-              //$detect = mobile_detect_get_object();
-              $is_mobile = FALSE; //$detect->isMobile();
+              $detect = mobile_detect_get_object();
+              $is_mobile = $detect->isMobile();
               if ($is_mobile) {
                   // why?
                   echo "options.width = parseInt(options.width) + 50;";
