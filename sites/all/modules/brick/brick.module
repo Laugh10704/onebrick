@@ -1009,7 +1009,6 @@ function brick_form_alter(&$form, &$form_state, $form_id) {
       hide($form['actions']['preview']);
       hide($form['actions']['delete']);
 
-
       if (@$_REQUEST['copy_id']) {
         $cn = node_load($_REQUEST['copy_id']);
 
@@ -1040,7 +1039,7 @@ function brick_form_alter(&$form, &$form_state, $form_id) {
       break;
     case 'views_form_attending_volunteers_list_default':
       //$form['actions']['submit']['#value'] = 'Reconcile Event';
-    break;
+      break;
   }
 }
 
