@@ -6,7 +6,10 @@
 
   //drupal_set_message(print_r($user, true));
 
-  $username = brick_format_name($user->signature);
+  $account = $elements['#account'];
+  //$account = user_load($account_id);
+
+  $username = brick_format_name($account->signature);
   echo "<div id='profile_title'>" . $username . "</div>";
 
   print render($user_profile);

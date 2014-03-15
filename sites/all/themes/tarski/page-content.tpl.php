@@ -81,30 +81,27 @@
 
   <?php $column++; ?>
   <div id="content-wrapper">
-    <div id="content" class="<?php if ($column == 1): ?>first<?php endif; ?><?php if ($column == $main_columns_number): ?> last<?php endif; ?>">
+    <div id="content"
+         class="<?php if ($column == 1): ?>first<?php endif; ?><?php if ($column == $main_columns_number): ?> last<?php endif; ?>">
 
       <?php print render($page['content_top']); ?>
-      <?php if ($messages): ?><div id="messages"><?php print $messages; ?></div><?php endif; ?>
-      <?php if ($tabs): ?><div class="tabs"><?php print render($tabs); ?></div><?php endif; ?>
+      <?php if ($messages): ?>
+        <div id="messages"><?php print $messages; ?></div><?php endif; ?>
+      <?php if ($tabs): ?>
+        <div class="tabs"><?php print render($tabs); ?></div><?php endif; ?>
       <?php print $feed_icons; ?>
 
       <a id="main-content"></a>
-  
 
-<?php print render($page['help']); ?>
-      <?php if ($action_links): ?><ul class="action-links"><?php print render($action_links); ?></ul><?php endif; ?>
 
-			<?php  // Expand One Brick Variables, skip edit page it's too confusing!
-      if (strpos($_SERVER['REQUEST_URI'], "/edit")) {
-				print render($page['content']);
-			}
-			else {
-				$event = node_load(32901); // debug load SF Chapter Lead Event for debug
-				print brick_expand(render($page['content']), $event);  // Clive edit
-			}
-			?>
-      
+      <?php print render($page['help']); ?>
+      <?php if ($action_links): ?>
+        <ul class="action-links"><?php print render($action_links); ?></ul><?php endif; ?>
+
+      <?php print render($page['content']); ?>
+
       <?php print render($page['content_bottom']); ?>
-    </div> <!-- /#content -->
+    </div>
+    <!-- /#content -->
   </div> <!-- /#content-wrapper -->
 <?php endif; ?>

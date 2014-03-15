@@ -183,7 +183,7 @@ function brick_email_assigned($eventid, $userid, $role) {
   $event = node_load($eventid);
   $user = user_load($userid);
 
-  $fname = $user->field_user_fullname['und']['0']['value'];
+  $fname = $user->signature;
   $email = $user->mail;
 
 //watchdog('email', "fname: ".$fname." email: ".$email); 
