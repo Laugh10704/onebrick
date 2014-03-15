@@ -478,18 +478,24 @@ function brick_user_presave(&$edit, $account, $category) {
 }
 
 function brick_entity_insert($entity, $type) {
-  if ($type == 'user') {
-    $id = $entity->uid;
+  switch ($type) {
+    case 'user':
+      $id = $entity->uid;
+      break;
+    case 'node':
+      $id = $entity->nid;
+      break;
+    case 'file':
+      $id = $entity->fid;
+      break;
   }
-  else {
-    $id = $entity->nid;
-  }
-
-  if ($type == 'user' ||
-    (property_exists($entity, "type") &&
-      in_array($entity->type, array("event", "organization", "site", "organization_contact")))
-  ) {
-    db_insert('node_access')->fields(array(
+  switch ($type) {
+    case 'user':
+    case 'site':
+    case 'event':
+    case 'organization':
+    case "organization_contact":
+      db_insert('node_access')->fields(array(
       'nid' => $id,
       'gid' => 0,
       'realm' => 'all',
@@ -497,6 +503,7 @@ function brick_entity_insert($entity, $type) {
       'grant_update' => 0,
       'grant_delete' => 0,
     ))->execute();
+      break;
   }
 }
 
