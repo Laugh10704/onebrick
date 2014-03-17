@@ -22,6 +22,11 @@ function brick_get_rsvp_list($eid) {
   return (db_query($q));
 }
 
+// just an alias for brick_get_rsvp_list, needed by some view
+function brick_get_rsvp_list_id($nid) {
+  return brick_get_rsvp_list($nid);
+}
+
 function brick_get_attendee_list($eid) {
   $q = "
   SELECT DISTINCT
