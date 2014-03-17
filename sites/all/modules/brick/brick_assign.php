@@ -179,30 +179,22 @@ function brick_clear_staged() {
   brick_go_back();
 }
 
-function brick_email_assigned($eventid, $userid, $role) {
-  $event = node_load($eventid);
-  $user = user_load($userid);
-
-  $fname = $user->signature;
-  $email = $user->mail;
-
-//watchdog('email', "fname: ".$fname." email: ".$email); 
-
-  $title = $event->title;
-  $times = brick_event_from_to($event);
-
-//watchdog('email', "title: ".$title." times: ".$times); 
+function brick_email_assigned($eid, $userid, $role) {
+  $event = node_load($eid);
+  global $user;
+  $account = user_load($userid);
 
   $res = db_query("SELECT field_data_body.body_value as text FROM node
- left join field_data_body on node.nid = entity_id
- WHERE node.title LIKE 'Assign " . $role . " Email Template'");
+      left join field_data_body on node.nid = entity_id
+      WHERE node.title LIKE 'Assign " . $role . " Email Template'");
   $template = $res->fetchField();
 
-  watchdog('email', '<pre>' . print_r($user, TRUE) . '</pre>');
-  $email_msg = brick_expand($template, $event, $user, NULL);
 
-//watchdog('email', "template: ".$template); 
-  watchdog('email', "email_msg: " . $email_msg);
+  $params['body'] = brick_expand($template, $eid, $account, NULL);
+  $params['subject'] = "One Brick Event Assignment - " . $event->title . "(";
+  $params['email'] = $user->mail;
+
+  drupal_mail('brick', 'assign', $account->mail, language_default(), $params, $user->mail);
 }
 
 function brick_change_staged($oldVal, $newVal) {

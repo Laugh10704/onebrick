@@ -215,18 +215,30 @@ function brick_mail_alter(&$message) {
 }
 
 function brick_count_staff() {
-  $q = "SELECT COUNT(DISTINCT(mail)) FROM STAFF WHERE 1;";
+  $q = "SELECT count(distinct(users.name)) from users
+        LEFT JOIN users_roles using (uid)
+        LEFT JOIN role using(rid)
+        LEFT JOIN field_revision_field_user_chapter chap ON chap.entity_id = users.uid
+        LEFT JOIN field_data_field_user_chapter ON field_data_field_user_chapter.entity_id = users.uid
+        LEFT JOIN node on node.nid = field_data_field_user_chapter.field_user_chapter_nid
+        WHERE users.status = 1 and role.name in ('Event Manager', 'Event Coordinator', 'Recruiting','Event Creation', 'Event Assignment')";
   $r = db_query($q);
   return $r->fetchField();
 }
 
 function brick_get_events_mailing_list($forChapter = NULL) {
-  $q = "SELECT DISTINCT mail from ROLES
-							where role in ('Event Creation', 'Event Assignment')";
-
+  $q = "SELECT users.name as mail FROM users
+        LEFT JOIN users_roles using (uid)
+        LEFT JOIN role using(rid)
+        LEFT JOIN field_revision_field_user_chapter chap ON chap.entity_id = users.uid
+        LEFT JOIN field_data_field_user_chapter ON field_data_field_user_chapter.entity_id = users.uid
+        LEFT JOIN node on node.nid = field_data_field_user_chapter.field_user_chapter_nid
+        WHERE users.status = 1 and role.name in ('Event Creation', 'Event Assignment')";
   if ($forChapter) {
-    $q = $q . " AND chapterid = " . $forChapter;
+    $q = $q . " AND node.nid = " . $forChapter;
   }
+  $q = $q . " group by users.uid;";
+
 
   $r = db_query($q);
   return $r->fetchCol();
@@ -489,7 +501,7 @@ function brick_entity_insert($entity, $type) {
       $id = $entity->fid;
       break;
   }
-  switch ($type) {
+  switch ($entity->$type) {
     case 'user':
     case 'site':
     case 'event':

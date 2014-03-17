@@ -1,11 +1,36 @@
 <?php
 // Move these into a misc file one day
 function brick_org_contact_list($orgid) {
-  return (db_query("SELECT * from ORG_CONTACT_LIST where orgid = " . $orgid . ";"));
+  $q = "SELECT DISTINCT
+            node.nid AS orgid, title AS organization,  users.signature AS name,
+            field_user_phone_value AS phone, users.mail as email
+          FROM node
+          LEFT JOIN field_data_field_org_contact_organization  ON field_org_contact_organization_nid = node.nid
+          LEFT JOIN field_data_field_org_contact_person ON field_data_field_org_contact_person.entity_id  =
+            field_data_field_org_contact_organization.entity_id
+          LEFT JOIN field_data_field_user_phone ON field_data_field_user_phone.entity_id =
+            field_org_contact_person_uid
+          LEFT JOIN users  ON users.uid = field_org_contact_person_uid
+          WHERE type = 'organization' and title <> '' and users.signature <> '' and node.nid = " . $orgid . ";";
+  return (db_query($q));
 }
 
 function brick_chapter_details($chapter_id) {
-  return (db_query("SELECT * FROM CHAPTER_DETAILS where chapter_id = " . $chapter_id . ";"));
+  $q = "SELECT DISTINCT
+           node.nid AS chapter_id,   node.title as name,
+           field_chapter_recruiting_email_value as email_recruiting,
+           field_chapter_events_email_value as email_events, field_chapter_twitter_url_value as twitter,
+           field_chapter_facebook_url_value as facebook, field_chapter_craigslist_stub_value as cl_stub,
+           field_chapter_craigslist_code_value as cl_code
+        FROM node
+           LEFT JOIN field_data_field_chapter_recruiting_email on   field_data_field_chapter_recruiting_email.entity_id = node.nid
+           LEFT JOIN field_data_field_chapter_events_email on       field_data_field_chapter_events_email.entity_id = node.nid
+           LEFT JOIN  field_data_field_chapter_twitter_url on       field_data_field_chapter_twitter_url.entity_id = node.nid
+           LEFT JOIN field_data_field_chapter_facebook_url on       field_data_field_chapter_facebook_url.entity_id = node.nid
+           LEFT JOIN field_data_field_chapter_craigslist_stub on    field_data_field_chapter_craigslist_stub.entity_id = node.nid
+           LEFT JOIN  field_data_field_chapter_craigslist_code on   field_data_field_chapter_craigslist_code.entity_id = node.nid
+        WHERE field_chapter_craigslist_code_value  <> and node.nid = " . $chapter_id . ";";
+  return (db_query($q));
 }
 
 function brick_site_address($eid) {
@@ -21,8 +46,10 @@ function brick_site_address($eid) {
 }
 
 function brick_event_from_to($eid) {
-// The string value is represented in one timezone (probably UTC),
-// and we need to convert it to the target timezone instead.
+  $event_node = node_load($eid);
+
+  // The string value is represented in one timezone (probably UTC),
+  // and we need to convert it to the target timezone instead.
   if (!function_exists('get_date')) {
     function get_date($str, $from_tz, $to_tz) {
       $obj = new DateTime($str, new DateTimeZone($from_tz));
@@ -30,7 +57,6 @@ function brick_event_from_to($eid) {
       return $obj;
     }
   }
-  $event_node = node_load($eid);
   $from_tz = $event_node->field_event_date['und'][0]['timezone_db'];
   $to_tz = $event_node->field_event_date['und'][0]['timezone'];
   $ts_from = get_date($event_node->field_event_date['und'][0]['value'], $from_tz, $to_tz);
@@ -162,7 +188,7 @@ function brick_array2commalist($list) {
 // $to - user node for the person we intend to email
 // $rsvp -  node for the person who just rsvp'ed
 //
-function brick_expand($s, $event = NULL, $to = NULL, $rsvp = NULL) {
+function brick_expand($s, $eid = NULL, $to = NULL, $rsvp = NULL) {
   $c = "#brick_expand"; //This is the stub we will look for in the file
 
   // Performance optimization ... if no variables simply return
@@ -192,18 +218,18 @@ function brick_expand($s, $event = NULL, $to = NULL, $rsvp = NULL) {
   }
 
   // expand information about the event passed as param event
-  if ($event && strpos($s, $c . "(event:")) {
+  if ($eid && strpos($s, $c . "(event:")) {
     global $base_url;
-    $url = $base_url . "/node/" . $event->nid;
-
-    $s = str_replace($c . "(event:rsvp_count)", brick_rsvp_count($event->nid), $s);
+    $event = node_load($eid);
+    $url = $base_url . "/node/" . $eid;
+    $s = str_replace($c . "(event:rsvp_count)", brick_rsvp_count($eid), $s);
     $s = str_replace($c . "(event:rsvp_capacity)",
       $event->field_event_max_rsvp_capacity['und'][0]['value'], $s);
-    $s = str_replace($c . "(event:date)", brick_event_from_to($event), $s);
+    $s = str_replace($c . "(event:date)", brick_event_from_to($eid), $s);
     $s = str_replace($c . "(event:name)", strip_tags($event->title), $s);
-    $s = str_replace($c . "(event:location)", brick_site_address($event), $s);
+    $s = str_replace($c . "(event:location)", brick_site_address($eid), $s);
 
-    $s = str_replace($c . "(event:staff)", brick_format_managment_list($event, FALSE), $s);
+    $s = str_replace($c . "(event:staff)", brick_format_managment_list($eid, FALSE), $s);
     $s = str_replace($c . "(event:page)", '<a href="' . $url . '">' . $url . "</a>", $s);
 
     $contacts = brick_org_contact_list($event->field_event_organization['und']['0']['nid']);
@@ -227,8 +253,6 @@ function brick_expand($s, $event = NULL, $to = NULL, $rsvp = NULL) {
         }
       }
     }
-    watchdog('info', "org_contacts for " . $org_name . " are " . $org_contacts);
-
     if (isset($org_name)) {
       $s = str_replace($c . "(event:org_name)", $org_name, $s);
       $s = str_replace($c . "(event:org_contacts)", $org_contacts, $s);
@@ -248,10 +272,10 @@ function brick_expand($s, $event = NULL, $to = NULL, $rsvp = NULL) {
 
   // expand information about the user we are emailing
   if ($to && strpos($s, $c . "(email:")) {
-    $s = str_replace($c . "(email:name)", $to->name, $s);
-    $names = explode(" ", $to->name);
-    watchdog("info", "name0: " . $names[0]);
+    $s = str_replace($c . "(email:name)", $to->signature, $s);
+    $names = explode(" ", $to->signature);
     $s = str_replace($c . "(email:fname)", $names[0], $s);
+    $s = str_replace($c . "(email:sname)", $names[1], $s);
   }
 
   // expand information about the current chapter

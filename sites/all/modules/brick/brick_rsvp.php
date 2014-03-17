@@ -556,7 +556,6 @@ function send_rsvp_emails($eid, $rsvpname, $rsvpemail, $note, $unrsvp = FALSE) {
 
     if ($unrsvp) {
       drupal_mail('brick', 'unrsvp', $email, language_default(), $params, $rsvpemail);
-
     }
     else {
       drupal_mail('brick', 'rsvp', $email, language_default(), $params, $rsvpemail);
@@ -589,8 +588,12 @@ function brick_mail($key, &$message, $params) {
       $message['subject'] = strtr("Event unRSVP: @title", $variables);
       $message['body'][] = strtr("@rsvpname has unRSVPed from the following event:\n @title\n@date", $variables);
       break;
+    case 'assign':
+    case 'unassign':
+      $message['subject'] = $params['subject'];
+      $message['body'][] = $params['body'];
+      break;
   }
-
 }
 
 // Return the number of people who have RSVPed but are not PUBLIC people
