@@ -10,12 +10,25 @@
 .page-user #profile_title {
     font-weight: bold;
     font-size: 2em;
-    float: left; /* so that the email link goes to the right */
 }
 
-.page-user .user-picture img {
-    position: absolute;
-    left: 850px;
+.page-user .user-picture {
+   float: right;
+}
+
+.page-user .brick-email-link {
+    position: relative;
+    left: -320px;
+    top: -25px;
+}
+
+.page-user .field {
+    float:left;
+}
+
+
+.page-user .region {
+    clear:both;
 }
 
 .page-user .brick-email-link {
