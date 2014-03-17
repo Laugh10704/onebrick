@@ -29,6 +29,11 @@ body, h1, h2, h3, form, input, td, p, ul, li {
     width: 450px;
 }
 
+.views-field-signature p {
+    margin: 0 !important;
+    display: inline !important;
+}
+
 .view-attending-volunteers-list td {
     height: 20px;
 }
