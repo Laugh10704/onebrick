@@ -502,7 +502,7 @@ function brick_entity_insert($entity, $type) {
       break;
   }
   if (property_exists($entity, 'type')) {
-    switch ($entity->$type) {
+    switch ($entity->type) {
       case 'user':
       case 'site':
       case 'event':
