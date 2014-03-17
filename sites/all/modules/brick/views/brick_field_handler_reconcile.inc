@@ -85,11 +85,26 @@ class brick_field_handler_reconcile  extends views_handler_field {
       }
     }
 
+    $evid = null;
+
     // Grab the nodes we need to update and update them.
     $nodes = node_load_multiple(array_keys($updates));
     foreach($nodes as $nid => $node) {
+      $evid = intval($node->field_rsvp_event[LANGUAGE_NONE][0]['nid']);
       $node->field_rsvp_attended[LANGUAGE_NONE][0]['value'] = $updates[$nid];
       node_save($node);
+    }
+
+    if (sizeof($updates) > 0) {
+       // reconcile the event
+       $evNd = node_load($evid);
+       if ($evNd) {
+          if (!$evNd->field_reconciled || !$evNd->field_reconciled['und'][0]['value']) {
+            $evNd->field_reconciled['und'][0]['value'] = TRUE;
+            node_save($evNd);
+            drupal_set_message(t('Event has been reconciled'));
+          }
+       }
     }
 
     drupal_set_message(t('Reconciled @num rsvps.', array('@num' => sizeof($updates))));
