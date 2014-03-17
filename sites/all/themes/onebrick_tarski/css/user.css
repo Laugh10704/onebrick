@@ -1,52 +1,59 @@
 .page-user table {
-   border: 1px solid lightgray; 
+    border: 1px solid lightgray;
 }
 
 .page-user td {
-  vertical-align: top; 
-       padding: .4em; 
+    vertical-align: top;
+    padding: .4em;
 }
 
 .page-user #profile_title {
-  font-weight: bold; 
-	font-size: 2em;
+    font-weight: bold;
+    font-size: 2em;
+    float: left; /* so that the email link goes to the right */
 }
 
-.page-user .user-picture img{
-float : right;
-top : 90px;
+.page-user .user-picture img {
+    float: right;
+    top: 90px;
+}
 
+.page-user .brick-email-link {
+    margin-left: 10px;
+}
+
+.page-user .field {
+    clear: both;
 }
 
 .page-user .field-label {
-	padding:5px;
-	padding-top:25px;
-	font-weight: bold;
+    padding: 5px;
+    padding-top: 25px;
+    font-weight: bold;
 }
 
 /* Removes header that says "History" */
 .page-user h3 {
-	display:none;
+    display: none;
 }
 
-
 .page-user .field-item {
-padding:5px;border:1px solid #ccc;height:auto; width: 410px;
+    padding: 5px;
+    border: 1px solid #ccc;
+    height: auto;
+    width: 410px;
 }
 
 /*hide the text at the top of the edit page*/
 .page-user-edit .inner .content p {
-   display: none;
+    display: none;
 }
-
 
 .field-name-field-user-public-rsvp,
-.password-strength
-{
-	display:none;
+.password-strength {
+    display: none;
 }
 
-.description 
-{
-	display:none;
+.description {
+    display: none;
 }
