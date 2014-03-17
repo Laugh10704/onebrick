@@ -270,7 +270,7 @@ function brick_get_num_assigned_from_pager($uid) {
 }
 
 function brick_get_num_assigned_from_monthid($uid, $monthId) {
-  drupal_set_message("Month: " . $monthId);
+  //drupal_set_message("Month: " . $monthId);
   $month = node_load($monthId)->field_availability_month['und'][0]['value'];
   return brick_get_num_assigned($uid, $month);
 }
