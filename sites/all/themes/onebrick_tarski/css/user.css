@@ -14,8 +14,8 @@
 }
 
 .page-user .user-picture img {
-    float: right;
-    top: 90px;
+    position: absolute;
+    left: 850px;
 }
 
 .page-user .brick-email-link {
