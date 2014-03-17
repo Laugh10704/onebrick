@@ -1,7 +1,10 @@
 
 // necessary for chrome and the like
 jQuery(document).ajaxComplete(function(e, xhr, settings) {
-   jQuery.colorbox.resize();
+    // only if it exists
+    if (typeof jQuery.colorbox != "undefined") {
+        jQuery.colorbox.resize();
+    }
 });
 
 jQuery.fn.reloadPage = function(data) {
