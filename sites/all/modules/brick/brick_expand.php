@@ -275,7 +275,9 @@ function brick_expand($s, $eid = NULL, $to = NULL, $rsvp = NULL) {
     $s = str_replace($c . "(email:name)", $to->signature, $s);
     $names = explode(" ", $to->signature);
     $s = str_replace($c . "(email:fname)", $names[0], $s);
-    $s = str_replace($c . "(email:sname)", $names[1], $s);
+    if (count($names) > 1) {
+      $s = str_replace($c . "(email:sname)", $names[1], $s);
+    }
   }
 
   // expand information about the current chapter
