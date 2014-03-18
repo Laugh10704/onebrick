@@ -602,7 +602,7 @@ function brick_user_view($account, $view_mode, $langcode) {
     $emailMarkup = brick_safe_mailto($account->mail);
 
     $account->content['field_user_email'] = array(
-      //'#theme' => 'field',
+      '#theme' => 'field',
       '#weight' => 0,
       '#field_type' => 'markup',
       '#label_display' => 'inline',
