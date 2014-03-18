@@ -601,9 +601,9 @@ function brick_user_view($account, $view_mode, $langcode) {
   //if (stristr($account->mail, "@onebrick.org")) {
     $emailMarkup = brick_safe_mailto($account->mail);
 
-    $account->content['field_email'] = array(
+    $account->content['field_user_email'] = array(
       //'#theme' => 'field',
-      '#weight' => -1,
+      '#weight' => 0,
       '#field_type' => 'markup',
       '#label_display' => 'inline',
       '#field_name' => 'email',
