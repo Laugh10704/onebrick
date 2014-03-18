@@ -598,8 +598,8 @@ function brick_switch_chapter($nid = 0) {
 }
 
 function brick_user_view($account, $view_mode, $langcode) {
-  if (stristr($account->mail, "@onebrick.org")) {
-    $emailMarkup = brick_safe_mailto($account->mail, "Email");
+  //if (stristr($account->mail, "@onebrick.org")) {
+    $emailMarkup = brick_safe_mailto($account->mail);
 
     $account->content['field_email'] = array(
       //'#theme' => 'field',
@@ -613,7 +613,7 @@ function brick_user_view($account, $view_mode, $langcode) {
       '#items' => array(array('value'=>0)),
       0 => array('#markup' => $emailMarkup),
     );
- }
+ //}
 }
 
 /*
@@ -878,7 +878,7 @@ function user_has_role($role, $user = NULL) {
   return FALSE;
 }
 
-function brick_safe_mailto($email, $subject) {
+function brick_safe_mailto($email, $subject = null) {
 
   if (!isset($email)) { // person doesn't have an email address in the system
     return ("");
