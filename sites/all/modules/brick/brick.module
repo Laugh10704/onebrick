@@ -598,7 +598,7 @@ function brick_switch_chapter($nid = 0) {
 }
 
 function brick_user_view($account, $view_mode, $langcode) {
-  //if (stristr($account->mail, "@onebrick.org")) {
+  if (stristr($account->mail, "@onebrick.org")) {
     $emailMarkup = brick_safe_mailto($account->mail);
 
     $account->content['field_user_email'] = array(
@@ -613,7 +613,7 @@ function brick_user_view($account, $view_mode, $langcode) {
       '#items' => array(array('value'=>0)),
       0 => array('#markup' => $emailMarkup),
     );
- //}
+ }
 }
 
 /*
