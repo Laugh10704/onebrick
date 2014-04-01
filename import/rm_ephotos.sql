@@ -1,0 +1,2 @@
+truncate field_data_field_event_photos;
+truncate field_revision_field_event_photos;

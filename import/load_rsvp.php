@@ -5,7 +5,7 @@ require("open_v3.php");
 $file = 'data/rsvp.csv';
 
 $q = "
-	LOAD DATA LOCAL INFILE '".$file."' REPLACE INTO TABLE node
+	LOAD DATA LOCAL INFILE '" . $file . "' REPLACE INTO TABLE node
 	FIELDS TERMINATED BY ',' ESCAPED BY '*' OPTIONALLY ENCLOSED BY '%' 
 			( @eventid, @role, @userid, @attended, @rsvpdate, @rsvpnote, @rsvpid)
 		SET 
@@ -23,7 +23,7 @@ $q = "
 db_query($q) or die(db_error());
 
 $q = "
-	LOAD DATA LOCAL INFILE '".$file."' REPLACE INTO TABLE node_revision
+	LOAD DATA LOCAL INFILE '" . $file . "' REPLACE INTO TABLE node_revision
 	FIELDS TERMINATED BY ',' ESCAPED BY '*' OPTIONALLY ENCLOSED BY '%' 
 			( @eventid, @role, @userid, @attended, @rsvpdate, @rsvpnote, @rsvpid)
 		SET 
@@ -40,7 +40,7 @@ $q = "
 db_query($q) or die(db_error());
 
 $q = "
-	LOAD DATA LOCAL INFILE '".$file."' REPLACE INTO TABLE node_access
+	LOAD DATA LOCAL INFILE '" . $file . "' REPLACE INTO TABLE node_access
 	FIELDS TERMINATED BY ',' ESCAPED BY '*' OPTIONALLY ENCLOSED BY '%' 
 			( @eventid, @role, @userid, @attended, @rsvpdate, @rsvpnote, @rsvpid)
 		SET 
@@ -54,7 +54,7 @@ $q = "
 
 db_query($q) or die(db_error());
 $q = "
-	LOAD DATA LOCAL INFILE '".$file."' REPLACE INTO TABLE node_comment_statistics
+	LOAD DATA LOCAL INFILE '" . $file . "' REPLACE INTO TABLE node_comment_statistics
 	FIELDS TERMINATED BY ',' ESCAPED BY '*' OPTIONALLY ENCLOSED BY '%' 
 			( @eventid, @role, @userid, @attended, @rsvpdate, @rsvpnote, @rsvpid)
 		SET 
@@ -69,8 +69,8 @@ db_query($q) or die(db_error());
 
 $two_types = array('data', 'revision');
 foreach ($two_types as $t) {
-				$q = "
-					LOAD DATA LOCAL INFILE '".$file."' REPLACE INTO TABLE field_".$t."_field_rsvp_attended
+  $q = "
+					LOAD DATA LOCAL INFILE '" . $file . "' REPLACE INTO TABLE field_" . $t . "_field_rsvp_attended
 					FIELDS TERMINATED BY ',' ESCAPED BY '*' OPTIONALLY ENCLOSED BY '%' 
 						( @eventid, @role, @userid, @attended, @rsvpdate, @rsvpnote, @rsvpid)
 						SET 
@@ -81,10 +81,10 @@ foreach ($two_types as $t) {
 							language='und',
 							field_rsvp_attended_value=@attended;
 				";
-				db_query($q) or die(db_error());
+  db_query($q) or die(db_error());
 
-				$q = "
-					LOAD DATA LOCAL INFILE '".$file."' REPLACE INTO TABLE field_".$t."_field_rsvp_event
+  $q = "
+					LOAD DATA LOCAL INFILE '" . $file . "' REPLACE INTO TABLE field_" . $t . "_field_rsvp_event
 					FIELDS TERMINATED BY ',' ESCAPED BY '*' OPTIONALLY ENCLOSED BY '%' 
 						( @eventid, @role, @userid, @attended, @rsvpdate, @rsvpnote, @rsvpid)
 						SET 
@@ -95,10 +95,10 @@ foreach ($two_types as $t) {
 							language='und',
 							field_rsvp_event_nid=@eventid+$eventid_offset
 				";
-				db_query($q) or die(db_error());
+  db_query($q) or die(db_error());
 
-				$q = "
-					LOAD DATA LOCAL INFILE '".$file."' REPLACE INTO TABLE field_".$t."_field_rsvp_person
+  $q = "
+					LOAD DATA LOCAL INFILE '" . $file . "' REPLACE INTO TABLE field_" . $t . "_field_rsvp_person
 					FIELDS TERMINATED BY ',' ESCAPED BY '*' OPTIONALLY ENCLOSED BY '%' 
 						( @eventid, @role, @userid, @attended, @rsvpdate, @rsvpnote, @rsvpid)
 						SET 
@@ -109,10 +109,10 @@ foreach ($two_types as $t) {
 							language='und',
 							field_rsvp_person_uid=@userid+$userid_offset
 				";
-				db_query($q) or die(db_error());
+  db_query($q) or die(db_error());
 
-				$q = "
-					LOAD DATA LOCAL INFILE '".$file."' REPLACE INTO TABLE field_".$t."_field_rsvp_role
+  $q = "
+					LOAD DATA LOCAL INFILE '" . $file . "' REPLACE INTO TABLE field_" . $t . "_field_rsvp_role
 					FIELDS TERMINATED BY ',' ESCAPED BY '*' OPTIONALLY ENCLOSED BY '%' 
 						( @eventid, @role, @userid, @attended, @rsvpdate, @rsvpnote, @rsvpid)
 						SET 
@@ -123,10 +123,10 @@ foreach ($two_types as $t) {
 							language='und',
 							field_rsvp_role_value=@role
 				";
-				db_query($q) or die(db_error());
+  db_query($q) or die(db_error());
 
-				$q = "
-					LOAD DATA LOCAL INFILE '".$file."' REPLACE INTO TABLE field_".$t."_field_rsvp_note
+  $q = "
+					LOAD DATA LOCAL INFILE '" . $file . "' REPLACE INTO TABLE field_" . $t . "_field_rsvp_note
 					FIELDS TERMINATED BY ',' ESCAPED BY '*' OPTIONALLY ENCLOSED BY '%' 
 						( @eventid, @role, @userid, @attended, @rsvpdate, @rsvpnote, @rsvpid)
 						SET 
@@ -137,10 +137,10 @@ foreach ($two_types as $t) {
 							language='und',
 							field_rsvp_note_value=@rsvpnote
 				";
-				db_query($q) or die(db_error());
+  db_query($q) or die(db_error());
 
-				$q = "
-					LOAD DATA LOCAL INFILE '".$file."' REPLACE INTO TABLE field_".$t."_field_public
+  $q = "
+					LOAD DATA LOCAL INFILE '" . $file . "' REPLACE INTO TABLE field_" . $t . "_field_public
 					FIELDS TERMINATED BY ',' ESCAPED BY '*' OPTIONALLY ENCLOSED BY '%' 
 						( @eventid, @role, @userid, @attended, @rsvpdate, @rsvpnote, @rsvpid)
 						SET 
@@ -151,7 +151,7 @@ foreach ($two_types as $t) {
 							language='und',
 							field_public_value=0
 				";
-				db_query($q) or die(db_error());
+  db_query($q) or die(db_error());
 
 } // End of foreach $two_types
 
@@ -162,8 +162,8 @@ echo shell_exec("grep ,%Manager% < $file >$file.em");
 
 $two_types = array('data', 'revision');
 foreach ($two_types as $t) {
-	$q = "
-	LOAD DATA LOCAL INFILE '".$file.".em' REPLACE INTO TABLE field_".$t."_field_manager
+  $q = "
+	LOAD DATA LOCAL INFILE '" . $file . ".em' REPLACE INTO TABLE field_" . $t . "_field_manager
 	FIELDS TERMINATED BY ',' ESCAPED BY '*' OPTIONALLY ENCLOSED BY '%' 
 		( @eventid, @role, @userid, @attended, @rsvpdate, @rsvpnote, @rsvpid)
 		SET 
@@ -174,15 +174,15 @@ foreach ($two_types as $t) {
 			language='und',
 			field_manager_uid=@userid+$userid_offset;
 	";
-	db_query($q) or die(db_error());
+  db_query($q) or die(db_error());
 } // End of foreach $two_types managers
 
 echo shell_exec("grep ,%Coordinator% < $file >$file.ec");
 
 $two_types = array('data', 'revision');
 foreach ($two_types as $t) {
-	$q = "
-		LOAD DATA LOCAL INFILE '".$file.".ec' REPLACE INTO TABLE field_".$t."_field_coordinator
+  $q = "
+		LOAD DATA LOCAL INFILE '" . $file . ".ec' REPLACE INTO TABLE field_" . $t . "_field_coordinator
 		FIELDS TERMINATED BY ',' ESCAPED BY '*' OPTIONALLY ENCLOSED BY '%' 
 			( @eventid, @role, @userid, @attended, @rsvpdate, @rsvpnote, @rsvpid)
 			SET 
@@ -193,5 +193,5 @@ foreach ($two_types as $t) {
 				language='und',
 				field_coordinator_uid=@userid+$userid_offset;
 	";
-	db_query($q) or die(db_error());
+  db_query($q) or die(db_error());
 } // End of foreach $two_types coordiantors

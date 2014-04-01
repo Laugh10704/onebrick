@@ -3,11 +3,10 @@ require("include.php");
 require("open_v3.php");
 $curtime = time();
 
-
-$file ="/tmp/ephotos.csv"; 
+$file = "/tmp/ephotos.csv";
 
 $q = "
-	LOAD DATA LOCAL INFILE '".$file."' REPLACE INTO TABLE file_usage 
+	LOAD DATA LOCAL INFILE '" . $file . "' REPLACE INTO TABLE file_usage
 	FIELDS TERMINATED BY ',' (@fileid, @eventid, @seq, @filename, @uri, @fsize)
 		SET 
 			fid = @fileid,
@@ -19,7 +18,7 @@ $q = "
 db_query($q) or die(db_error());
 
 $q = "
-	LOAD DATA LOCAL INFILE '".$file."' REPLACE INTO TABLE file_managed
+	LOAD DATA LOCAL INFILE '" . $file . "' REPLACE INTO TABLE file_managed
 	FIELDS TERMINATED BY ',' (@fileid, @eventid, @seq, @filename, @uri, @fsize)
 		SET 
 			fid = @fileid,
@@ -36,8 +35,8 @@ db_query($q) or die(db_error());
 $two_types = array('data', 'revision');
 foreach ($two_types as $t) {
 
-	$q = "
-	LOAD DATA LOCAL INFILE '".$file."' REPLACE INTO TABLE field_".$t."_field_event_photos
+  $q = "
+	LOAD DATA LOCAL INFILE '" . $file . "' REPLACE INTO TABLE field_" . $t . "_field_event_photos
 	FIELDS TERMINATED BY ',' (@fileid, @eventid, @seq, @filename, @uri, @fsize)
 		SET 
 		entity_type = 'node',
@@ -49,7 +48,7 @@ foreach ($two_types as $t) {
 		delta = @seq,
 		field_event_photos_fid = @fileid
 	";
-	db_query($q) or die(db_error());
+  db_query($q) or die(db_error());
 
 
 } // End of foreach $two_types

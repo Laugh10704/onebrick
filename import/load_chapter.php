@@ -7,7 +7,7 @@ $curtime = time();
 $file = 'data/chapters.csv';
 
 $q = "
-	LOAD DATA LOCAL INFILE '".$file."' REPLACE INTO TABLE node
+	LOAD DATA LOCAL INFILE '" . $file . "' REPLACE INTO TABLE node
 	FIELDS TERMINATED BY ',' ESCAPED BY '*' OPTIONALLY ENCLOSED BY '%' LINES TERMINATED BY 'XYXXY'
 			(@chapid, @name, @facebook_url, @twitter_url, @craigslist_stub, @created, @modified)
 		SET 
@@ -25,7 +25,7 @@ $q = "
 db_query($q) or die(db_error());
 
 $q = "
-	LOAD DATA LOCAL INFILE '".$file."' REPLACE INTO TABLE node_revision
+	LOAD DATA LOCAL INFILE '" . $file . "' REPLACE INTO TABLE node_revision
 	FIELDS TERMINATED BY ',' ESCAPED BY '*' OPTIONALLY ENCLOSED BY '%' LINES TERMINATED BY 'XYXXY'
 			(@chapid, @name, @facebook_url, @twitter_url, @craigslist_stub, @created, @modified)
 		SET 
@@ -42,7 +42,7 @@ db_query($q) or die(db_error());
 
 
 $q = "
-	LOAD DATA LOCAL INFILE '".$file."' REPLACE INTO TABLE node_access
+	LOAD DATA LOCAL INFILE '" . $file . "' REPLACE INTO TABLE node_access
 	FIELDS TERMINATED BY ',' ESCAPED BY '*' OPTIONALLY ENCLOSED BY '%' LINES TERMINATED BY 'XYXXY'
 	(@chapid, @name, @facebook_url, @twitter_url, @craigslist_stub, @created, @modified)
 		SET 
@@ -56,7 +56,7 @@ $q = "
 
 db_query($q) or die(db_error());
 $q = "
-	LOAD DATA LOCAL INFILE '".$file."' REPLACE INTO TABLE node_comment_statistics
+	LOAD DATA LOCAL INFILE '" . $file . "' REPLACE INTO TABLE node_comment_statistics
 	FIELDS TERMINATED BY ',' ESCAPED BY '*' OPTIONALLY ENCLOSED BY '%' LINES TERMINATED BY 'XYXXY'
 			(@chapid, @name, @facebook_url, @twitter_url, @craigslist_stub, @created, @modified)
 
@@ -70,7 +70,7 @@ $q = "
 db_query($q) or die(db_error());
 
 $q = "
-	LOAD DATA LOCAL INFILE '".$file."' REPLACE INTO TABLE field_data_body
+	LOAD DATA LOCAL INFILE '" . $file . "' REPLACE INTO TABLE field_data_body
 	FIELDS TERMINATED BY ',' ESCAPED BY '*' OPTIONALLY ENCLOSED BY '%' LINES TERMINATED BY 'XYXXY'
 			(@chapid, @name, @facebook_url, @twitter_url, @craigslist_stub, @created, @modified)
 
@@ -88,8 +88,8 @@ db_query($q) or die(db_error());
 
 $two_types = array('data', 'revision');
 foreach ($two_types as $t) {
-				$q = "
-					LOAD DATA LOCAL INFILE '".$file."' REPLACE INTO TABLE field_".$t."_field_chapter_craigslist_stub
+  $q = "
+					LOAD DATA LOCAL INFILE '" . $file . "' REPLACE INTO TABLE field_" . $t . "_field_chapter_craigslist_stub
 					FIELDS TERMINATED BY ',' ESCAPED BY '*' OPTIONALLY ENCLOSED BY '%' LINES TERMINATED BY 'XYXXY'
 							(@chapid, @name, @facebook_url, @twitter_url, @craigslist_stub)
 						SET 
@@ -100,10 +100,10 @@ foreach ($two_types as $t) {
 							language='und',
 							field_chapter_craigslist_stub_value=@craigslist_stub;
 				";
-				db_query($q) or die(db_error());
+  db_query($q) or die(db_error());
 
-				$q = "
-					LOAD DATA LOCAL INFILE '".$file."' REPLACE INTO TABLE field_".$t."_field_chapter_twitter_url
+  $q = "
+					LOAD DATA LOCAL INFILE '" . $file . "' REPLACE INTO TABLE field_" . $t . "_field_chapter_twitter_url
 					FIELDS TERMINATED BY ',' ESCAPED BY '*' OPTIONALLY ENCLOSED BY '%' LINES TERMINATED BY 'XYXXY'
 							(@chapid, @name, @facebook_url, @twitter_url, @craigslist_stub, @created, @modified)
 
@@ -115,10 +115,10 @@ foreach ($two_types as $t) {
 							language='und',
 							field_chapter_twitter_url_value=@twitter_url;
 				";
-				db_query($q) or die(db_error());
+  db_query($q) or die(db_error());
 
-				$q = "
-					LOAD DATA LOCAL INFILE '".$file."' REPLACE INTO TABLE field_".$t."_field_chapter_facebook_url
+  $q = "
+					LOAD DATA LOCAL INFILE '" . $file . "' REPLACE INTO TABLE field_" . $t . "_field_chapter_facebook_url
 					FIELDS TERMINATED BY ',' ESCAPED BY '*' OPTIONALLY ENCLOSED BY '%' LINES TERMINATED BY 'XYXXY'
 							(@chapid, @name, @facebook_url, @twitter_url, @craigslist_stub, @created, @modified)
 
@@ -130,7 +130,7 @@ foreach ($two_types as $t) {
 							language='und',
 							field_chapter_facebook_url_value=@facebook_url;
 				";
-				db_query($q) or die(db_error());
+  db_query($q) or die(db_error());
 
 
 } // End of foreach $two_types
