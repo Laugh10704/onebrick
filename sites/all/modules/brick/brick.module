@@ -631,7 +631,7 @@ function brick_is_user_in_home_chapter() {
 function brick_load_user_home_chapter() {
   global $user;
 
-  //$chapter_nid = 101; // default to chapter 101 - San Francisco
+  $chapter_nid = 101; // default to chapter 101 - San Francisco
 
   if ($user && $user->uid) {
     $loadedUser = user_load($user->uid);

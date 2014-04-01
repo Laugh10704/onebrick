@@ -271,7 +271,7 @@ function brick_create_account_form($form, $form_state, $uid = NULL, $username = 
 
   $form['create']['fullname'] = array(
     '#type' => "textfield",
-    '#title' => t("Your name:"),
+    '#title' => t("Name:"),
     '#default_value' => $name,
     '#size' => 40,
     '#required' => TRUE

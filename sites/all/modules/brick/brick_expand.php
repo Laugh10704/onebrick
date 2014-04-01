@@ -33,12 +33,23 @@ function brick_chapter_details($chapter_id) {
   return (db_query($q));
 }
 
+function brick_site_title($eid) {
+  $event_node = node_load($eid);
+  $title = "";
+  if (isset($event_node->field_event_site)) {
+    $site = node_load($event_node->field_event_site['und']['0']['nid']);
+    $title = $site->title;
+  }
+  return ($title);
+}
+
 function brick_site_address($eid) {
   $event_node = node_load($eid);
   $address = "";
   if (isset($event_node->field_event_site)) {
     $site = node_load($event_node->field_event_site['und']['0']['nid']);
     if (isset($site->location)) {
+      $site->location['country'] = ""; //remove ",us" from the address
       $address = location_address2singleline($site->location);
     }
   }
