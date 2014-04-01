@@ -49,6 +49,13 @@ td.title {
     <td class='title'>Location:</td>
     <td>
  	<?php
+    $title = brick_site_title($node->nid);
+    $address = brick_site_address($node->nid);
+    $n = strlen($title);
+    if (strncmp($title, $address, strlen($title))) {
+      print("$title<br>"); // Don't print the title if it's the same as the first line of the address
+    }
+
     if ($address = brick_site_address($node->nid)) {
       print("$address <a title=\"Google Map\" ");
 	  print ("href=\"http://maps.google.com/maps?q=");
