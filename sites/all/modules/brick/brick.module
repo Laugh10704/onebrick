@@ -597,6 +597,25 @@ function brick_switch_chapter($nid = 0) {
   drupal_goto(); // Goto to the home page for the new chapter
 }
 
+function brick_user_view($account, $view_mode, $langcode) {
+  if (stristr($account->mail, "@onebrick.org")) {
+    $emailMarkup = brick_safe_mailto($account->mail);
+
+    $account->content['field_user_email'] = array(
+      '#theme' => 'field',
+      '#weight' => 1,
+      '#field_type' => 'markup',
+      '#label_display' => 'inline',
+      '#field_name' => 'email',
+      '#entity_type' => 'user',
+      '#bundle' => 'user',
+      '#title' => t('Send E-mail'),
+      '#items' => array(array('value'=>0)),
+      0 => array('#markup' => $emailMarkup),
+    );
+ }
+}
+
 /*
  * resets the SESSION variables to the users "home" chapter
  * if $user is not set then they are not logged in and set set the value to the first chapter (SF)
@@ -859,7 +878,7 @@ function user_has_role($role, $user = NULL) {
   return FALSE;
 }
 
-function brick_safe_mailto($email, $subject) {
+function brick_safe_mailto($email, $subject = null) {
 
   if (!isset($email)) { // person doesn't have an email address in the system
     return ("");
@@ -874,7 +893,7 @@ function brick_safe_mailto($email, $subject) {
   for ($i = 0; $i < strlen($link); $i++) {
     $obfuscatedLink .= "&#" . ord($link[$i]) . ";";
   }
-  $result = "<a title=\"Send Email\" href=\" $obfuscatedLink";
+  $result = "<a class='brick-email-link' title=\"Send Email\" href=\" $obfuscatedLink";
   if (isset($subject)) {
     $result .= "?subject=$subject";
   }
