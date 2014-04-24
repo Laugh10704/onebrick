@@ -7,6 +7,12 @@
 body, h1, h2, h3, form, input, td, p, ul, li {
     font: 12px Verdana, Arial, Helvetica, sans-serif;
     padding: 0;
+    color: black;
+}
+
+.node h1.node-title {
+    font-size: 17px;
+    font-weight: bold;
 }
 
 .views-field-reconcile div {
@@ -69,14 +75,9 @@ body, h1, h2, h3, form, input, td, p, ul, li {
 
 h2 {
     display: block;
-    font-size: 1.2em;
+    font-size: 15px;
     font-weight: bold;
     margin: 1em 0;
-}
-
-h1, h2, h3 {
-    font-family: "Verdana", "Helvetica", "Arial", sans-serif;
-    color: #21759B;
 }
 
 #header {
@@ -259,13 +260,25 @@ table img {
 }
 
 .content .view-header, .content .view-header p {
-    color: #EA8324;
+    /*color: #EA8324;*/
     font-weight: bold !important;
-    font-size: 16px !important;
+    font-size: 14px !important;
 }
 
 .content .view-header {
     margin-bottom: 20px;
+}
+
+.views-exposed-form label {
+    font-weight: bold;
+    font-size: 16px;
+    color: #EA8324;
+    padding-top: 10px;
+    padding-bottom: 5px;
+}
+
+.views-exposed-form .views-exposed-widget .form-submit {
+    margin-top: 3em;
 }
 
 .page-event-gallery #cboxTitle {
@@ -425,7 +438,7 @@ div.gallery-processed {
 }
 
 #header-menu .block {
-    font-size: 1.3em;
+    font-size: 14px;
     margin: 0;
     font-weight: 900;
 }
@@ -500,13 +513,20 @@ div.gallery-processed {
 }
 
 /* block title styling */
+
 .block h2 {
     border-bottom: none;
-    color: #21759B;
     font-family: "Verdana", "Helvetica", "Arial", sans-serif;
-    font-size: 1.2em;
+    font-size: 15px;
     font-weight: bold;
     text-transform: none;
+    color: inherit;
+    letter-spacing: 0em;
+}
+
+.block-content h2 {
+    font-size: 15px;
+    margin: 10px 0 7px 0;
 }
 
 /* add orange top border to footer menu region */
@@ -621,10 +641,44 @@ ul.calendar-links {
     overflow: visible;
 }
 
+.view .date-nav-wrapper .date-prev {
+    background: none repeat scroll 0 0 #ffffff;
+    float: none;
+    padding: 5px 0;
+    position: absolute;
+    right: auto;
+    left: 100px;
+    text-align: right;
+    top: 0px;
+    width: auto;
+    z-index: 1;
+}
+
+.view .date-nav-wrapper .date-next {
+    -moz-border-radius: 0px 5px 5px 0px;
+    border-radius: 0px 5px 5px 0px;
+    background: none repeat scroll 0 0 #ffffff;
+    float: none;
+    padding: 5px 0;
+    position: absolute;
+    right: 100px;
+    text-align: left;
+    top: 0px;
+    width: auto;
+    font-size: large;
+}
+
+.view .date-nav-wrapper .date-next a {
+    font-size: 16px;
+}
+
+.view .date-nav-wrapper .date-prev a {
+    font-size: 16px;
+}
+
 .date-nav div.date-heading h3 {
     /* Month Year Header */
     background-color: white;
-    color: black;
     font-size: large;
 }
 
@@ -638,6 +692,15 @@ ul.calendar-links {
 
 .date-nav-wrapper .date-nav .date-next .ajax-progress-throbber {
     display: none;
+}
+
+.view .date-nav-wrapper .date-nav {
+    margin-bottom: 0;
+    padding: 0;
+}
+
+.view-header {
+    margin-bottom: 10px;
 }
 
 /* Highly specific matching to override another very specific CSS rule.  All we
