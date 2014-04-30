@@ -10,9 +10,22 @@ body, h1, h2, h3, form, input, td, p, ul, li {
     color: black;
 }
 
-.node h1.node-title {
+h1 {
     font-size: 17px;
     font-weight: bold;
+    border-bottom: none;
+}
+
+h2 {
+    font-size: 15px;
+    font-weight: bold;
+    border-bottom: none;
+}
+
+h3 {
+    font-size: 13px;
+    font-weight: bold;
+    border-bottom: none;
 }
 
 .views-field-reconcile div {
@@ -390,7 +403,7 @@ div.gallery-processed {
     margin-bottom: 50px;
 }
 
-#brick-add-organization-contact-form  {
+#brick-add-organization-contact-form {
     background-color: #EEEEEE;
     border: solid gray 1px;
     height: 220px;
@@ -412,14 +425,13 @@ div.gallery-processed {
     margin-top: 50px;
 }
 
-
 #brick-add-organization-contact-form #edit-group0 {
-    float:left;
+    float: left;
     margin-left: 40px;
 }
 
 #brick-add-organization-contact-form #edit-group1 {
-    float:right;
+    float: right;
     margin-right: 50px;
 }
 
