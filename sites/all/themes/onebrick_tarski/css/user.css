@@ -24,10 +24,6 @@
     clear:both;
 }
 
-.page-user .brick-email-link {
-    float: left;
-}
-
 .page-user .field-name-field-user-subscribed .field-label {
     float: left;
     padding-top: 10px;
@@ -56,8 +52,16 @@
 .page-user .field-item {
     padding: 10px;
     padding-left: 30px;
-    height: auto;
     width: 410px;
+}
+
+.page-user .field-name-email {
+    width: 60px;
+    height: 30px;
+}
+
+.page-user .field-name-email .field-label {
+    display: none;
 }
 
 /*hide the text at the top of the edit page*/
@@ -65,11 +69,6 @@
     display: none;
 }
 
-.field-name-email .field-label {
-    display: none;
-    padding-top: 10px;
-
-}
 
 .field-name-field-user-public-rsvp,
 .password-strength {
