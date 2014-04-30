@@ -603,7 +603,7 @@ function brick_user_view($account, $view_mode, $langcode) {
 
     $account->content['field_user_email'] = array(
       '#theme' => 'field',
-      '#weight' => -1,
+      '#weight' => 1,
       '#field_type' => 'markup',
       '#label_display' => 'inline',
       '#field_name' => 'email',

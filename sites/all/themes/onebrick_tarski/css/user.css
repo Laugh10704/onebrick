@@ -28,13 +28,24 @@
     float: left;
 }
 
+.page-user .field-name-field-user-subscribed .field-label {
+    float: left;
+    padding-top: 10px;
+}
+
+.page-user .field-name-field-user-phone .field-label {
+    float: left;
+    padding-top: 10px;
+
+}
+
 .page-user dl {
 }
 
 .page-user .field-label {
-    padding: 5px;
     font-weight: bold;
     display: inline;
+
 }
 
 /* Removes header that says "History" */
@@ -43,9 +54,8 @@
 }
 
 .page-user .field-item {
-    padding: 5px;
+    padding: 10px;
     padding-left: 30px;
-    padding-bottom: 10px;
     height: auto;
     width: 410px;
 }
@@ -57,6 +67,8 @@
 
 .field-name-email .field-label {
     display: none;
+    padding-top: 10px;
+
 }
 
 .field-name-field-user-public-rsvp,
