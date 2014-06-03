@@ -16,3 +16,14 @@
 
 background-color : orange;
 }
+
+.tabs ul.tabs li a {
+    background-color: #EEE;
+    float: left;
+    width: 100%;
+    font-size: 100%;
+    line-height: normal;
+    border-bottom: 1px solid #666;
+    padding: 2px 2px 2px 4px;
+    border-radius: 5px 5px 0px 0px;
+}
